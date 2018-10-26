@@ -1,0 +1,426 @@
+/* *, *:before, *:after {
+  box-sizing: border-box;
+} */
+body{
+  margin: 0;
+  height: 98.7vh; /* Why does 100 have slight scrolling?? */
+
+}
+.display-none{
+  display: none !important;
+}
+#game{
+  position: relative;
+  height: 100%;
+  width: 300%;
+  background-color: DarkOliveGreen;
+  background-image: linear-gradient(190deg, #820303,#4e1d00 44%, SteelBlue , DarkOliveGreen 56%, #e5f310);
+  box-shadow: inset 0 0 1000px 100px black;
+}
+#game.zoom-out{width: 100vw}
+
+#board{
+  padding: 10px;
+  display: flex;
+  position: relative;
+  background-color: SaddleBrown;
+  width: 100%;
+  max-width: 4400px ;
+  height: 61.8vw;
+  max-height: 906.4px; /*  4400 / 3 * 61.8%  */
+  top: 50%;
+  transform: translateY(-50%);
+}
+@media screen and (min-width: 1466px ) {
+  #board{
+    margin-left: calc(50vw - 1466px / 2);
+    margin-right: calc(50vw - 1466px / 2);
+  }
+  #game{max-width: calc(4400px + 100vw - 1466px);}
+}
+#board.zoom-out{
+  width: 100%;
+  height: 20.6vw;
+  margin: 0;
+  /* height: 80%; */
+}
+
+#shop{
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #502609;
+  border-color: #291208;
+  box-shadow: 3px 5px #291208, inset 5px 5px 4px #0004;
+  border-style: solid;
+  border-width: 10px;
+  border-radius: 20px;
+  width: 100%;
+  height: 100%;
+  max-width: 500px;
+  max-height: 400px;
+}
+#shop div{
+  position: absolute;
+  color: DarkRed;
+  font-size: 10em;
+  font-family: monospace;
+  left: 50%;
+  top: 50%;
+  text-shadow: 2px 2px #440707;
+  transform: translate(-50%, -50%) rotate(-30deg);
+}
+#shop .close-btn{
+  position: absolute;
+  left: 50%;
+  bottom: 25px;
+  transform: translateX(-50%);
+}
+
+.lane{
+  position: relative;
+  width: 33%;
+  /* flex-basis: 30%; */
+  flex-grow: 1;
+  height: 100%;
+  background-color: green;
+  box-shadow: inset 0 0 100px black;
+}
+.lane.active{
+  box-shadow: inset 0 0 100px Gold;
+}
+.left-lane{
+  margin-right: 5px;
+  background-image: linear-gradient(185deg, #4e1d00,#4e1d00 40%, SteelBlue , DarkOliveGreen 48%,DarkOliveGreen);
+}
+
+.middle-lane{
+  margin-right: 5px;
+  margin-left: 5px;
+  background-image: linear-gradient( #4e1d00,#4e1d00 46%, SteelBlue , DarkOliveGreen 54%,DarkOliveGreen);
+}
+
+.right-lane{
+  margin-left: 5px;
+  background-image: linear-gradient(185deg, #4e1d00,#4e1d00 52%, SteelBlue , DarkOliveGreen 60%,DarkOliveGreen);
+}
+
+.playarea{
+  width: 95%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  height: calc(50% - 15px);
+  /* border-style: solid; */
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y:hidden;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.card{
+  position: relative;
+  flex-shrink: 0;
+  width: 150px;
+  height: 191.38px;
+  /* height: 127.58px; */
+  padding: 10px 0 10px 0;
+  background-color: grey;
+  margin: 10px;
+  border-style: solid;
+  border-width: 5px;
+  border-radius: 5px;
+}
+
+.Black{
+  background-color: #333035;
+  border-color: #333035;
+}
+.Red{
+  background-color: #5b1c1e;
+  border-color: #5b1c1e;
+}
+.Blue{
+  background-color: #1b3c57;
+  border-color: #1b3c57;
+}
+.Green{
+  background-color: #315c1c;
+  border-color: #315c1c;
+}
+.Yellow{
+  background-color: #a78e32;
+  border-color: #a78e32;
+}
+
+.card  img{
+  position: absolute;
+  width: 100%;
+}
+.icon-container{
+  position: absolute;
+  width: 33%;
+  font-size: 2em;
+  font-family: sans-serif;
+  text-align: center;
+  text-shadow:
+  -1px -1px 0 #fff,
+  1px  -1px 0 #fff,
+  -1px 1px  0 #fff,
+  1px  1px  0 #fff;
+}
+.icon-container div{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, 15%)
+}
+.icon-container img{
+  position: absolute;
+  left: 0;
+}
+.health{
+  right: 0;
+  bottom: 1.5em;
+}
+.attack{
+  left: 0;
+  bottom: 1.5em;
+}
+.armor{
+  left: 50%;
+  bottom: 1.5em;
+  transform: translateX(-50%)
+}
+
+.arrow{
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-width: thick;
+  border-style: solid solid none none;
+  left: 50%;
+  transform: translateX(-50%) rotate(-45deg);
+  top: -20px;
+}
+.arrow.right{
+  right: 0;
+  left: auto;
+  transform: translateX(-50%) rotate(-20deg)
+}
+.arrow.left{
+  right: auto;
+  left: 0;
+  transform: translateX(-50%) rotate(-70deg)
+}
+
+.playarea-top .arrow{
+  border-style: none none solid solid;
+  top: unset;
+  bottom: -20px;
+}
+.playarea-top .right{
+  transform: translateX(-50%) rotate(-70deg)
+}
+.playarea-top .left{
+  transform: translateX(-50%) rotate(-20deg)
+}
+
+
+.blank{
+  flex-shrink: 0;
+  width: 150px;
+  height: 191.38px;
+  padding: 10px 0 10px 0;
+  margin: 10px;
+  border-style: solid;
+}
+.zoom-out .card,.zoom-out .blank{
+  transform:scale(0.5);
+  margin: -35px;
+  /* width: 75px;
+  height: 95.69px; */
+}
+
+
+.tower{
+  left: 50%;
+  transform: translateX(-50%);
+  /* padding: 3%; */
+  position: absolute;
+  width: 6vw;
+  height: 6vw;
+  border-radius: 50px;
+  border-style: solid;
+  /* align-items: flex-start; */
+  text-align: center;
+  font-size: 4vw;
+  line-height: 5.5vw;
+}
+.tower-bottom{
+  bottom: -25px;
+  background-color: CadetBlue;
+}
+.zoom-out .tower-bottom{
+  bottom: -75px;
+}
+.tower-top{
+  top: -25px;
+  background-color: DarkSlateGrey;
+}
+.ancient{
+  background-color: FireBrick;
+  width: 6.5vw;
+  height: 6.5vw;
+}
+.zoom-out .tower-top{
+  top: -75px;
+}
+
+.UI{
+  position: fixed;
+}
+
+.hand{
+  width: 60%;
+  /* border-style: solid; */
+  height: 10%;
+  left:20%;
+  /* background-color: #fff3; */
+}
+
+.hand.bottom{
+  bottom: 0px;
+}
+.hand.top{
+  top: 0px;
+}
+.stage{
+  display: flex;
+  /* border-style: solid; */
+  height: 20%;
+  left:20%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.dragover{
+  background-color: #fff3;
+}
+.stage.bottom{
+  bottom: 20px;
+}
+.stage.top{
+  top: 20px;
+}
+.lane .stage{
+  position: absolute;
+  align-items: center;
+  width: 100%;
+  height: 90%;
+}
+.lane .stage .card{
+  transform: rotate(-5deg);
+}
+.zoom-out .lane .stage .card{
+  transform: scale(0.5) rotate(-5deg);
+}
+.stage-bottom{
+  bottom: -50%;
+  /* padding-top: 20%;
+  padding-bottom: 10%; */
+}
+.stage-top{
+  top: -50%;
+  /* padding-bottom: 20%;
+  padding-top: 10%; */
+}
+
+
+
+
+.board-nav{
+  top: 15px;
+  left: 15px;
+}
+.btn{
+  border-style: none;
+  padding: .5em 1em .5em 1em;
+  border-radius: .25em;
+  background-color: SlateGrey;
+  color: white;
+}
+.btn.active{
+  background-color: Gold;
+  color: Black;
+}
+.pass-btn{
+  background-color: Gold;
+  border-style: solid;
+  border-color: silver;
+  width: 125px;
+  height: 125px;
+  border-radius: 100px;
+}
+.pass-btn.bottom, .deploy-btn{
+  bottom: 60px;
+  right: 200px;
+}
+.pass-btn.top{
+  top: 60px;
+  left: 200px;
+}
+.pass-btn:disabled{
+  background-color:grey;
+}
+
+.deploy-btn{
+  background-color: DodgerBlue;
+  font-size: 2em;
+  padding: 20px;
+}
+
+#start-game-btn{
+  padding: 1em 2em 1em 2em;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10vw;
+  border-radius: 1em;
+  background-color: DarkGreen;
+  color: black;
+  text-shadow: 2px 2px 1px DarkRed;
+}
+
+.info{
+  background-color: #FFD70055;
+  border-style: solid;
+  border-color: Khaki;
+  border-radius: 10px;
+  font-size: 2em;
+  right: 0;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+.info img{
+  height: 1em;
+}
+.info .gold{
+  padding-right: 50px;
+}
+#info-top{
+  top: 0;
+  border-style: none none solid solid;
+  border-radius: 0 0 0 10px;
+}
+#info-bottom{
+  bottom: 0;
+  border-style: solid none none solid;
+  border-radius: 10px 0 0 0;
+}
+.gold{
+  color: gold;
+}

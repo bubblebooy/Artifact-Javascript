@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="artifact.css">
+    <title>Artifact</title>
+  </head>
+  <body>
+    <main id="game">
+      <div id="board" class=""></div>
+
+      <div class="hand bottom UI"></div>
+      <div class="hand top UI"></div>
+
+      <div class="board-nav UI">
+        <button type="button" name="zoomOut" class="btn" id="zoom-btn">Zoom</button>
+        <button type="button" name="zoomLeft" class="btn" id="zoom-btn-left">Left Lane</button>
+        <button type="button" name="zoomMiddle" class="btn" id="zoom-btn-middle">Middle Lane</button>
+        <button type="button" name="zoomRight" class="btn" id="zoom-btn-right">Right Lane</button>
+      </div>
+      <div id="info-top" class = "info display-none UI">
+        <img src="/node_modules/artifactdb/assets/icon/cardstat-goldcost.png" alt="Gold" align="top">
+        <span class="gold">0</span>
+        <span class="name">Name:</span>
+      </div>
+      <div id="info-bottom" class = "info display-none UI">
+        <img src="/node_modules/artifactdb/assets/icon/cardstat-goldcost.png" alt="Gold" align="top">
+        <span class="gold">0</span>
+        <span class="name">Name:</span>
+      </div>
+      <button class="pass-btn bottom UI active" id="pass-btn-bottom" disabled>Pass</button>
+      <button class="pass-btn top UI" id="pass-btn-top" disabled>Pass</button>
+
+      <button type="button" name="startGame" id='start-game-btn' class="btn UI">Start Game</button>
+      <div class="display-none UI" id="shop">
+        <div>
+          Closed
+        </div>
+      </div>
+    </main>
+    <script src="main.js"></script>
+  </body>
+</html>
