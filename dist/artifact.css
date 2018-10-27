@@ -3,7 +3,7 @@
 } */
 body{
   margin: 0;
-  height: 98.7vh; /* Why does 100 have slight scrolling?? */
+  height: 100vh; /* Why does 100 have slight scrolling?? */
 
 }
 .display-none{
@@ -39,7 +39,7 @@ body{
   #game{max-width: calc(4400px + 100vw - 1466px);}
 }
 #board.zoom-out{
-  width: 100%;
+  width: calc(100% - 2 * 10px);
   height: 20.6vw;
   margin: 0;
   /* height: 80%; */

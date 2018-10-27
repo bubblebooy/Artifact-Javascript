@@ -1,10 +1,10 @@
-import {card , blank} from './card'
-import loadJSON from './loadJSON'
-import zoomNavController from './zoomNavController'
-import passButtonController from './passButtonController'
-import shop from './shop'
-import {deployment} from './deploy'
-import infoDisplay from './infoDisplay'
+import {card , blank} from '../card'
+import loadJSON from '../loadJSON'
+import zoomNavController from '../zoomNavController'
+import passButtonController from '../passButtonController'
+import shop from '../shop'
+import {deployment} from '../deploy'
+import infoDisplay from '../infoDisplay'
 
 let cardData = "not loaded yet";
 loadJSON(function(response){

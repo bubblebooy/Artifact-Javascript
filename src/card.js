@@ -23,7 +23,7 @@ const blank = (parrent, side) => {
 }
 
 const card = (cardProto , player) => {
-  let assetPath = "/node_modules/artifactdb/assets"
+  let assetPath = "../node_modules/artifactdb/assets"
   let div = document.createElement('div')
   let updateDisplay = () => {};
   let properties = {div, player};
