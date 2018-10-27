@@ -157,7 +157,7 @@ body{
   border-color: #a78e32;
 }
 
-.card  img{
+.card img{
   position: absolute;
   width: 100%;
 }
@@ -195,6 +195,21 @@ body{
   left: 50%;
   bottom: 1.5em;
   transform: translateX(-50%)
+}
+
+.abilities-container{
+  position: absolute;
+  display: flex;
+  width: 100%;
+  height: 25px;
+  bottom: 40%;
+}
+.ability-container{
+  width: 30%;
+}
+.ability-container > img{
+  position: relative;
+  border-style: solid;
 }
 
 .arrow{

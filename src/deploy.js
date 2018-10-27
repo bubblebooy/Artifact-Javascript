@@ -15,6 +15,7 @@ function dragover(ev) { ev.preventDefault()}
 function dragenter(ev) { ev.target.classList.add("dragover")}
 function dragleave(ev) { ev.target.classList.remove("dragover")}
 
+
 function buildStages(){
   const stageBottom = document.createElement("div"); stageBottom.classList.add("bottom","display-none");
   const stageTop = document.createElement("div"); stageTop.classList.add("top","display-none");

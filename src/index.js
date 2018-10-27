@@ -77,8 +77,6 @@ const player = (name, heros, computer = false) => {
 }
 
 
-
-
 const game = (() => {
   const div = document.getElementById('game');
   const bottomPassButton = document.getElementById("pass-btn-bottom");
@@ -88,9 +86,12 @@ const game = (() => {
   let turn = 0;
   let round = 0;
   let currentLane = 0;
-  let hand = [];
   let score = [0,0];
   let _infoDisplay;
+
+  let afterCombatEvent = new Event('afterCombat')
+  let endOfRoundEvent = new Event('endOfRound')
+  let continuousEffectEvent = new Event('continuousEffect')
 
   const getCurrentLane = () => currentLane ;
   const getRound = () => round ;
@@ -156,7 +157,9 @@ const game = (() => {
     nextTurn()
   };
 
-  return {div, getCurrentLane, hand, startGame, getRound, score, gameOver, getTurn, pass, players, infoDisplayUpdate}
+
+
+  return {div, getCurrentLane, startGame, getRound, score, gameOver, getTurn, pass, players, infoDisplayUpdate , afterCombatEvent , endOfRoundEvent , continuousEffectEvent}
 })();
 
 
@@ -198,6 +201,8 @@ function combat(){
   currentLane.towers[0].updateDisplay();
   game.infoDisplayUpdate();
   if (game.gameOver()) {};
+  currentLane.div.dispatchEvent(game.afterCombatEvent)
+  currentLane.div.dispatchEvent(game.continuousEffectEvent)
 }
 
 function condemn(unit, lane){
@@ -271,6 +276,7 @@ startGamebtn.addEventListener("click",function(){
   this.parentNode.removeChild(this)
   game.startGame()
 })
+
 
 
 export {game, board, cardData, posAvail};
