@@ -66,7 +66,7 @@ const player = (name, heros, computer = false) => {
     })
     heros[3].respawn = 1;
     heros[4].respawn = 2;
-  },100)
+  },300)
   let deck = [];
 
   player.getHeros = () => heros ;
@@ -272,6 +272,8 @@ function buildLanes(){
 
 
 const startGamebtn = document.getElementById("start-game-btn");
+startGamebtn.disabled = true;
+setTimeout( function(){startGamebtn.disabled = false;} , 500)
 startGamebtn.addEventListener("click",function(){
   this.parentNode.removeChild(this)
   game.startGame()
