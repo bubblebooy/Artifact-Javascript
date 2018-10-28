@@ -9,34 +9,34 @@ abilityMap.set("testAbility" , function(){
 });
 
 triggerMap.set("Pack Leadership" , "continuousEffect")
-abilityMap.set("Pack Leadership" , function(card){
-  let player = (card.player == game.players[0]) ? 0: 1;
-  board.lanes.forEach(function(lane){
-    let index  = lane.cards.findIndex(function(row){return card == row[player]})
-    if (index != -1){
-      for (var i = -1; i < 2; i+=2) {
-        // console.log(lane.cards[index] )
-        if(lane.cards[index+i] != null && lane.cards[index+i][player].Name != null){
-          lane.cards[index+i][player].currentArmor[4] += 1;
-          lane.cards[index+i][player].updateDisplay()
-        }
-      }
+abilityMap.set("Pack Leadership" , function(card,e){
+  for (var i = -1; i < 2; i+=2) {
+    let lane = board.lanes[e.detail.lane]
+    let index = e.detail.card
+    if(lane.cards[index+i] != null && lane.cards[index+i][e.detail.player].Name != null){
+      lane.cards[index+i][e.detail.player].currentArmor[4] += 1;
+      lane.cards[index+i][e.detail.player].updateDisplay()
     }
-  })
+  }
 });
 
 triggerMap.set("Wisdom of the Elders" , "click")
-abilityMap.set("Wisdom of the Elders" , function(card){
+abilityMap.set("Wisdom of the Elders" , function(card,e){
   console.log("Wisdom of the Elders")
 });
 
 triggerMap.set("Work the Knife" , "whenAttacking")
-abilityMap.set("Work the Knife" , function(card){
-  // console.log("Work the Knife")
+abilityMap.set("Work the Knife" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  let index = e.detail.card + card.arrow
+  if(lane.cards[index] != null && lane.cards[index][1 - e.detail.player].Name != null){
+    if (lane.cards[index][1 - e.detail.player].CardType == "Creep") return;
+  }
+  card.currentAttack[4] += 2;
 });
 
 triggerMap.set("Arcane Aura" , "afterCardPlayed")
-abilityMap.set("Arcane Aura" , function(card){
+abilityMap.set("Arcane Aura" , function(card,e){
   // console.log("Arcane Aura")
 });
 

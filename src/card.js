@@ -119,9 +119,9 @@ const card = (cardProto , player) => {
       ability.div.appendChild(abilityIcon)
       abilitiesContainer.appendChild(ability.div)
       if (ability.Type == "Active"){
-        ability.div.addEventListener("click", function(){abilityMap.get(ability.Name)(cardProto)})
+        ability.div.addEventListener("click", function(e){abilityMap.get(ability.Name)(cardProto,e)})
       }else{
-        div.addEventListener(triggerMap.get(ability.Name), function(){abilityMap.get(ability.Name)(cardProto)})
+        div.addEventListener(triggerMap.get(ability.Name), function(e){abilityMap.get(ability.Name)(cardProto,e)})
        }
     })
     div.appendChild(abilitiesContainer)

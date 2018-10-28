@@ -91,11 +91,6 @@ const game = (() => {
   let score = [0,0];
   let _infoDisplay;
 
-  let afterCombatEvent = new CustomEvent('afterCombat', { detail: {lane: undefined, card: undefined, player: undefined} })
-  let endOfRoundEvent = new CustomEvent('endOfRound', { detail: {lane: undefined, card: undefined, player: undefined} })
-  let continuousRefreshEvent = new CustomEvent('continuousRefresh', { detail: {lane: undefined, card: undefined, player: undefined} })
-  let continuousEffectEvent = new CustomEvent('continuousEffect', { detail: {lane: undefined, card: undefined, player: undefined} })
-
   const getCurrentLane = () => currentLane ;
   const getRound = () => round ;
   const getTurn = () => turn ;
@@ -127,13 +122,20 @@ const game = (() => {
     return true;
   }
 
+  let afterCombatEvent = new CustomEvent('afterCombat', { detail: {lane: undefined, card: undefined, player: undefined} })
+  let endOfRoundEvent = new CustomEvent('endOfRound', { detail: {lane: undefined, card: undefined, player: undefined} })
+  let continuousRefreshEvent = new CustomEvent('continuousRefresh', { detail: {lane: undefined, card: undefined, player: undefined} })
+  let continuousEffectEvent = new CustomEvent('continuousEffect', { detail: {lane: undefined, card: undefined, player: undefined} })
+  let whenAttackingEvent = new CustomEvent('whenAttacking', { detail: {lane: undefined, card: undefined, player: undefined} })
+
   function dispatchEvent(e){
     // console.log(e)
     let events = {
       "afterCombat": (lane) => {if (lane == currentLane){return afterCombatEvent}},
       "endOfRound": (lane) => {return endOfRoundEvent},
       "continuousRefresh": (lane ) => {return continuousRefreshEvent},
-      "_continuousEffect": (lane) => {return continuousEffectEvent}
+      "_continuousEffect": (lane) => {return continuousEffectEvent},
+      "whenAttacking": (lane) => {if (lane == currentLane) return whenAttackingEvent}
     };
     board.lanes.forEach(function(lane, laneIndex){
       lane.cards.forEach(function(row, cardIndex){
@@ -152,7 +154,6 @@ const game = (() => {
       })
     })
     if (e == "continuousRefresh"){dispatchEvent("_continuousEffect")}
-
   }
 
   function nextTurn(){
@@ -204,6 +205,7 @@ function posAvail(total, position, index) {
 function combat(){
 
   let currentLane = board.lanes[game.getCurrentLane()]
+  game.dispatchEvent("whenAttacking")
   currentLane.cards.forEach(function(row, rowIndex){
     row.forEach(function(attacker, attackerIndex){
       if (attacker.Name == null){ return; };
