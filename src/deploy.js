@@ -1,7 +1,7 @@
 import passButtonController from './passButtonController'
 import {game , board, cardData, posAvail} from './index.js'
 import {card , blank, draggedCard} from './card'
-import shuffle from './shuffle'
+import {shuffle} from './arrayFunctions'
 
 
 const stages = [];
@@ -153,8 +153,9 @@ function deploy(){
         })
       })
     }
-    console.log(lane.cards)
+    // console.log(lane.cards)
   })
+  game.dispatchEvent("continuousRefresh")
   passButtonController.show();
 }
 

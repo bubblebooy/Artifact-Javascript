@@ -1,10 +1,14 @@
+import {toCamelCase, toFunctionName, toFileName} from './stringFunctions'
+import {sum} from './arrayFunctions'
+import {abilityMap,triggerMap} from './abilities.js'
+import {game , board, cardData, posAvail} from './index.js'
+
 
 function addToFunction( someFunction , callback){
   someFunction = (function(){
     let _someFunction = someFunction;
     return function() {
       callback();
-      // healthNumber.textContent = cardProto.currentHealth;
       _someFunction.apply(this);
     };
   })();
@@ -26,11 +30,13 @@ const card = (cardProto , player) => {
   let assetPath = "../node_modules/artifactdb/assets"
   let div = document.createElement('div')
   let updateDisplay = () => {};
+  let endOfRound = () => {};
+  let continuousRefresh = () => {};
   let properties = {div, player};
 
   div.classList.add("card" , cardProto.Color)
   // div.draggable = true;
-  let imageFileName = cardProto.Name.replace(/\s/g,"_").replace("\'","").toLowerCase()
+  let imageFileName = toFileName(cardProto.Name) // .replace(/\s/g,"_").replace("\'","").toLowerCase()
   let artwork = document.createElement('IMG'); artwork.draggable = false;
   artwork.src = `${assetPath}/artwork/large/${imageFileName}.jpg`
   div.appendChild(artwork)
@@ -55,19 +61,22 @@ const card = (cardProto , player) => {
     })
   }
   if (cardProto.Health != null){
-    properties.currentHealth = cardProto.Health;
+    properties.currentHealth = [cardProto.Health,0,0,0,0];
     let healthContainer = document.createElement('div')
     healthContainer.classList.add("icon-container","health")
     let healthIcon = document.createElement('IMG'); healthIcon.draggable = false;
     healthIcon.src = `${assetPath}/icon/cardstat-health.png`
     let healthNumber = document.createElement('div')
-    healthNumber.textContent = properties.currentHealth;
+    healthNumber.textContent = sum(properties.currentHealth);
     healthContainer.appendChild(healthIcon)
     healthContainer.appendChild(healthNumber)
     div.appendChild(healthContainer)
-    updateDisplay = addToFunction(updateDisplay , function(){healthNumber.textContent = cardProto.currentHealth;})
+    updateDisplay = addToFunction(updateDisplay , function(){healthNumber.textContent = sum(cardProto.currentHealth);})
+    endOfRound = addToFunction(endOfRound , function(){cardProto.currentHealth[3] = 0 })
+    continuousRefresh = addToFunction(continuousRefresh , function(){cardProto.currentHealth[4] = 0 })
   }
   if (cardProto.Attack != null){
+    properties.currentAttack = [cardProto.Attack,0,0,0,0]
     let attackContainer = document.createElement('div')
     attackContainer.classList.add("icon-container","attack")
     let attackIcon = document.createElement('IMG'); attackIcon.draggable = false;
@@ -77,9 +86,13 @@ const card = (cardProto , player) => {
     attackContainer.appendChild(attackIcon)
     attackContainer.appendChild(attackNumber)
     div.appendChild(attackContainer)
-    updateDisplay = addToFunction(updateDisplay , function(){attackNumber.textContent = cardProto.Attack;})
+    updateDisplay = addToFunction(updateDisplay , function(){attackNumber.textContent = sum(cardProto.currentAttack);})
+    endOfRound = addToFunction(endOfRound , function(){cardProto.currentAttack[3] = 0 })
+    continuousRefresh = addToFunction(continuousRefresh , function(){cardProto.currentAttack[4] = 0 })
+
   }
   if (cardProto.Armor != null){
+    properties.currentArmor = [cardProto.Armor,0,0,0,0]
     let armorContainer = document.createElement('div')
     armorContainer.classList.add("icon-container","armor")
     let armorIcon = document.createElement('IMG'); armorIcon.draggable = false;
@@ -89,7 +102,9 @@ const card = (cardProto , player) => {
     armorContainer.appendChild(armorIcon)
     armorContainer.appendChild(armorNumber)
     div.appendChild(armorContainer)
-    updateDisplay = addToFunction(updateDisplay , function(){armorNumber.textContent = cardProto.Armor;})
+    updateDisplay = addToFunction(updateDisplay , function(){armorNumber.textContent = sum(cardProto.currentArmor);})
+    endOfRound = addToFunction(endOfRound , function(){cardProto.currentArmor[3] = 0 })
+    continuousRefresh = addToFunction(continuousRefresh , function(){cardProto.currentArmor[4] = 0 })
   }
   if (cardProto.Abilities != null){
     let abilitiesContainer = document.createElement('div');
@@ -98,25 +113,31 @@ const card = (cardProto , player) => {
       ability.div = document.createElement('div')
       ability.div .classList.add("ability-container")
       let abilityIcon = document.createElement('IMG'); abilityIcon.draggable = false;
-      let abilityFileName = ability.Name.replace(/\s/g,"_").replace("\'","").toLowerCase()
+      let abilityFileName = toFileName(ability.Name) //.replace(/\s/g,"_").replace("\'","").toLowerCase()
       abilityIcon.src = `${assetPath}/ability/${abilityFileName}.jpg`
       abilityIcon.title = ability.Text
       ability.div.appendChild(abilityIcon)
       abilitiesContainer.appendChild(ability.div)
-
+      if (ability.Type == "Active"){
+        ability.div.addEventListener("click", function(){abilityMap.get(ability.Name)(cardProto)})
+      }else{
+        div.addEventListener(triggerMap.get(ability.Name), function(){abilityMap.get(ability.Name)(cardProto)})
+       }
     })
     div.appendChild(abilitiesContainer)
   }
 
-  div.addEventListener("click",function(){console.log(cardProto.player.name)}) // `${cardProto.Name} Health: ${cardProto.currentHealth}`
+  div.addEventListener("click",function(){console.log(cardProto)})
   div.ondragstart = function(ev){
     draggedCard = cardProto
     ev.dataTransfer.setData("text/plain", " ")
   };
-  // div.ontouchstart = function(ev){ ev.preventDefault(); draggedCard = cardProto };
-  // console.log(properties)
+
+  div.addEventListener("endOfRound", endOfRound)
+  div.addEventListener("continuousRefresh", continuousRefresh)
+
   properties.updateDisplay = updateDisplay
-  cardProto = Object.assign({},cardProto, properties) //{div, currentHealth, updateDisplay, arrow}
+  cardProto = Object.assign({},cardProto, properties)
 
   return cardProto
 }

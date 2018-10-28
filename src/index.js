@@ -5,6 +5,7 @@ import passButtonController from './passButtonController'
 import shop from './shop'
 import {deployment} from './deploy'
 import infoDisplay from './infoDisplay'
+import {sum} from './arrayFunctions'
 
 let cardData = "not loaded yet";
 loadJSON(function(response){
@@ -16,22 +17,23 @@ loadJSON(function(response){
 // const card = (cardProto) => {
 
 const tower = (currentHealth, player) => {
+  currentHealth = [currentHealth]
   let Name = "tower";
   let div = document.createElement('div');
-  let Armor = 0;
+  let currentArmor = [0];
   let ancient = false;
   const updateDisplay = () => {
-    if (tower.currentHealth <= 0 ){
+    if (sum(tower.currentHealth) <= 0 ){
       game.score[1 - player] += 1;
       if (!ancient){
         ancient = !ancient;
-        tower.currentHealth = 80;
+        tower.currentHealth = [80];
         div.classList.add("ancient");
       };
     }
-    div.textContent = tower.currentHealth;
+    div.textContent = sum(tower.currentHealth);
   };
-  let tower = {currentHealth , div, Name, Armor, updateDisplay}
+  let tower = {currentHealth , div, Name, currentArmor, updateDisplay}
   return tower
 }
 
@@ -89,9 +91,10 @@ const game = (() => {
   let score = [0,0];
   let _infoDisplay;
 
-  let afterCombatEvent = new Event('afterCombat')
-  let endOfRoundEvent = new Event('endOfRound')
-  let continuousEffectEvent = new Event('continuousEffect')
+  let afterCombatEvent = new CustomEvent('afterCombat', { detail: {lane: undefined, card: undefined, player: undefined} })
+  let endOfRoundEvent = new CustomEvent('endOfRound', { detail: {lane: undefined, card: undefined, player: undefined} })
+  let continuousRefreshEvent = new CustomEvent('continuousRefresh', { detail: {lane: undefined, card: undefined, player: undefined} })
+  let continuousEffectEvent = new CustomEvent('continuousEffect', { detail: {lane: undefined, card: undefined, player: undefined} })
 
   const getCurrentLane = () => currentLane ;
   const getRound = () => round ;
@@ -124,6 +127,34 @@ const game = (() => {
     return true;
   }
 
+  function dispatchEvent(e){
+    // console.log(e)
+    let events = {
+      "afterCombat": (lane) => {if (lane == currentLane){return afterCombatEvent}},
+      "endOfRound": (lane) => {return endOfRoundEvent},
+      "continuousRefresh": (lane ) => {return continuousRefreshEvent},
+      "_continuousEffect": (lane) => {return continuousEffectEvent}
+    };
+    board.lanes.forEach(function(lane, laneIndex){
+      lane.cards.forEach(function(row, cardIndex){
+        row.forEach(function(card,playerIndex){
+          if (card.Name != null){
+            let evnt = events[e](laneIndex)
+            if (evnt != null){
+              evnt.detail.lane = laneIndex;
+              evnt.detail.card = cardIndex;
+              evnt.detail.player = playerIndex;
+              card.div.dispatchEvent(evnt);
+            }
+            card.updateDisplay()
+          }
+        })
+      })
+    })
+    if (e == "continuousRefresh"){dispatchEvent("_continuousEffect")}
+
+  }
+
   function nextTurn(){
     turn = 1 - turn
     passButtonController.enable();
@@ -136,15 +167,12 @@ const game = (() => {
     if (currentLane > 2){
       passButtonController.hide()
       shop.show();
+      dispatchEvent("endOfRound")
       currentLane = 0
       round += 1
-      // deployment() moved to shop close
     }
     board.lanes[currentLane].div.classList.add("active")
     zoomNavController.updateActive()
-    // board.lanes[currentLane].div.scrollIntoView({inline: "center"})
-    // board.div.classList.remove("zoom-out");
-    // game.div.classList.remove("zoom-out");
   };
 
   const pass = () => {
@@ -159,7 +187,7 @@ const game = (() => {
 
 
 
-  return {div, getCurrentLane, startGame, getRound, score, gameOver, getTurn, pass, players, infoDisplayUpdate , afterCombatEvent , endOfRoundEvent , continuousEffectEvent}
+  return {div, getCurrentLane, startGame, getRound, score, gameOver, getTurn, pass, players, infoDisplayUpdate , dispatchEvent}
 })();
 
 
@@ -181,28 +209,29 @@ function combat(){
       if (attacker.Name == null){ return; };
       let target = currentLane.cards[rowIndex + attacker.arrow][1 - attackerIndex] // cause arror if pointing to null (not blank), this shoud not happen anyways
       if (target == null || target.Name == null ){
-        target = attackerIndex ?  currentLane.towers[0] : currentLane.towers[1];
+        target = ( attackerIndex ?  currentLane.towers[0] : currentLane.towers[1] ) ;
+        target.currentHealth[0] -= sum(attacker.currentAttack) - sum(target.currentArmor)
+      }else{
+        target.currentHealth[0] -= sum(attacker.currentAttack) - sum(target.currentArmor)
       }
       //divine Shield
-      target.currentHealth -= attacker.Attack - target.Armor
       //Retaliate
       //Regen
     });
   });
   currentLane.cards.flat().forEach(function(unit){
-    if (unit.currentHealth !=null && unit.currentHealth <= 0 ){
+    if (unit.currentHealth !=null && sum(unit.currentHealth) <= 0 ){
       condemn(unit, currentLane)
     }
   })
 
   collapse();
-  currentLane.cards.flat().forEach(function(unit){ if (unit.Name != null) unit.updateDisplay();})
+  // currentLane.cards.flat().forEach(function(unit){ if (unit.Name != null) unit.updateDisplay();})
   currentLane.towers[1].updateDisplay();
   currentLane.towers[0].updateDisplay();
+  game.dispatchEvent("afterCombat")
   game.infoDisplayUpdate();
   if (game.gameOver()) {};
-  currentLane.div.dispatchEvent(game.afterCombatEvent)
-  currentLane.div.dispatchEvent(game.continuousEffectEvent)
 }
 
 function condemn(unit, lane){
@@ -216,7 +245,7 @@ function condemn(unit, lane){
   unit.player == game.players[0] ? game.players[1].gold += unit.Bounty : game.players[0].gold += unit.Bounty
   if (unit.respawn != null){
     unit.respawn = 1;
-    unit.currentHealth = unit.Health;
+    unit.currentHealth[0] = unit.Health;
     unit.updateDisplay();
   }
 }
@@ -240,7 +269,11 @@ function collapse(){
        };
     })
   })
-  if (loop) collapse()
+  if (loop) {  // there is prob a better way
+    collapse()
+  }else{
+    game.dispatchEvent("continuousRefresh")
+  }
 }
 
 
@@ -256,7 +289,7 @@ function buildLanes(){
       lane.playAreas[i] = document.createElement('div');
       lane.playAreas[i].classList.add("playarea", `playarea-${sideNames[i]}`);
       lane.towers[i].div.classList.add("tower", `tower-${sideNames[i]}`);
-      lane.towers[i].div.textContent = lane.towers[i].currentHealth;
+      lane.towers[i].div.textContent = sum(lane.towers[i].currentHealth);
       lane.div.appendChild(lane.playAreas[i])
       lane.div.appendChild(lane.towers[i].div)
       lane.playAreas[i].addEventListener('scroll', function () {
@@ -273,7 +306,8 @@ function buildLanes(){
 
 const startGamebtn = document.getElementById("start-game-btn");
 startGamebtn.disabled = true;
-setTimeout( function(){startGamebtn.disabled = false;} , 500)
+let loading = true
+setTimeout( function(){ startGamebtn.disabled = false;} , 500)
 startGamebtn.addEventListener("click",function(){
   this.parentNode.removeChild(this)
   game.startGame()

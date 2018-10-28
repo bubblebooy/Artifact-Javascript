@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack --mode development",
     "build": "webpack",
     "watch": "webpack --progress --watch",
     "server": "webpack-dev-server --open"
@@ -13,6 +14,7 @@
   "author": "Max Garber",
   "license": "ISC",
   "devDependencies": {
+    "uglifyjs-webpack-plugin": "^2.0.1",
     "webpack": "^4.23.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.9"
