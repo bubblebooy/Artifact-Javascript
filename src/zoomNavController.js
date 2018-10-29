@@ -1,4 +1,5 @@
-import {game , board} from './index.js'
+import {game } from './index.js'
+import {board} from './board'
 
 const zoomNavController = (() => {
 // function zoomNavController(){

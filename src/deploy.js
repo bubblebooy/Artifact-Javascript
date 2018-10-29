@@ -1,5 +1,7 @@
 import passButtonController from './passButtonController'
-import {game , board, cardData, posAvail} from './index.js'
+import handController from './handController'
+import {game , cardData, posAvail} from './index.js'
+import {board} from './board'
 import {card , blank, draggedCard} from './card'
 import {shuffle} from './arrayFunctions'
 
@@ -110,7 +112,6 @@ function deployment(){
       })
     })
     deployButton.classList.remove('display-none')
-    // deploy();
   }();
 }
 
@@ -123,7 +124,8 @@ function deploy(){
     sides.forEach(function(side, sideIndex){
       while (lane.cards.reduce(posAvail , [[],[]])[sideIndex].length < side[i].length){
         let rightLeft = Math.random() < 0.5
-        let empty = [blank(lane.playAreas[0],rightLeft),blank(lane.playAreas[1],rightLeft)]
+        rightLeft = rightLeft ? lane.playAreas[0].childNodes.length : 0
+        let empty = [blank(i,lane.playAreas[0],rightLeft),blank(i,lane.playAreas[1],rightLeft)]
         rightLeft ? lane.cards.push(empty) : lane.cards.unshift(empty)
       }
     })
@@ -153,10 +155,13 @@ function deploy(){
         })
       })
     }
-    // console.log(lane.cards)
   })
   game.dispatchEvent("continuousRefresh")
+  game.nextTurn();
   passButtonController.show();
+  handController.show();
+  game.players.forEach(function(player){player.draw();player.draw()})
+  // handController.enable();
 }
 
 

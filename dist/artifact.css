@@ -107,35 +107,48 @@ body{
 
 .playarea{
   width: 95%;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  /* margin-top: 10px;
+  margin-bottom: 10px; */
   margin-left: auto;
   margin-right: auto;
-  height: calc(50% - 15px);
+  height: calc(50%);
   /* border-style: solid; */
   display: flex;
   flex-wrap: nowrap;
+  overflow: hidden;
   overflow-x: auto;
-  overflow-y:hidden;
   justify-content: center;
   align-items: center;
 }
 
 
-.card{
+.card , .blank{
   position: relative;
   flex-shrink: 0;
-  width: 150px;
-  height: 191.38px;
+  width: 200px;
+  height: 256px;
   /* height: 127.58px; */
-  padding: 10px 0 10px 0;
-  background-color: grey;
-  margin: 10px;
+  padding: 20px 0 10px 0;
+  /* background-color: grey; */
+  margin: 5px;
   border-style: solid;
   border-width: 5px;
   border-radius: 5px;
+  font-family: sans-serif;
 }
 
+.card .name, .mana-cost{
+  color: white;
+  position: relative;
+  display: inline-block;
+  top: -20px;
+}
+.card .mana-cost{
+  padding-right: .5em;
+  font-size: 1.5em;
+  line-height: .5em;
+  top: -18px;
+}
 .Black{
   background-color: #333035;
   border-color: #333035;
@@ -155,6 +168,10 @@ body{
 .Yellow{
   background-color: #a78e32;
   border-color: #a78e32;
+}
+
+.blank{
+
 }
 
 .card img{
@@ -212,7 +229,22 @@ body{
   border-style: solid;
 }
 
+.card-text{
+  bottom: 100px;
+  width: 100%;
+  position: absolute;
+}
+
+.card-text span{
+  margin: 1em;
+  display: block;
+  position: absolute;
+  color: white;
+  width: 100%;
+}
+
 .arrow{
+  display: none;
   position: absolute;
   width: 10px;
   height: 10px;
@@ -221,6 +253,9 @@ body{
   left: 50%;
   transform: translateX(-50%) rotate(-45deg);
   top: -20px;
+}
+.playarea .arrow{
+  display: block;
 }
 .arrow.right{
   right: 0;
@@ -245,20 +280,9 @@ body{
   transform: translateX(-50%) rotate(-20deg)
 }
 
-
-.blank{
-  flex-shrink: 0;
-  width: 150px;
-  height: 191.38px;
-  padding: 10px 0 10px 0;
-  margin: 10px;
-  border-style: solid;
-}
-.zoom-out .card,.zoom-out .blank{
-  transform:scale(0.5);
-  margin: -35px;
-  /* width: 75px;
-  height: 95.69px; */
+#board.zoom-out .card,.zoom-out .blank{
+  transform:scale(0.375);
+  margin: -4em;
 }
 
 
@@ -287,6 +311,18 @@ body{
   top: -25px;
   background-color: DarkSlateGrey;
 }
+.mana{
+  position: absolute;
+  font-size: .6em;
+  width: 100%;
+  line-height: 1em;
+  border-style: solid solid solid none;
+  bottom: 50%;
+  right: -100%;
+  transform: translateY(50%);
+  background-color: inherit;
+}
+
 .ancient{
   background-color: FireBrick;
   width: 6.5vw;
@@ -301,18 +337,50 @@ body{
 }
 
 .hand{
-  width: 60%;
+  width: 60vw;
+  /* max-width: 60vw; */
+  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit,  minmax(15px, max-content)) ;
   /* border-style: solid; */
-  height: 10%;
-  left:20%;
+  height: 300px;
+  left:50%;
+  transform: translateX(-50%);
   /* background-color: #fff3; */
+}
+.hand.hide{
+  width: 20vw;
+  justify-content: left;
+  left:3em;
+  transform: none;
+}
+.hand.bottom:hover{
+  bottom: 10px;
+  z-index: 500;
+}
+.hand .card:hover{
+    z-index: 1000;
+    transform: scale(1.2) translateY(-2em);
+    box-shadow: 0px 0px 24px 0px #6bbddb;
+}
+.hand .card{
+  display: block;
+  /* margin-left: -5%;
+  margin-right: -5%; */
 }
 
 .hand.bottom{
-  bottom: 0px;
+  bottom: -250px;
 }
 .hand.top{
-  top: 0px;
+  top: -250px;
+}
+.hand.top > .card{
+  border-color: Black;
+  background-color: grey;
+}
+.hand.top > .card *{
+  display: none
 }
 .stage{
   display: flex;

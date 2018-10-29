@@ -2,10 +2,12 @@ import {card , blank} from './card'
 import loadJSON from './loadJSON'
 import zoomNavController from './zoomNavController'
 import passButtonController from './passButtonController'
+import handController from './handController'
 import shop from './shop'
 import {deployment} from './deploy'
 import infoDisplay from './infoDisplay'
-import {sum} from './arrayFunctions'
+import {sum, shuffle} from './arrayFunctions'
+import {board} from './board'
 
 let cardData = "not loaded yet";
 loadJSON(function(response){
@@ -20,8 +22,22 @@ const tower = (currentHealth, player) => {
   currentHealth = [currentHealth]
   let Name = "tower";
   let div = document.createElement('div');
+  let healthSpan = document.createElement('span');
+  healthSpan.textContent = sum(currentHealth);
+  let manaDiv = document.createElement('div');
+  div.appendChild(manaDiv)
+  div.appendChild(healthSpan)
+  manaDiv.classList.add("mana")
   let currentArmor = [0];
   let ancient = false;
+  let mana = [3,3]
+  manaDiv.textContent = `${mana[0]} : ${mana[1]}`
+
+  let restoreMana = () => {
+    mana[0] = mana[1]
+    tower.manaDiv.textContent = `${mana[0]} : ${mana[1]}`
+  }
+
   const updateDisplay = () => {
     if (sum(tower.currentHealth) <= 0 ){
       game.score[1 - player] += 1;
@@ -31,34 +47,23 @@ const tower = (currentHealth, player) => {
         div.classList.add("ancient");
       };
     }
-    div.textContent = sum(tower.currentHealth);
+    healthSpan.textContent = sum(tower.currentHealth);
+    // div.appendChild(manaDiv)
+    tower.manaDiv.textContent = `${tower.mana[0]} : ${tower.mana[1]}`
   };
-  let tower = {currentHealth , div, Name, currentArmor, updateDisplay}
+
+  setTimeout(function(){ board.lanes[player].div.addEventListener("endOfRound", function(){
+    tower.mana[1]+=1
+    tower.manaDiv.textContent = `${tower.mana[0]} : ${tower.mana[1]}`
+    restoreMana()
+  })},10)
+
+  let tower = {currentHealth , div, Name, currentArmor, mana, manaDiv, updateDisplay}  // why did I do it this way?
+
   return tower
 }
 
-const lane = () => {
-  let passCount = 0;
-  let name;
-  let div;
-  let towerTop = tower(40,1);
-  let towerBottom = tower(40,0);
-  let towers = [towerBottom,towerTop];
-  let playAreaTop;
-  let playAreaBottom;
-  let playAreas = [playAreaBottom,playAreaTop]
-  let stages = []
-  let cards = []
-  return {name, div, cards, towers, playAreas,stages, passCount};
-};
-
-const board = (() => {
-  const div = document.getElementById('board');
-  const lanes = [lane(),lane(),lane()]
-  return {div, lanes}
-})();
-
-const player = (name, heros, computer = false) => {
+const player = (turn, name, heros, deck, computer = false) => {
   let player = {}
   setTimeout(function(){
     heros = heros.map(function(hero){
@@ -68,9 +73,22 @@ const player = (name, heros, computer = false) => {
     })
     heros[3].respawn = 1;
     heros[4].respawn = 2;
+    // add sig cards to deck
+    shuffle(deck);
   },300)
-  let deck = [];
 
+  player.handDiv = ( turn ? document.getElementById("hand-top") : document.getElementById("hand-bottom") )
+  player.hand = []
+  player.draw = () => {
+    let c = deck.shift()
+    if (c != null){
+      let newCard = card(cardData.Cards.find(function(e){
+        return e.Name == c
+      }))
+      player.hand.push(newCard)
+      player.handDiv.appendChild(newCard.div)
+    }
+  }
   player.getHeros = () => heros ;
   player.name = name
   player.computer = computer
@@ -81,11 +99,18 @@ const player = (name, heros, computer = false) => {
 
 const game = (() => {
   const div = document.getElementById('game');
-  const bottomPassButton = document.getElementById("pass-btn-bottom");
-  const topPassButton = document.getElementById("pass-btn-top");
-  let players = [player("Radiant",["Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Debbi the Cunning","Crystal Maiden"]),
-                 player("Dire",["Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Debbi the Cunning","Crystal Maiden"],true)];
-  let turn = 0;
+  // const bottomPassButton = document.getElementById("pass-btn-bottom");
+  // const topPassButton = document.getElementById("pass-btn-top");
+  let deck = ["Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Roseleaf Wall","Thunderhide Alpha"]
+  deck = deck.concat(deck,deck)
+  let players = [player(0,"Radiant",
+                    ["Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Debbi the Cunning","Axe"],
+                    deck),
+                 player(1,"Dire",
+                    ["Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Debbi the Cunning","Axe"],
+                    deck,
+                    true)];
+  let turn = Math.random() < 0.5;
   let round = 0;
   let currentLane = 0;
   let score = [0,0];
@@ -103,6 +128,12 @@ const game = (() => {
     _infoDisplay = infoDisplay()
     board.lanes[currentLane].div.classList.add("active");
     deployment();
+    game.players.forEach(function(player){
+      for (var i = 0; i < 3; i++) {  // you draw 2 after each deployment making the starting hand 5
+        player.draw()
+      }
+    })
+    handController.initialize();
     passButtonController.enable();
     zoomNavController.updateActive();
   };
@@ -152,6 +183,8 @@ const game = (() => {
           }
         })
       })
+      let evntLane = events[e](laneIndex)
+      if (evntLane != null){lane.div.dispatchEvent(evntLane);}
     })
     if (e == "continuousRefresh"){dispatchEvent("_continuousEffect")}
   }
@@ -159,6 +192,9 @@ const game = (() => {
   function nextTurn(){
     turn = 1 - turn
     passButtonController.enable();
+    handController.enable();
+    board.lanes[currentLane].collapse(false)
+    board.lanes[currentLane].expand()
     if (players[turn].computer ){ setTimeout( pass , 300) }  // AI AUTO PASS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   }
 
@@ -167,10 +203,13 @@ const game = (() => {
     currentLane += 1
     if (currentLane > 2){
       passButtonController.hide()
+      handController.hide();
       shop.show();
       dispatchEvent("endOfRound")
       currentLane = 0
       round += 1
+    } else{
+      nextTurn()
     }
     board.lanes[currentLane].div.classList.add("active")
     zoomNavController.updateActive()
@@ -182,13 +221,15 @@ const game = (() => {
       combat()
       nextLane()
       board.lanes[currentLane].passCount = 0;
+    } else{
+      nextTurn()
     }
-    nextTurn()
+
   };
 
 
 
-  return {div, getCurrentLane, startGame, getRound, score, gameOver, getTurn, pass, players, infoDisplayUpdate , dispatchEvent}
+  return {div, getCurrentLane, startGame, getRound, score, gameOver, getTurn, nextTurn, pass, players, infoDisplayUpdate , dispatchEvent}
 })();
 
 
@@ -227,7 +268,7 @@ function combat(){
     }
   })
 
-  collapse();
+  board.collapse();
   // currentLane.cards.flat().forEach(function(unit){ if (unit.Name != null) unit.updateDisplay();})
   currentLane.towers[1].updateDisplay();
   currentLane.towers[0].updateDisplay();
@@ -238,7 +279,7 @@ function combat(){
 
 function condemn(unit, lane){
   let index = lane.cards.flat().indexOf(unit);
-  let empty = blank();
+  let empty = blank(board.lanes.indexOf(lane));
   //death effects
 
   unit.div.classList.add("condemned");
@@ -252,56 +293,33 @@ function condemn(unit, lane){
   }
 }
 
-function collapse(){
-  let loop = false
-  board.lanes.forEach(function(lane){
-    lane.cards.forEach(function(row,index){
-      row.forEach(function(unit, side) {
-        if (unit.Name != null && lane.cards[index + unit.arrow][1 - side].Name == null){
-          unit.arrow = 0;
-        }
-      })
-    })
-    lane.cards.forEach(function(row, index){
-      if (row[0].Name == null && row[1].Name == null){
-        loop = true
-        row[0].div.parentNode.removeChild(row[0].div);
-        row[1].div.parentNode.removeChild(row[1].div);
-        lane.cards.splice(index, 1)
-       };
-    })
-  })
-  if (loop) {  // there is prob a better way
-    collapse()
-  }else{
-    game.dispatchEvent("continuousRefresh")
-  }
-}
-
-
 function buildLanes(){
   let laneNames=['left-lane','middle-lane','right-lane']
   let sideNames=['bottom','top']
-  board.lanes.forEach(function(lane,i){
+  board.lanes.forEach(function(lane,j){
     lane.div = document.createElement('div');
-    lane.name = laneNames[i];
-    lane.div.classList.add('lane',laneNames[i]);
+    lane.name = laneNames[j];
+    lane.div.classList.add('lane',laneNames[j]);
     board.div.appendChild(lane.div);
     for (var i = 1; i >= 0; i--) {
       lane.playAreas[i] = document.createElement('div');
       lane.playAreas[i].classList.add("playarea", `playarea-${sideNames[i]}`);
+      lane.towers[i] = tower(40,i);
       lane.towers[i].div.classList.add("tower", `tower-${sideNames[i]}`);
-      lane.towers[i].div.textContent = sum(lane.towers[i].currentHealth);
+      // lane.towers[i].div.textContent = sum(lane.towers[i].currentHealth);
       lane.div.appendChild(lane.playAreas[i])
       lane.div.appendChild(lane.towers[i].div)
-      lane.playAreas[i].addEventListener('scroll', function () {
-          lane.playAreas[1-i].scrollLeft = lane.playAreas[i].scrollLeft;
-      });
+      // lane.towers[i].div.appendChild(lane.towers[i].manaDiv)
       lane.stages[i] = document.createElement('div');
       lane.stages[i].classList.add("stage", `stage-${sideNames[i]}`, "display-none");
       lane.div.appendChild(lane.stages[i])
     }
-
+    lane.playAreas[1].addEventListener('scroll', function () {
+        lane.playAreas[0].scrollLeft = lane.playAreas[1].scrollLeft;
+    });
+    lane.playAreas[0].addEventListener('scroll', function () {
+        lane.playAreas[1].scrollLeft = lane.playAreas[0].scrollLeft;
+    });
   })
 }
 
@@ -317,4 +335,4 @@ startGamebtn.addEventListener("click",function(){
 
 
 
-export {game, board, cardData, posAvail};
+export {game, cardData, posAvail};

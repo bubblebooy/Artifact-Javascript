@@ -1,7 +1,8 @@
 import {toCamelCase, toFunctionName, toFileName} from './stringFunctions'
 import {sum} from './arrayFunctions'
 import {abilityMap,triggerMap} from './abilities.js'
-import {game , board, cardData, posAvail} from './index.js'
+import {game , cardData, posAvail} from './index.js'
+import {board} from './board'
 
 
 function addToFunction( someFunction , callback){
@@ -17,12 +18,42 @@ function addToFunction( someFunction , callback){
 
 let draggedCard;
 
-const blank = (parrent, side) => {
+const colorCheck = (card) => {
+  if (card[game.getTurn()].CardType == "Hero"){
+    return card[game.getTurn()].Color == draggedCard.Color
+  }
+}
+
+const blank = (lane, parrent, index) => {
   let div = document.createElement('div')
   div.classList.add("blank")
   if (parrent != null){
-    side ? parrent.appendChild(div) : parrent.insertBefore(div, parrent.firstChild);
+    index ? parrent.insertBefore(div , parrent.childNodes[index-1].nextSibling ) : parrent.insertBefore(div, parrent.firstChild); //parrent.childNodes[index-1].nextSibling
   }
+  div.ondragover = function(ev) { ev.preventDefault()};
+  div.ondragenter = function(ev) { ev.target.classList.add("dragover")};
+  div.ondragleave = function(ev) { ev.target.classList.remove("dragover")};
+  div.ondrop = function(ev){ev.preventDefault();
+    ev.target.classList.remove("dragover")
+    if (board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] < draggedCard.ManaCost) return
+      if (lane == game.getCurrentLane() && draggedCard.CardType == "Creep") {
+        if (board.lanes[lane].cards.some(colorCheck)){
+          let index = board.lanes[lane].cards.flat().findIndex(function(card){return card.div == blank.div});
+          let player = index % 2
+          index = Math.floor(index/2)
+          if (player == game.getTurn()){
+            console.log(player, lane, index)
+            draggedCard.div.draggable = false;
+            div.parentNode.replaceChild(draggedCard.div , div)
+            board.lanes[lane].cards[index][player] = draggedCard
+            board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
+            board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay()
+            game.dispatchEvent("continuousRefresh")
+          }
+        }
+      }
+  };
+  let blank = {div}
   return {div}
 }
 
@@ -44,10 +75,36 @@ const card = (cardProto , player) => {
   if (cardProto.CardType == "Hero"){
     properties.respawn = 0;
     properties.Bounty = 5;
+
   }
   if (cardProto.CardType == "Creep"){
     properties.Bounty = 1;
   }
+
+  if (cardProto.ManaCost != null){
+    let manaCostContainer = document.createElement('div')
+    manaCostContainer.classList.add('mana-cost')
+    manaCostContainer.textContent = cardProto.ManaCost
+    div.appendChild(manaCostContainer)
+  }
+
+  if (cardProto.Text != null && cardProto.Text != ""){
+    let textContainer = document.createElement('div')
+    textContainer.classList.add("card-text")
+    let textBackground = document.createElement('IMG'); textBackground.draggable = false;
+    textBackground.src = `${assetPath}/text_background.jpg`
+    let textSpan = document.createElement('span')
+    textSpan.textContent=cardProto.Text
+    div.appendChild(textContainer)
+    textContainer.appendChild(textBackground)
+    textContainer.appendChild(textSpan)
+  }
+
+
+  let nameContainer = document.createElement('div')
+  nameContainer.classList.add('name')
+  nameContainer.textContent = cardProto.Name
+  div.appendChild(nameContainer)
 
   if (cardProto.CardType == "Creep" || cardProto.CardType == "Hero" ){
     properties.arrow = 0;
