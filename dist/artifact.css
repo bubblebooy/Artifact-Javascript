@@ -314,7 +314,7 @@ body{
 .mana{
   position: absolute;
   font-size: .6em;
-  width: 100%;
+  min-width: 100%;
   line-height: 1em;
   border-style: solid solid solid none;
   bottom: 50%;
@@ -322,6 +322,7 @@ body{
   transform: translateY(50%);
   background-color: inherit;
   white-space: nowrap;
+
 }
 
 .ancient{
