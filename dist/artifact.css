@@ -321,6 +321,7 @@ body{
   right: -100%;
   transform: translateY(50%);
   background-color: inherit;
+  white-space: nowrap;
 }
 
 .ancient{
