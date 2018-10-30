@@ -22,7 +22,7 @@ const lane = (lane) => {
   div.ondrop = function(ev){ev.preventDefault();
     ev.target.classList.remove("dragover")
     if (board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] < draggedCard.ManaCost) return ;
-    if (lane == game.getCurrentLane() && targetMap.get(draggedCard.Name) == "lane") {
+    if ((lane == game.getCurrentLane() || draggedCard.CrossLane) && targetMap.get(draggedCard.Name) == "lane") {
       if (board.lanes[lane].cards.some(colorCheck)){
         effectMap.get(draggedCard.Name)(game.getTurn(),lane,ev)
         draggedCard.div.draggable = false;
@@ -30,6 +30,8 @@ const lane = (lane) => {
         board.lanes[lane].towers[game.getTurn()].updateDisplay()
         draggedCard.div.parentNode.removeChild(draggedCard.div)
         game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
+        collapse()
+        expand()
       }
     }
   };

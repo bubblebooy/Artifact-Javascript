@@ -53,6 +53,8 @@ const blank = (lane, parrent, index) => {
               board.lanes[lane].cards[index][1 - player].updateDisplay()
           }
           game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
+          board.lanes[lane].collapse()
+          board.lanes[lane].expand()
           game.dispatchEvent("continuousRefresh")
         }
       }
