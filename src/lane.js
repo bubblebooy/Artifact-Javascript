@@ -2,6 +2,8 @@ import {game, posAvail} from './index'
 import {blank, draggedCard, colorCheck} from './card'
 import {effectMap,targetMap} from './cardEffects.js'
 import {board} from './board'
+
+
 const lane = (lane) => {
   let passCount = 0;
   // let name;
@@ -17,24 +19,29 @@ const lane = (lane) => {
 
 
   div.ondragover = function(ev) { ev.preventDefault()};
-  div.ondragenter = function(ev) { ev.target.classList.add("dragover")};
-  div.ondragleave = function(ev) { ev.target.classList.remove("dragover")};
-  div.ondrop = function(ev){ev.preventDefault();
-    ev.target.classList.remove("dragover")
+  div.addEventListener("dragenter", function(ev) { ev.currentTarget.classList.add("dragover")} , true , true )
+  div.addEventListener("dragleave", function(ev) { ev.target.classList.remove("dragover")})
+  // div.ondragenter = function(ev) { ev.target.classList.add("dragover")};
+  // div.ondragleave = function(ev) { ev.target.classList.remove("dragover")};
+  div.ondrop = (ev) => drop(ev);
+  const drop = (ev) => {ev.preventDefault();
+    if (ev != null ) ev.currentTarget.classList.remove("dragover")
     if (board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] < draggedCard.ManaCost) return ;
     if ((lane == game.getCurrentLane() || draggedCard.CrossLane) && targetMap.get(draggedCard.Name) == "lane") {
-      if (board.lanes[lane].cards.some(colorCheck)){
-        effectMap.get(draggedCard.Name)(game.getTurn(),lane,ev)
+      if (board.lanes[game.getCurrentLane()].cards.some(colorCheck)){
+        effectMap.get(draggedCard.Name)(ev , lane) // make this a if statment and the effect return true or false?
         draggedCard.div.draggable = false;
-        board.lanes[lane].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
-        board.lanes[lane].towers[game.getTurn()].updateDisplay()
+        board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
+        board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay()
         draggedCard.div.parentNode.removeChild(draggedCard.div)
         game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
         collapse()
         expand()
+        game.nextTurn()
       }
     }
   };
+
 
   const collapse = (refresh = true) => {
     let loop = false
@@ -96,7 +103,7 @@ const lane = (lane) => {
       })
     })
   }
-  return {name, div, cards, towers, playAreas, stages, passCount, collapse, expand, summon};
+  return {name, div, cards, towers, playAreas, stages, passCount, collapse, expand, summon, drop};
 };
 
 export {lane};

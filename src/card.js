@@ -3,6 +3,7 @@ import {sum} from './arrayFunctions'
 import {abilityMap,triggerMap} from './abilities.js'
 import {game , cardData, posAvail} from './index.js'
 import {board} from './board'
+import {effectMap,targetMap} from './cardEffects.js'
 
 
 function addToFunction( someFunction , callback){
@@ -33,21 +34,21 @@ const blank = (lane, parrent, index) => {
   div.ondragover = function(ev) { ev.preventDefault()};
   div.ondragenter = function(ev) { ev.target.classList.add("dragover")};
   div.ondragleave = function(ev) { ev.target.classList.remove("dragover")};
-  div.ondrop = function(ev){ev.preventDefault();
-    ev.target.classList.remove("dragover")
+  div.ondrop = (ev) => drop(ev);  // would need div ,lane, parrent, index if onDrop Moves out of blank
+  const drop = (ev) => {ev.preventDefault();
+    if (ev != null ) ev.target.classList.remove("dragover")
     if (board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] < draggedCard.ManaCost) return
     if (lane == game.getCurrentLane() && draggedCard.CardType == "Creep") {
-      if (board.lanes[lane].cards.some(colorCheck)){
+      if (board.lanes[game.getCurrentLane()].cards.some(colorCheck)){
         let index = board.lanes[lane].cards.flat().findIndex(function(card){return card.div == blank.div});
         let player = index % 2
         index = Math.floor(index/2)
         if (player == game.getTurn()){
-          console.log(player, lane, index)
           draggedCard.div.draggable = false;
           div.parentNode.replaceChild(draggedCard.div , div)
           board.lanes[lane].cards[index][player] = draggedCard
-          board.lanes[lane].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
-          board.lanes[lane].towers[game.getTurn()].updateDisplay()
+          board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
+          board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay()
           if(board.lanes[lane].cards[index][1 - player].Name != null){
               board.lanes[lane].cards[index][1 - player].arrow = 0;
               board.lanes[lane].cards[index][1 - player].updateDisplay()
@@ -56,11 +57,12 @@ const blank = (lane, parrent, index) => {
           board.lanes[lane].collapse()
           board.lanes[lane].expand()
           game.dispatchEvent("continuousRefresh")
+          game.nextTurn()
         }
       }
     }
   };
-  let blank = {div}
+  let blank = {div, drop}
   return {div}
 }
 
@@ -69,6 +71,7 @@ const card = (cardProto , player) => {
   let div = document.createElement('div')
   let updateDisplay = () => {};
   let endOfRound = () => {};
+  let afterCombat = () => {};
   let continuousRefresh = () => {};
   let properties = {div, player};
 
@@ -135,7 +138,7 @@ const card = (cardProto , player) => {
     })
   }
   if (cardProto.Health != null){
-    properties.currentHealth = [cardProto.Health,0,0,0,0];
+    properties.currentHealth = [cardProto.Health,0,0,0,0,0];
     let healthContainer = document.createElement('div')
     healthContainer.classList.add("icon-container","health")
     let healthIcon = document.createElement('IMG'); healthIcon.draggable = false;
@@ -148,9 +151,10 @@ const card = (cardProto , player) => {
     updateDisplay = addToFunction(updateDisplay , function(){healthNumber.textContent = sum(cardProto.currentHealth);})
     endOfRound = addToFunction(endOfRound , function(){cardProto.currentHealth[3] = 0 })
     continuousRefresh = addToFunction(continuousRefresh , function(){cardProto.currentHealth[4] = 0 })
+    afterCombat = addToFunction(afterCombat , function(){cardProto.currentHealth[5] = 0 })
   }
   if (cardProto.Attack != null){
-    properties.currentAttack = [cardProto.Attack,0,0,0,0]
+    properties.currentAttack = [cardProto.Attack,0,0,0,0,0]
     let attackContainer = document.createElement('div')
     attackContainer.classList.add("icon-container","attack")
     let attackIcon = document.createElement('IMG'); attackIcon.draggable = false;
@@ -163,10 +167,10 @@ const card = (cardProto , player) => {
     updateDisplay = addToFunction(updateDisplay , function(){attackNumber.textContent = sum(cardProto.currentAttack);})
     endOfRound = addToFunction(endOfRound , function(){cardProto.currentAttack[3] = 0 })
     continuousRefresh = addToFunction(continuousRefresh , function(){cardProto.currentAttack[4] = 0 })
-
+    afterCombat = addToFunction(afterCombat , function(){cardProto.currentAttack[5] = 0 })
   }
   if (cardProto.Armor != null){
-    properties.currentArmor = [cardProto.Armor,0,0,0,0]
+    properties.currentArmor = [cardProto.Armor,0,0,0,0,0]
     let armorContainer = document.createElement('div')
     armorContainer.classList.add("icon-container","armor")
     let armorIcon = document.createElement('IMG'); armorIcon.draggable = false;
@@ -179,6 +183,7 @@ const card = (cardProto , player) => {
     updateDisplay = addToFunction(updateDisplay , function(){armorNumber.textContent = sum(cardProto.currentArmor);})
     endOfRound = addToFunction(endOfRound , function(){cardProto.currentArmor[3] = 0 })
     continuousRefresh = addToFunction(continuousRefresh , function(){cardProto.currentArmor[4] = 0 })
+    afterCombat = addToFunction(afterCombat , function(){cardProto.currentArmor[5] = 0 })
   }
   if (cardProto.Abilities != null){
     let abilitiesContainer = document.createElement('div');
@@ -200,14 +205,40 @@ const card = (cardProto , player) => {
     })
     div.appendChild(abilitiesContainer)
   }
+  div.ondragover = function(ev) { ev.preventDefault()};
+  div.addEventListener("dragenter", function(ev) { ev.currentTarget.classList.add("dragover")} , true , true )
+  div.addEventListener("dragleave", function(ev) { ev.target.classList.remove("dragover")} , true , true )
+  div.ondrop = (ev) => drop(ev);  // would need div ,lane, parrent, index if onDrop Moves out of blank
+  const drop = (ev) => {ev.preventDefault();
+    if (ev != null ) ev.currentTarget.classList.remove("dragover")
+    if (board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] < draggedCard.ManaCost) return
+    let lane = board.lanes.findIndex(function(lane){return lane.div == ev.currentTarget.parentNode.parentNode})
+    if ((lane == game.getCurrentLane() || draggedCard.CrossLane) && targetMap.get(draggedCard.Name) == "unit") {
+      if (board.lanes[game.getCurrentLane()].cards.some(colorCheck)){
+        let index = board.lanes[lane].cards.flat().findIndex(function(card){return card.div == ev.currentTarget});
+        let player = index % 2
+        index = Math.floor(index/2)
+
+        effectMap.get(draggedCard.Name)(ev, lane , player , index) // make this a if statment and the effect return true or false?
+        draggedCard.div.draggable = false;
+        board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
+        board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay()
+        draggedCard.div.parentNode.removeChild(draggedCard.div)
+        game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
+        game.nextTurn()
+      }
+    }
+  };
 
   div.addEventListener("click",function(){console.log(cardProto)})
+
   div.ondragstart = function(ev){
     draggedCard = cardProto
     ev.dataTransfer.setData("text/plain", " ")
   };
 
   div.addEventListener("endOfRound", endOfRound)
+  div.addEventListener("afterCombat", afterCombat)
   div.addEventListener("continuousRefresh", continuousRefresh)
 
   properties.updateDisplay = updateDisplay

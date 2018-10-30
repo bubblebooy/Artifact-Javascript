@@ -101,7 +101,7 @@ const game = (() => {
   const div = document.getElementById('game');
   // const bottomPassButton = document.getElementById("pass-btn-bottom");
   // const topPassButton = document.getElementById("pass-btn-top");
-  let deck = ["Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Roseleaf Wall","Thunderhide Alpha"]
+  let deck = ["Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Roseleaf Wall","Thunderhide Alpha"]
   deck = deck.concat(deck,deck)
   let players = [player(0,"Radiant",
                     ["Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Debbi the Cunning","Axe"],
@@ -189,8 +189,9 @@ const game = (() => {
     if (e == "continuousRefresh"){dispatchEvent("_continuousEffect")}
   }
 
-  function nextTurn(){
+  function nextTurn(passed = false){
     turn = 1 - turn
+    if (!passed) board.lanes[currentLane].passCount = 0;
     passButtonController.enable();
     handController.enable();
     board.lanes[currentLane].collapse(false)
@@ -220,9 +221,9 @@ const game = (() => {
     if (board.lanes[currentLane].passCount > 1){
       combat()
       nextLane()
-      board.lanes[currentLane].passCount = 0;
+      // board.lanes[currentLane].passCount = 0;
     } else{
-      nextTurn()
+      nextTurn(true)
     }
 
   };
