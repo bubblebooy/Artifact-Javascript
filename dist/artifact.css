@@ -244,6 +244,7 @@ body{
 }
 
 .arrow{
+  border-color: white;
   display: none;
   position: absolute;
   width: 10px;
@@ -346,7 +347,7 @@ body{
   grid-template-columns: repeat(auto-fit,  minmax(15px, max-content)) ;
   /* border-style: solid; */
   height: 300px;
-  left:50%;
+  left:40%;
   transform: translateX(-50%);
   /* background-color: #fff3; */
 }
@@ -379,7 +380,7 @@ body{
 }
 .hand.top > .card{
   border-color: Black;
-  background-color: grey;
+  background-color: DarkSlateGrey;
 }
 .hand.top > .card *{
   display: none

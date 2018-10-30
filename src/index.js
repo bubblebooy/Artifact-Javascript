@@ -101,7 +101,7 @@ const game = (() => {
   const div = document.getElementById('game');
   // const bottomPassButton = document.getElementById("pass-btn-bottom");
   // const topPassButton = document.getElementById("pass-btn-top");
-  let deck = ["Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Roseleaf Wall","Thunderhide Alpha"]
+  let deck = ["Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Roseleaf Wall","Thunderhide Alpha"]
   deck = deck.concat(deck,deck)
   let players = [player(0,"Radiant",
                     ["Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Debbi the Cunning","Axe"],
@@ -297,7 +297,6 @@ function buildLanes(){
   let laneNames=['left-lane','middle-lane','right-lane']
   let sideNames=['bottom','top']
   board.lanes.forEach(function(lane,j){
-    lane.div = document.createElement('div');
     lane.name = laneNames[j];
     lane.div.classList.add('lane',laneNames[j]);
     board.div.appendChild(lane.div);

@@ -2,7 +2,7 @@ import {game , cardData, posAvail} from './index.js'
 import {board} from './board'
 
 
-let abilityMap = new Map() // should i just be uisng an object instead? does it really matter?
+let abilityMap = new Map()  // should i just be uisng an object instead? does it really matter?
 let triggerMap = new Map()
 
 abilityMap.set("testAbility" , function(){

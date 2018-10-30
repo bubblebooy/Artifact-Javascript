@@ -36,22 +36,27 @@ const blank = (lane, parrent, index) => {
   div.ondrop = function(ev){ev.preventDefault();
     ev.target.classList.remove("dragover")
     if (board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] < draggedCard.ManaCost) return
-      if (lane == game.getCurrentLane() && draggedCard.CardType == "Creep") {
-        if (board.lanes[lane].cards.some(colorCheck)){
-          let index = board.lanes[lane].cards.flat().findIndex(function(card){return card.div == blank.div});
-          let player = index % 2
-          index = Math.floor(index/2)
-          if (player == game.getTurn()){
-            console.log(player, lane, index)
-            draggedCard.div.draggable = false;
-            div.parentNode.replaceChild(draggedCard.div , div)
-            board.lanes[lane].cards[index][player] = draggedCard
-            board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
-            board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay()
-            game.dispatchEvent("continuousRefresh")
+    if (lane == game.getCurrentLane() && draggedCard.CardType == "Creep") {
+      if (board.lanes[lane].cards.some(colorCheck)){
+        let index = board.lanes[lane].cards.flat().findIndex(function(card){return card.div == blank.div});
+        let player = index % 2
+        index = Math.floor(index/2)
+        if (player == game.getTurn()){
+          console.log(player, lane, index)
+          draggedCard.div.draggable = false;
+          div.parentNode.replaceChild(draggedCard.div , div)
+          board.lanes[lane].cards[index][player] = draggedCard
+          board.lanes[lane].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
+          board.lanes[lane].towers[game.getTurn()].updateDisplay()
+          if(board.lanes[lane].cards[index][1 - player].Name != null){
+              board.lanes[lane].cards[index][1 - player].arrow = 0;
+              board.lanes[lane].cards[index][1 - player].updateDisplay()
           }
+          game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
+          game.dispatchEvent("continuousRefresh")
         }
       }
+    }
   };
   let blank = {div}
   return {div}
@@ -112,6 +117,16 @@ const card = (cardProto , player) => {
     let arrowDiv = document.createElement('div');
     arrowDiv.classList.add("arrow", directions[1 + properties.arrow])
     div.appendChild(arrowDiv);
+    properties.rndArrow = (lane, index, side) => {
+      if (typeof lane == "number") { lane = board.lanes[lane] }
+      if(lane.cards[index][1 - side].Name == null){
+        let rand = Math.random();
+        rand = rand > .75 ? 1 : (rand > .25) - 1;
+        if (lane.cards[index + rand] == null || lane.cards[index + rand][1 - side].Name == null){ rand = 0 }
+        cardProto.arrow = rand;
+      }
+      cardProto.updateDisplay()
+    }
     updateDisplay = addToFunction(updateDisplay , function(){
       arrowDiv.classList.remove("left", "middle", "right")
       arrowDiv.classList.add("arrow", directions[1 + cardProto.arrow])
@@ -199,4 +214,4 @@ const card = (cardProto , player) => {
   return cardProto
 }
 
-export { card , blank, draggedCard}
+export { card , blank, draggedCard, colorCheck}

@@ -119,48 +119,25 @@ function deploy(){
 
   hideStages()
   deployButton.classList.add('display-none')
-  for (let i = 0; i < 3; i++){
+  for (let i = 0; i < 3; i++){ // makes blank rows in nessesrry
     let lane = board.lanes[i]
-    sides.forEach(function(side, sideIndex){
-      while (lane.cards.reduce(posAvail , [[],[]])[sideIndex].length < side[i].length){
-        let rightLeft = Math.random() < 0.5
-        rightLeft = rightLeft ? lane.playAreas[0].childNodes.length : 0
-        let empty = [blank(i,lane.playAreas[0],rightLeft),blank(i,lane.playAreas[1],rightLeft)]
-        rightLeft ? lane.cards.push(empty) : lane.cards.unshift(empty)
-      }
-    })
-    sides.forEach(function(side, sideIndex){
-      side[i].forEach(function(creep){
-        let pos = lane.cards.reduce(posAvail , [[],[]])[sideIndex]
-        pos = pos[Math.floor(Math.random() * pos.length)]
-        let blankDiv = lane.cards[pos][sideIndex].div
-        blankDiv.parentNode.replaceChild(creep.div , blankDiv)
-        lane.cards[pos][sideIndex] = creep
-      })
-    })
-  }
-  board.lanes.forEach(function(lane){
-    if (game.getRound() != 0){
+    lane.summon([sides[0][i],sides[1][i]],false)
+
+    if (game.getRound() != 0){  // sets the arrows
       lane.cards.forEach(function(row,index){
         row.forEach(function(unit, side) {
           if(unit.Name != null){
-            if(row[1 - side].Name == null){
-              let rand = Math.random();
-              rand = rand > .75 ? 1 : (rand > .25) - 1;
-              if (lane.cards[index + rand] == null || lane.cards[index + rand][1 - side].Name == null){ rand = 0 }
-              unit.arrow = rand;
-            }
-            unit.updateDisplay()
+            unit.rndArrow(lane,index,side)
           }
         })
       })
     }
-  })
+  }
   game.dispatchEvent("continuousRefresh")
+  game.players.forEach(function(player){player.draw();player.draw()})
   game.nextTurn();
   passButtonController.show();
   handController.show();
-  game.players.forEach(function(player){player.draw();player.draw()})
   // handController.enable();
 }
 
