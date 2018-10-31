@@ -20,6 +20,6 @@
     "webpack-dev-server": "^3.1.9"
   },
   "dependencies": {
-    "artifactdb": "^2.2.2"
+    "artifactdb": "^2.2.3"
   }
 }

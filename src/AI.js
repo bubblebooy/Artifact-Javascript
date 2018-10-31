@@ -38,7 +38,7 @@ const AI = (() => {
     played:
     for (var i = 0; i < player.hand.length; i++) {
       let card = player.hand[i]
-      if ((card.ManaCost||0) < board.lanes[game.getCurrentLane()].towers[player.turn].mana[0]) {
+      if ((card.ManaCost||0) <= board.lanes[game.getCurrentLane()].towers[player.turn].mana[0]) {
         card.div.ondragstart(new DragEvent({setData:null}))
         if (board.lanes[game.getCurrentLane()].cards.some(colorCheck)){
           if (draggedCard.CardType == "Creep") {
@@ -48,7 +48,7 @@ const AI = (() => {
                   target: blank.div,
                   currentTarget: blank.div}
             blank.drop(ev)
-            return
+            break played;
           }
           if (draggedCard.CardType == "Improvement") {
             let lane = board.lanes[Math.floor(Math.random()*3)]
@@ -56,7 +56,7 @@ const AI = (() => {
                   target: lane.div,
                   currentTarget: lane.div}
             lane.drop(ev)
-            return
+            break played;
           }
           if (draggedCard.CardType == "Spell") {
             let spellTarget = targetMap.get(draggedCard.Name)
@@ -76,13 +76,17 @@ const AI = (() => {
                   target: spellTarget.div,
                   currentTarget: spellTarget.div}
             spellTarget.drop(ev)
-            return
+
+            break played;
+
+
           }
           break played;
         }
       }
     }
-    setTimeout( game.pass , 300)
+    setTimeout( function(){if (game.getTurn() == player.turn) game.pass() } , 300)
+    // setTimeout( game.pass , 300)
   }
 
   return {actionPhase}
