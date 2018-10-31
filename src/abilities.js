@@ -66,4 +66,9 @@ abilityMap.set("Burning Oil : Effect" , function(card,e){
 
 //// creeps
 
+triggerMap.set("Troll Soothsayer : Effect" , "endOfRound")
+abilityMap.set("Troll Soothsayer : Effect" , function(card,e){
+  card.player.draw()
+});
+
 export {abilityMap,triggerMap};

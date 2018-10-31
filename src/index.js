@@ -85,7 +85,7 @@ const player = (turn, name, heros, deck, computer = false) => {
     if (c != null){
       let newCard = card(cardData.Cards.find(function(e){
         return e.Name == c
-      }))
+      }),player)
       player.hand.push(newCard)
       player.handDiv.appendChild(newCard.div)
     }
