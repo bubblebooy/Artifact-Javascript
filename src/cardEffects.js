@@ -263,7 +263,7 @@ effectMap.set("Rumusque Blessing" , function(ev, lane){
   let player = game.getTurn()
   l.cards.forEach(function(card){
     if (card[player].Name != null) {
-      card[player].currentHealth[1] += 4;
+      card[player].currentHealth[1] += 3;
       card[player].updateDisplay()
     }
   })
