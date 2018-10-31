@@ -63,7 +63,7 @@ const blank = (lane, parrent, index) => {
     }
   };
   let blank = {div, drop}
-  return {div}
+  return {div, drop}
 }
 
 const card = (cardProto , player) => {
@@ -81,6 +81,8 @@ const card = (cardProto , player) => {
   let artwork = document.createElement('IMG'); artwork.draggable = false;
   artwork.src = `${assetPath}/artwork/large/${cardProto.fileName}.jpg`
   div.appendChild(artwork)
+
+  function lane(){ return board.lanes.findIndex(function(l){ return l.cards.flat().some(function(c){return c.div == cardProto.div }) })}
 
   if (cardProto.CardType == "Hero"){
     properties.respawn = 0;
@@ -186,9 +188,11 @@ const card = (cardProto , player) => {
     afterCombat = addToFunction(afterCombat , function(){cardProto.currentArmor[5] = 0 })
   }
   if (cardProto.Abilities != null){  //&& cardProto.CardType != "Improvement"
+    properties.Abilities = []
     let abilitiesContainer = document.createElement('div');
     abilitiesContainer.classList.add("abilities-container")
-    cardProto.Abilities.forEach(function(ability){
+    cardProto.Abilities.forEach(function(ability,abilityIndex){
+      ability = Object.assign({}, ability)
       ability.div = document.createElement('div')
       ability.div .classList.add("ability-container")
       let abilityIcon = document.createElement('IMG'); abilityIcon.draggable = false;
@@ -202,18 +206,39 @@ const card = (cardProto , player) => {
       ability.div.appendChild(abilityIcon)
       abilitiesContainer.appendChild(ability.div)
       if (ability.Type == "Active"){
-        ability.div.addEventListener("click", function(e){abilityMap.get(ability.Name)(cardProto,e)})
+        if (cardProto.CardType == "Hero") {ability.currentCooldown = ability.Cooldown}
+        else { ability.currentCooldown = 0 }
+        ability.cooldownDiv = document.createElement('div')
+        ability.cooldownDiv.classList.add("cooldown")
+        ability.cooldownDiv.textContent = ability.currentCooldown;
+        ability.div.appendChild(ability.cooldownDiv)
+        ability.div.addEventListener("click", function(e){
+
+          if (game.players[game.getTurn()] == player && game.getCurrentLane() == lane() && cardProto.Abilities[abilityIndex].currentCooldown <= 0){
+            if (abilityMap.get(ability.Name)(cardProto,e)) { cardProto.Abilities[abilityIndex].currentCooldown = cardProto.Abilities[abilityIndex].Cooldown ; updateDisplay()}
+          }
+
+        })
+        endOfRound = addToFunction(endOfRound , function(){cardProto.Abilities[abilityIndex].currentCooldown -= 1;})
+        updateDisplay = addToFunction(updateDisplay , function(){
+          if (cardProto.Abilities[abilityIndex].currentCooldown <= 0){ cardProto.Abilities[abilityIndex].cooldownDiv.classList.add("display-none")}
+          else {
+            cardProto.Abilities[abilityIndex].cooldownDiv.classList.remove("display-none")
+            cardProto.Abilities[abilityIndex].cooldownDiv.textContent = cardProto.Abilities[abilityIndex].currentCooldown
+          }
+        })
       }else{
         div.addEventListener(triggerMap.get(ability.Name), function(e){abilityMap.get(ability.Name)(cardProto,e)})
        }
+       properties.Abilities.push(ability)
     })
     div.appendChild(abilitiesContainer)
   }
   div.ondragover = function(ev) { ev.preventDefault()};
   div.addEventListener("dragenter", function(ev) { ev.target.classList.add("dragover")} )
   div.addEventListener("dragleave", function(ev) { ev.target.classList.remove("dragover")}  )
-  div.ondrop = (ev) => drop(ev);  // would need div ,lane, parrent, index if onDrop Moves out of blank
-  const drop = (ev) => {ev.preventDefault();
+  div.ondrop = (ev) => properties.drop(ev);  // would need div ,lane, parrent, index if onDrop Moves out of blank
+  properties.drop = (ev) => {ev.preventDefault();
     if (ev != null ) ev.target.classList.remove("dragover")
     if (board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] < draggedCard.ManaCost) return
     let lane = board.lanes.findIndex(function(lane){return lane.div == ev.currentTarget.parentNode.parentNode})
@@ -240,7 +265,7 @@ const card = (cardProto , player) => {
 
   div.ondragstart = function(ev){
     draggedCard = cardProto
-    ev.dataTransfer.setData("text/plain", " ")
+    if(ev.dataTransfer != null ) ev.dataTransfer.setData("text/plain", " ")
   };
 
   div.addEventListener("endOfRound", endOfRound)

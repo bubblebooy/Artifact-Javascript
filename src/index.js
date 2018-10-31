@@ -8,6 +8,7 @@ import {deployment} from './deploy'
 import infoDisplay from './infoDisplay'
 import {sum, shuffle} from './arrayFunctions'
 import {board} from './board'
+import AI from './AI'
 
 let cardData = "not loaded yet";
 loadJSON(function(response){
@@ -76,7 +77,7 @@ const player = (turn, name, heros, deck, computer = false) => {
     // add sig cards to deck
     shuffle(deck);
   },300)
-
+  player.turn = turn
   player.handDiv = ( turn ? document.getElementById("hand-top") : document.getElementById("hand-bottom") )
   player.hand = []
   player.draw = () => {
@@ -195,6 +196,15 @@ const game = (() => {
       }
     })
     if (e == "continuousRefresh"){dispatchEvent("_continuousEffect")}
+    if (e == "endOfRound") {
+      game.players.forEach(function(player,playerIndex){
+        player.getHeros().forEach(function(hero){
+          let evnt = events[e]()
+          evnt.detail.player = playerIndex;
+          if (hero.respawn >= 0) hero.div.dispatchEvent(evnt)
+        })
+      })
+    }
   }
 
   function nextTurn(passed = false){
@@ -204,7 +214,7 @@ const game = (() => {
     handController.enable();
     board.lanes[currentLane].collapse(false)
     board.lanes[currentLane].expand()
-    if (players[turn].computer ){ setTimeout( pass , 300) }  // AI AUTO PASS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if (players[turn].computer ){ AI.actionPhase(players[turn]) }//setTimeout( AI.actionPhase , 300) }  // AI AUTO PASS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   }
 
   function nextLane(){

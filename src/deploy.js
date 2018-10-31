@@ -102,6 +102,7 @@ function deployment(){
           if (!game.players[sideIndex].computer) {
             stages[sideIndex].appendChild(hero.div)
             hero.div.draggable = true;
+            hero.updateDisplay();
           } else{
             let rand = Math.floor(Math.random() * 3)
             side[rand].push(hero)

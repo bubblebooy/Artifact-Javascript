@@ -239,6 +239,7 @@ body{
   justify-content: center;
 }
 .ability-container{
+  position: relative;
   width: 30%;
 }
 .Improvement .ability-container > img{
@@ -247,6 +248,16 @@ body{
 .ability-container > img{
   position: relative;
   border-style: solid;
+}
+.cooldown{
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: center;
+    color: white;
+    font-size: 4em;
+    background-color: #000a;
+    width: 100%;
 }
 
 .card-text{

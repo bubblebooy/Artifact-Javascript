@@ -5,6 +5,7 @@ import {board} from './board'
 import {sum} from './arrayFunctions'
 
 
+
 const lane = (lane) => {
   let passCount = 0;
   // let name;
