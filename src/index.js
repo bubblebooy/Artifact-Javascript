@@ -30,7 +30,7 @@ const tower = (currentHealth, player) => {
   manaDiv.classList.add("mana")
   let currentArmor = [0];
   let ancient = false;
-  let mana = [3,3]
+  let mana = [3,3];
   manaDiv.textContent = `${mana[0]} : ${mana[1]}`
 
   let restoreMana = () => {
@@ -101,11 +101,11 @@ const game = (() => {
   const div = document.getElementById('game');
   // const bottomPassButton = document.getElementById("pass-btn-bottom");
   // const topPassButton = document.getElementById("pass-btn-top");
-  let deck = ["Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Roseleaf Wall","Thunderhide Alpha"]
+  let deck = ["Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Roseleaf Wall","Thunderhide Alpha"]
   deck = deck.concat(deck,deck)
   let players = [player(0,"Radiant",
                     ["Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Debbi the Cunning","Axe"],
-                    deck),
+                    deck.slice()),
                  player(1,"Dire",
                     ["Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Debbi the Cunning","Axe"],
                     deck,
@@ -158,33 +158,41 @@ const game = (() => {
   let continuousRefreshEvent = new CustomEvent('continuousRefresh', { detail: {lane: undefined, card: undefined, player: undefined} })
   let continuousEffectEvent = new CustomEvent('continuousEffect', { detail: {lane: undefined, card: undefined, player: undefined} })
   let whenAttackingEvent = new CustomEvent('whenAttacking', { detail: {lane: undefined, card: undefined, player: undefined} })
+  let beforeTheActionPhaseEvent = new CustomEvent('beforeTheActionPhase', { detail: {lane: undefined, card: undefined, player: undefined} })
 
   function dispatchEvent(e){
     // console.log(e)
     let events = {
       "afterCombat": (lane) => {if (lane == currentLane){return afterCombatEvent}},
       "endOfRound": (lane) => {return endOfRoundEvent},
+      "beforeTheActionPhase": (lane) => {if (lane == currentLane) return beforeTheActionPhaseEvent},
       "continuousRefresh": (lane ) => {return continuousRefreshEvent},
       "_continuousEffect": (lane) => {return continuousEffectEvent},
       "whenAttacking": (lane) => {if (lane == currentLane) return whenAttackingEvent}
     };
     board.lanes.forEach(function(lane, laneIndex){
-      lane.cards.forEach(function(row, cardIndex){
-        row.forEach(function(card,playerIndex){
-          if (card.Name != null){
-            let evnt = events[e](laneIndex)
-            if (evnt != null){
-              evnt.detail.lane = laneIndex;
-              evnt.detail.card = cardIndex;
+      let evnt = events[e](laneIndex)
+      if (evnt != null){
+        evnt.detail.lane = laneIndex;
+        lane.cards.forEach(function(row, cardIndex){
+          evnt.detail.card = cardIndex;
+          row.forEach(function(card,playerIndex){
+            if (card.Name != null){
               evnt.detail.player = playerIndex;
               card.div.dispatchEvent(evnt);
+              card.updateDisplay()
             }
-            card.updateDisplay()
-          }
+          })
         })
-      })
-      let evntLane = events[e](laneIndex)
-      if (evntLane != null){lane.div.dispatchEvent(evntLane);}
+        if (evnt != null){lane.div.dispatchEvent(evnt);}
+        lane.improvements.forEach(function(side,playerIndex){
+          evnt.detail.player = playerIndex;
+          side.forEach(function(improvement, improvementIndex){
+            evnt.detail.card = improvementIndex;
+            improvement.div.dispatchEvent(evnt);
+          })
+        })
+      }
     })
     if (e == "continuousRefresh"){dispatchEvent("_continuousEffect")}
   }
@@ -211,6 +219,7 @@ const game = (() => {
       round += 1
     } else{
       nextTurn()
+      dispatchEvent("beforeTheActionPhase")
     }
     board.lanes[currentLane].div.classList.add("active")
     zoomNavController.updateActive()
@@ -228,9 +237,25 @@ const game = (() => {
 
   };
 
+  const condemn = (unit, lane) => { //should this be a function of card?
+    let index = lane.cards.flat().indexOf(unit);
+    let empty = blank(board.lanes.indexOf(lane));
+    //death effects
+
+    unit.div.classList.add("condemned");
+    unit.div.parentNode.replaceChild(empty.div , unit.div);
+    lane.cards[Math.floor(index / 2)][index % 2] = empty;
+    unit.player == game.players[0] ? game.players[1].gold += unit.Bounty : game.players[0].gold += unit.Bounty
+    if (unit.respawn != null){
+      unit.respawn = 1;
+      unit.currentHealth[0] = unit.Health;
+      unit.updateDisplay();
+    }
+  }
 
 
-  return {div, getCurrentLane, startGame, getRound, score, gameOver, getTurn, nextTurn, pass, players, infoDisplayUpdate , dispatchEvent}
+
+  return {div, getCurrentLane, startGame, getRound, score, gameOver, getTurn, nextTurn, pass, condemn, players, infoDisplayUpdate , dispatchEvent}
 })();
 
 
@@ -263,14 +288,13 @@ function combat(){
       //Regen
     });
   });
-  currentLane.cards.flat().forEach(function(unit){
-    if (unit.currentHealth !=null && sum(unit.currentHealth) <= 0 ){
-      condemn(unit, currentLane)
-    }
-  })
+  // currentLane.cards.flat().forEach(function(unit){
+  //   if (unit.currentHealth !=null && sum(unit.currentHealth) <= 0 ){
+  //     condemn(unit, currentLane)
+  //   }
+  // })
 
-  board.collapse();
-  // currentLane.cards.flat().forEach(function(unit){ if (unit.Name != null) unit.updateDisplay();})
+  board.collapse(); //should this be currentLane.collapse?
   currentLane.towers[1].updateDisplay();
   currentLane.towers[0].updateDisplay();
   game.dispatchEvent("afterCombat")
@@ -278,21 +302,6 @@ function combat(){
   if (game.gameOver()) {};
 }
 
-function condemn(unit, lane){
-  let index = lane.cards.flat().indexOf(unit);
-  let empty = blank(board.lanes.indexOf(lane));
-  //death effects
-
-  unit.div.classList.add("condemned");
-  unit.div.parentNode.replaceChild(empty.div , unit.div);
-  lane.cards[Math.floor(index / 2)][index % 2] = empty;
-  unit.player == game.players[0] ? game.players[1].gold += unit.Bounty : game.players[0].gold += unit.Bounty
-  if (unit.respawn != null){
-    unit.respawn = 1;
-    unit.currentHealth[0] = unit.Health;
-    unit.updateDisplay();
-  }
-}
 
 function buildLanes(){
   let laneNames=['left-lane','middle-lane','right-lane']
@@ -306,10 +315,8 @@ function buildLanes(){
       lane.playAreas[i].classList.add("playarea", `playarea-${sideNames[i]}`);
       lane.towers[i] = tower(40,i);
       lane.towers[i].div.classList.add("tower", `tower-${sideNames[i]}`);
-      // lane.towers[i].div.textContent = sum(lane.towers[i].currentHealth);
-      lane.div.appendChild(lane.playAreas[i])
-      lane.div.appendChild(lane.towers[i].div)
-      // lane.towers[i].div.appendChild(lane.towers[i].manaDiv)
+      lane.div.appendChild(lane.playAreas[i]);
+      lane.div.appendChild(lane.towers[i].div);
       lane.stages[i] = document.createElement('div');
       lane.stages[i].classList.add("stage", `stage-${sideNames[i]}`, "display-none");
       lane.div.appendChild(lane.stages[i])

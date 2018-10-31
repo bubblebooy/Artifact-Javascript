@@ -232,8 +232,17 @@ body{
   height: 25px;
   bottom: 40%;
 }
+.Creep .abilities-container, .Improvement .abilities-container{
+  bottom: 50%
+}
+.Improvement .abilities-container{
+  justify-content: center;
+}
 .ability-container{
   width: 30%;
+}
+.Improvement .ability-container > img{
+  border-radius: 3em;
 }
 .ability-container > img{
   position: relative;
@@ -296,7 +305,6 @@ body{
   transform:scale(0.375);
   margin: -4em;
 }
-
 
 .tower{
   left: 50%;
@@ -398,7 +406,6 @@ body{
 }
 .stage{
   display: flex;
-  /* border-style: solid; */
   height: 20%;
   left:20%;
   left: 50%;
@@ -435,6 +442,43 @@ body{
   /* padding-bottom: 20%;
   padding-top: 10%; */
 }
+
+.lane .improvement{
+  position: absolute;
+  width: 45%;
+  height: 66px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.lane .improvement .card:hover{
+  z-index: 100;
+  margin: -5em !important; }
+.zoom-out .improvement.bottom{
+  bottom: -50px;
+}
+.improvement.bottom{
+  bottom: 10px;
+}
+.improvement.top{
+  top: -50px;
+}
+.improvement .card:not(:hover) > * {display: none;}
+.improvement .card:not(:hover) .abilities-container {
+  display: flex;}
+.improvement .card:not(:hover) {
+  width: 75px;
+  height: auto;
+  padding: 0;
+  margin: 0 !important;
+  border-style: none;
+  background: none;
+}
+.zoom-out .improvement .card:not(:hover) { width: 50px; }
+.zoom-out .improvement .card{
+  transform: none !important;
+}
+.improvement .card:not(:hover) .ability-container{ width: 100px;}
 
 
 

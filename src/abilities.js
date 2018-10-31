@@ -1,6 +1,6 @@
 import {game , cardData, posAvail} from './index.js'
 import {board} from './board'
-
+import {sum} from './arrayFunctions'
 
 let abilityMap = new Map()  // should i just be uisng an object instead? does it really matter?
 let triggerMap = new Map()
@@ -8,6 +8,8 @@ let triggerMap = new Map()
 abilityMap.set("testAbility" , function(){
   console.log("testAbility")
 });
+
+///Heros
 
 triggerMap.set("Pack Leadership" , "continuousEffect")
 abilityMap.set("Pack Leadership" , function(card,e){
@@ -36,12 +38,31 @@ abilityMap.set("Work the Knife" , function(card,e){
   card.currentAttack[4] += 2;
 });
 
+
 triggerMap.set("Arcane Aura" , "afterCardPlayed")
 abilityMap.set("Arcane Aura" , function(card,e){
   // console.log("Arcane Aura")
 });
 
 
+//// improvements
 
+triggerMap.set("Conflagration : Effect" , "beforeTheActionPhase")
+abilityMap.set("Conflagration : Effect" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  lane.cards.forEach(function(card){
+    if (card[1-e.detail.player].Name != null) {
+      card[1-e.detail.player].currentHealth[0] -= 2 - sum(card[1-e.detail.player].currentArmor)
+    }
+  })
+  lane.collapse()
+});
+
+triggerMap.set("Burning Oil : Effect" , "continuousEffect")
+abilityMap.set("Burning Oil : Effect" , function(card,e){
+  // console.log("Burning Oil : Effect")
+});
+
+//// creeps
 
 export {abilityMap,triggerMap};

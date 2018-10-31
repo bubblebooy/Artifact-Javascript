@@ -133,9 +133,10 @@ function deploy(){
       })
     }
   }
-  game.dispatchEvent("continuousRefresh")
+  game.dispatchEvent("continuousRefresh");
   game.players.forEach(function(player){player.draw();player.draw()})
   game.nextTurn();
+  game.dispatchEvent("beforeTheActionPhase")
   passButtonController.show();
   handController.show();
   // handController.enable();

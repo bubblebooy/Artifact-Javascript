@@ -75,11 +75,11 @@ const card = (cardProto , player) => {
   let continuousRefresh = () => {};
   let properties = {div, player};
 
-  div.classList.add("card" , cardProto.Color)
+  div.classList.add("card" , cardProto.Color, cardProto.CardType)
   // div.draggable = true;
-  let imageFileName = toFileName(cardProto.Name) // .replace(/\s/g,"_").replace("\'","").toLowerCase()
+  // let imageFileName = toFileName(cardProto.Name) // .replace(/\s/g,"_").replace("\'","").toLowerCase()
   let artwork = document.createElement('IMG'); artwork.draggable = false;
-  artwork.src = `${assetPath}/artwork/large/${imageFileName}.jpg`
+  artwork.src = `${assetPath}/artwork/large/${cardProto.fileName}.jpg`
   div.appendChild(artwork)
 
   if (cardProto.CardType == "Hero"){
@@ -185,15 +185,19 @@ const card = (cardProto , player) => {
     continuousRefresh = addToFunction(continuousRefresh , function(){cardProto.currentArmor[4] = 0 })
     afterCombat = addToFunction(afterCombat , function(){cardProto.currentArmor[5] = 0 })
   }
-  if (cardProto.Abilities != null){
+  if (cardProto.Abilities != null){  //&& cardProto.CardType != "Improvement"
     let abilitiesContainer = document.createElement('div');
     abilitiesContainer.classList.add("abilities-container")
     cardProto.Abilities.forEach(function(ability){
       ability.div = document.createElement('div')
       ability.div .classList.add("ability-container")
       let abilityIcon = document.createElement('IMG'); abilityIcon.draggable = false;
-      let abilityFileName = toFileName(ability.Name) //.replace(/\s/g,"_").replace("\'","").toLowerCase()
-      abilityIcon.src = `${assetPath}/ability/${abilityFileName}.jpg`
+      if (cardProto.CardType == "Hero"){
+        let abilityFileName = toFileName(ability.Name)
+        abilityIcon.src = `${assetPath}/ability/${abilityFileName}.jpg`
+      } else{
+        abilityIcon.src = `${assetPath}/artwork/small/${cardProto.fileName}.jpg`
+      }
       abilityIcon.title = ability.Text
       ability.div.appendChild(abilityIcon)
       abilitiesContainer.appendChild(ability.div)
@@ -206,11 +210,11 @@ const card = (cardProto , player) => {
     div.appendChild(abilitiesContainer)
   }
   div.ondragover = function(ev) { ev.preventDefault()};
-  div.addEventListener("dragenter", function(ev) { ev.currentTarget.classList.add("dragover")} , true , true )
-  div.addEventListener("dragleave", function(ev) { ev.target.classList.remove("dragover")} , true , true )
+  div.addEventListener("dragenter", function(ev) { ev.target.classList.add("dragover")} )
+  div.addEventListener("dragleave", function(ev) { ev.target.classList.remove("dragover")}  )
   div.ondrop = (ev) => drop(ev);  // would need div ,lane, parrent, index if onDrop Moves out of blank
   const drop = (ev) => {ev.preventDefault();
-    if (ev != null ) ev.currentTarget.classList.remove("dragover")
+    if (ev != null ) ev.target.classList.remove("dragover")
     if (board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] < draggedCard.ManaCost) return
     let lane = board.lanes.findIndex(function(lane){return lane.div == ev.currentTarget.parentNode.parentNode})
     if ((lane == game.getCurrentLane() || draggedCard.CrossLane) && targetMap.get(draggedCard.Name) == "unit") {
@@ -219,13 +223,15 @@ const card = (cardProto , player) => {
         let player = index % 2
         index = Math.floor(index/2)
 
-        effectMap.get(draggedCard.Name)(ev, lane , player , index) // make this a if statment and the effect return true or false?
-        draggedCard.div.draggable = false;
-        board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
-        board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay()
-        draggedCard.div.parentNode.removeChild(draggedCard.div)
-        game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
-        game.nextTurn()
+        if (effectMap.get(draggedCard.Name)(ev, lane , player , index)){
+          draggedCard.div.draggable = false;
+          board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
+          board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay()
+          draggedCard.div.parentNode.removeChild(draggedCard.div)
+          game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
+          game.nextTurn()
+        } // make this a if statment and the effect return true or false?
+
       }
     }
   };

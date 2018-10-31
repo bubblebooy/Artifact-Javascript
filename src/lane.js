@@ -2,6 +2,7 @@ import {game, posAvail} from './index'
 import {blank, draggedCard, colorCheck} from './card'
 import {effectMap,targetMap} from './cardEffects.js'
 import {board} from './board'
+import {sum} from './arrayFunctions'
 
 
 const lane = (lane) => {
@@ -16,34 +17,51 @@ const lane = (lane) => {
   let playAreas = [playAreaBottom,playAreaTop]
   let stages = []
   let cards = []
+  let improvements = [[],[]]
+
+  let improvementsContainers = [document.createElement('div'),document.createElement('div')]
+  improvementsContainers.forEach(function(improvementsContainer,p){
+    improvementsContainer.classList.add("improvement", p ? "top" : "bottom");
+    div.appendChild(improvementsContainer);
+  })
 
 
   div.ondragover = function(ev) { ev.preventDefault()};
-  div.addEventListener("dragenter", function(ev) { ev.currentTarget.classList.add("dragover")} , true , true )
+  div.addEventListener("dragenter", function(ev) { ev.target.classList.add("dragover")} )
   div.addEventListener("dragleave", function(ev) { ev.target.classList.remove("dragover")})
   // div.ondragenter = function(ev) { ev.target.classList.add("dragover")};
   // div.ondragleave = function(ev) { ev.target.classList.remove("dragover")};
   div.ondrop = (ev) => drop(ev);
   const drop = (ev) => {ev.preventDefault();
-    if (ev != null ) ev.currentTarget.classList.remove("dragover")
+    if (ev != null ) ev.target.classList.remove("dragover")
     if (board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] < draggedCard.ManaCost) return ;
-    if ((lane == game.getCurrentLane() || draggedCard.CrossLane) && targetMap.get(draggedCard.Name) == "lane") {
+    if ((lane == game.getCurrentLane() || draggedCard.CrossLane) && (targetMap.get(draggedCard.Name) == "lane" || draggedCard.CardType == "Improvement")) {
       if (board.lanes[game.getCurrentLane()].cards.some(colorCheck)){
-        effectMap.get(draggedCard.Name)(ev , lane) // make this a if statment and the effect return true or false?
-        draggedCard.div.draggable = false;
-        board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
-        board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay()
-        draggedCard.div.parentNode.removeChild(draggedCard.div)
-        game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
-        collapse()
-        expand()
-        game.nextTurn()
+        if (draggedCard.CardType == "Improvement"){
+          draggedCard.div.draggable = false;
+          improvements[game.getTurn()].push(draggedCard);
+          improvementsContainers[game.getTurn()].appendChild(draggedCard.div);
+        } else {
+          effectMap.get(draggedCard.Name)(ev , lane);
+          draggedCard.div.parentNode.removeChild(draggedCard.div);
+        }
+        board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost;
+        board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay();
+        game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1);
+        collapse();
+        expand();
+        game.nextTurn();
       }
     }
   };
 
 
   const collapse = (refresh = true) => {
+    cards.flat().forEach(function(unit){
+      if (unit.currentHealth !=null && sum(unit.currentHealth) <= 0 ){
+        game.condemn(unit, board.lanes[lane])
+      }
+    })
     let loop = false
     cards.forEach(function(row,index){
       row.forEach(function(unit, side) {
@@ -103,7 +121,7 @@ const lane = (lane) => {
       })
     })
   }
-  return {name, div, cards, towers, playAreas, stages, passCount, collapse, expand, summon, drop};
+  return {name, div, cards, towers, improvements, playAreas, stages, passCount, collapse, expand, summon, drop};
 };
 
 export {lane};
