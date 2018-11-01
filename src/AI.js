@@ -36,6 +36,13 @@ function targetCreepsAvail(total, position, index) {
   return total
 }
 
+let targetEnemy = ["Intimidation","Bellow","Relentless Pursuit","Viscous Nasal Goo","Crippling Blow","Rend Armor","Grazing Shot","No Accident","Slay","Pick Off","Assassinate"]
+targetEnemy = new Map(targetEnemy.map(x => [x,true]))
+
+let targetCreeps = ["Slay","Bellow"]
+targetCreeps = new Map(targetCreeps.map(x => [x,true]))
+
+
 const AI = (() => {
   const actionPhase = (player) => {
     shuffle(player.hand)
@@ -72,8 +79,10 @@ const AI = (() => {
             if (spellTarget == "lane"){
               spellTarget = lane
             } else if (spellTarget == "unit") {
-              let targetPlayer = true ? player.turn : 1 - player.turn                                                     // make map of cards for AI to use
-              spellTarget = lane.cards.reduce(targetHerossAvail , [[],[]])[targetPlayer]                                // prob another map, or use the targetMap
+              let targetPlayer = targetEnemy.get(card.Name) ? 1 - player.turn : player.turn
+              if (targetCreeps.get(card.Name)){spellTarget = lane.cards.reduce(targetCreepsAvail , [[],[]])[targetPlayer]}
+              else {spellTarget = lane.cards.reduce(targetHerossAvail , [[],[]])[targetPlayer]}
+
               if (spellTarget.length <= 0 ) break played;
               spellTarget = lane.cards[spellTarget[Math.floor(Math.random() * spellTarget.length)]][targetPlayer]
             }

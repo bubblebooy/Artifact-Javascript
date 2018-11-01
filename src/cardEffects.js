@@ -389,7 +389,6 @@ effectMap.set("Assassinate" , function(ev, lane, player, index){
 
 
 //"Grazing Shot","No Accident","Slay","Pick Off","Assassinate"
-["Disciple of Nevermore"]
 
 
 export {effectMap,targetMap};
