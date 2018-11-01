@@ -140,4 +140,25 @@ abilityMap.set("Mercenary Exiles : Effect" , function(card,e){
   return true
 });
 
+triggerMap.set("Satyr Magician : Effect" , "click")
+abilityMap.set("Satyr Magician : Effect" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let tower = lane.towers[game.getTurn()]
+  tower.mana[0] = tower.mana[1]
+  tower.updateDisplay()
+  return true
+});
+
+triggerMap.set("Disciple of Nevermore : Effect" , "continuousEffect")
+abilityMap.set("Disciple of Nevermore : Effect" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  lane.cards.forEach(function(card){
+    if (card[e.detail.player].Name != null && lane.cards[e.detail.card] != card) {
+      card[e.detail.player].currentArmor[4] -= 2
+      card[e.detail.player].currentAttack[4] += 2
+      card[e.detail.player].updateDisplay()
+    }
+  })
+});
+
 export {abilityMap,triggerMap};

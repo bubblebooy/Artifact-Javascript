@@ -214,9 +214,12 @@ const card = (cardProto , player) => {
         ability.div.appendChild(ability.cooldownDiv)
         ability.div.addEventListener("click", function(e){
           if (game.players[game.getTurn()] == player && game.getCurrentLane() == lane() && cardProto.Abilities[abilityIndex].currentCooldown <= 0){
-            if (abilityMap.get(ability.Name)(cardProto,e)) { cardProto.Abilities[abilityIndex].currentCooldown = cardProto.Abilities[abilityIndex].Cooldown ; updateDisplay()}
+            if (abilityMap.get(ability.Name)(cardProto,e)) {
+              cardProto.Abilities[abilityIndex].currentCooldown = cardProto.Abilities[abilityIndex].Cooldown;
+              updateDisplay()
+              game.nextTurn()
+            };
           }
-          game.nextTurn()
         })
         endOfRound = addToFunction(endOfRound , function(){cardProto.Abilities[abilityIndex].currentCooldown -= 1;})
         updateDisplay = addToFunction(updateDisplay , function(){
