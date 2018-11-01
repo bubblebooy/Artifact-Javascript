@@ -342,11 +342,12 @@ function buildLanes(){
 
 
 const startGamebtn = document.getElementById("start-game-btn");
+const startScreen = document.getElementById("start-screen");
 startGamebtn.disabled = true;
 let loading = true
 setTimeout( function(){ startGamebtn.disabled = false;} , 500)
 startGamebtn.addEventListener("click",function(){
-  this.parentNode.removeChild(this)
+  startScreen.parentNode.removeChild(startScreen)
   game.startGame()
 })
 
