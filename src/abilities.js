@@ -161,4 +161,53 @@ abilityMap.set("Disciple of Nevermore : Effect" , function(card,e){
   })
 });
 
+triggerMap.set("Ravenous Mass : Effect" , "click")
+abilityMap.set("Ravenous Mass : Effect" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = game.getTurn()
+  let index = lane.cards.findIndex(function(c){ return (c[player] == card) })
+  for (var i = -1; i < 2; i+=2) {
+    if(lane.cards[index+i] != null && lane.cards[index+i][player].Name != null){
+      card.currentAttack[1] += sum(lane.cards[index+i][player].currentAttack)
+      card.currentHealth[1] += sum(lane.cards[index+i][player].currentHealth)
+      game.condemn(lane.cards[index+i][player],lane)
+    }
+  }
+  lane.collapse()
+  return true
+});
+
+triggerMap.set("Rampaging Hellbear : Effect" , "afterCombat")
+abilityMap.set("Rampaging Hellbear : Effect" , function(card,e){
+  card.currentAttack[1] += 4
+  card.updateDisplay()
+});
+
+triggerMap.set("Satyr Duelist : Effect" , "afterCombat")
+abilityMap.set("Satyr Duelist : Effect" , function(card,e){
+  card.currentAttack[1] += 2
+  card.updateDisplay()
+});
+
+triggerMap.set("Savage Wolf : Effect" , "afterCombat")
+abilityMap.set("Savage Wolf : Effect" , function(card,e){
+  card.currentAttack[1] += 1
+  card.currentHealth[1] += 2
+  card.updateDisplay()
+});
+
+triggerMap.set("Selfish Cleric : Effect" , "afterCombat")
+abilityMap.set("Selfish Cleric : Effect" , function(card,e){
+    card.currentHealth[0] = card.Health
+  card.updateDisplay()
+});
+
+triggerMap.set("Revtel Convoy : Effect" , "continuousEffect")
+abilityMap.set("Revtel Convoy : Effect" , function(card,e){
+  let x = Math.floor(card.player.gold / 2)
+  card.currentAttack[4] += x
+  card.updateDisplay()
+});
+
+//"Selfish Cleric","Revtel Convoy"
 export {abilityMap,triggerMap};
