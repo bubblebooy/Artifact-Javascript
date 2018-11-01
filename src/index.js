@@ -143,11 +143,11 @@ const game = (() => {
     if ( score[0] < 2 && score[1] < 2){
       return false;
     }else if ( score[0] >= 2 && score[1] >= 2){
-      console.log("Tie Game");
+      alert("Tie Game");
     }else if ( score[0] >= 2){
-      console.log(`${players[0].name} Wins`);
+      alert(`${players[0].name} Wins`);
     }else if ( score[1] >= 2){
-      console.log(`${players[1].name} Wins`);
+      alert(`${players[1].name} Wins`);
     }
 
     passButtonController.hide()
