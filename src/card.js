@@ -209,7 +209,7 @@ const card = (cardProto , player) => {
         if (cardProto.CardType == "Hero") {ability.currentCooldown = ability.Cooldown}
         else { ability.currentCooldown = 0 }
         ability.cooldownDiv = document.createElement('div')
-        ability.cooldownDiv.classList.add("cooldown")
+        ability.cooldownDiv.classList.add("cooldown","display-none")
         ability.cooldownDiv.textContent = ability.currentCooldown;
         ability.div.appendChild(ability.cooldownDiv)
         ability.div.addEventListener("click", function(e){

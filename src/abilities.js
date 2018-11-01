@@ -117,4 +117,27 @@ abilityMap.set("Troll Soothsayer : Effect" , function(card,e){
   card.player.draw()
 });
 
+triggerMap.set("Legion Standard Bearer : Effect" , "continuousEffect")
+abilityMap.set("Legion Standard Bearer : Effect" , function(card,e){
+  for (var i = -1; i < 2; i+=2) {
+    let lane = board.lanes[e.detail.lane]
+    let index = e.detail.card
+    if(lane.cards[index+i] != null && lane.cards[index+i][e.detail.player].Name != null){
+      lane.cards[index+i][e.detail.player].currentAttack[4] += 4;
+      lane.cards[index+i][e.detail.player].updateDisplay()
+    }
+  }
+});
+
+triggerMap.set("Mercenary Exiles : Effect" , "click")
+abilityMap.set("Mercenary Exiles : Effect" , function(card,e){
+  let x = Math.floor(card.player.gold / 2)
+  card.player.gold = 0
+  card.currentAttack[1] += x
+  card.currentHealth[1] += x
+  card.updateDisplay()
+  game.infoDisplayUpdate();
+  return true
+});
+
 export {abilityMap,triggerMap};
