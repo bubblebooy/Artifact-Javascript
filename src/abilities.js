@@ -48,6 +48,17 @@ abilityMap.set("Arcane Aura" , function(card,e){
 
 //// improvements
 
+triggerMap.set("Ignite : Effect" , "beforeTheActionPhase")
+abilityMap.set("Ignite : Effect" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  lane.cards.forEach(function(card){
+    if (card[1-e.detail.player].Name != null) {
+      card[1-e.detail.player].currentHealth[0] -= 1 - (sum(card[1-e.detail.player].currentArmor) < 0 ? sum(card[1-e.detail.player].currentArmor) : 0)
+    }
+  })
+  lane.collapse()
+});
+
 triggerMap.set("Conflagration : Effect" , "beforeTheActionPhase")
 abilityMap.set("Conflagration : Effect" , function(card,e){
   let lane = board.lanes[e.detail.lane]
@@ -62,6 +73,41 @@ abilityMap.set("Conflagration : Effect" , function(card,e){
 triggerMap.set("Burning Oil : Effect" , "continuousEffect")
 abilityMap.set("Burning Oil : Effect" , function(card,e){
   // console.log("Burning Oil : Effect")
+});
+
+triggerMap.set("Assault Ladders : Effect" , "whenAttacking")
+abilityMap.set("Assault Ladders : Effect" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  lane.cards.forEach(function(card , index){
+    if (card[e.detail.player].Name != null) {
+        if(lane.cards[index + card.arrow] == null || lane.cards[index + card.arrow][1 - e.detail.player].Name == null){
+          lane.cards[index][e.detail.player].currentAttack[4] += 2;
+        }
+    }
+  })
+
+});
+
+triggerMap.set("Mist of Avernus : Effect" , "beforeTheActionPhase")
+abilityMap.set("Mist of Avernus : Effect" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  lane.cards.forEach(function(card){
+    if (card[e.detail.player].Name != null) {
+      card[e.detail.player].currentAttack[1] += 1
+      card[e.detail.player].updateDisplay()
+    }
+  })
+});
+
+triggerMap.set("Verdant Refuge : Effect" , "continuousEffect")
+abilityMap.set("Verdant Refuge : Effect" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  lane.cards.forEach(function(card){
+    if (card[e.detail.player].Name != null) {
+      card[e.detail.player].currentArmor[4] += 1
+      card[e.detail.player].updateDisplay()
+    }
+  })
 });
 
 //// creeps

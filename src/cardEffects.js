@@ -382,7 +382,7 @@ effectMap.set("Pick Off" , function(ev, lane, player, index){
 targetMap.set("Assassinate" , "unit")
 effectMap.set("Assassinate" , function(ev, lane, player, index){
   let l = board.lanes[lane]
-  l.cards[index][player].currentHealth[0] -= 10
+  l.cards[index][player].currentHealth[0] -= 10 - (sum(l.cards[index][player].currentArmor) < 0 ? sum(l.cards[index][player].currentArmor) : 0)
   l.collapse()
   return true
 });
