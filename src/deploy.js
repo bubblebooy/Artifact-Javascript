@@ -45,7 +45,7 @@ function buildStages(){
       stage.ondragleave = dragleave;
       stage.ondrop=function(ev){ev.preventDefault();
         dragleave(ev)
-        if (draggedCard.player == game.players[side]){
+        if (draggedCard.player == game.players[side] && draggedCard.CardType == "Hero"){
           stage.appendChild(draggedCard.div)
           sides[side][laneIndex].push(draggedCard)
           draggedCard.div.draggable = false;
