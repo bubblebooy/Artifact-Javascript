@@ -369,6 +369,20 @@ body{
   position: fixed;
 }
 
+.last-played.top{
+  right:13em;;
+  height: 300px;
+  /* width: 200px; */
+  top: -250px;
+  transform: rotate(180deg);
+  /* border-style: solid; */
+}
+.last-played.top:hover{
+  top: 10px;
+  z-index: 500;
+  transform: rotate(0);
+}
+
 .hand{
   width: 60vw;
   /* max-width: 60vw; */
