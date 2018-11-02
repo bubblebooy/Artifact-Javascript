@@ -59,7 +59,7 @@ abilityMap.set("Pack Leadership" , function(card,e){
 
 triggerMap.set("Wisdom of the Elders" , "click")
 abilityMap.set("Wisdom of the Elders" , function(card,e){
-  card.player.draw();card.player.draw()
+  card.player.draw();
   return true
 });
 
