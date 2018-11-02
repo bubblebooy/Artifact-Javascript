@@ -113,6 +113,7 @@ abilityMap.set("Verdant Refuge : Effect" , function(card,e){
 triggerMap.set("Steam Cannon : Effect" , "click")
 abilityMap.set("Steam Cannon : Effect" , function(card,e){
   let abilityIndex = card.Abilities.findIndex(function(p){ console.log(p.div , e.currentTarget) ;return p.div == e.currentTarget})
+  card.Abilities[abilityIndex].div.classList.add("glow")
   game.div.addEventListener("click",function f(ev){
     ev.stopPropagation()
     vaild: {
@@ -133,6 +134,7 @@ abilityMap.set("Steam Cannon : Effect" , function(card,e){
         game.nextTurn()
       }
     }
+    card.Abilities[abilityIndex].div.classList.remove("glow")
     game.div.removeEventListener("click",f,true)
   },true)
   return false
