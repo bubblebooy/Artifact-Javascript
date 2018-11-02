@@ -10,22 +10,24 @@ function doubleTarget(card, currentTarget, target, callback, conditional = true 
   card.Abilities[abilityIndex].div.classList.add("glow")
   game.div.addEventListener("click",function f(ev){
     ev.stopPropagation()
+    let path = ev.path || (ev.composedPath && ev.composedPath());
+    if (!path) {console.log("no path")}
     vaild: {
-      let lane = ev.path.find(function(p){if (p.classList) return p.classList.contains('lane')}); if (lane == undefined) break vaild;
+      let lane = path.find(function(p){if (p.classList) return p.classList.contains('lane')}); if (lane == undefined) break vaild;
       lane = board.lanes.find(function(p){return p.div == lane})
       let player
       if (target == "card" || target == "empty"){
-        player = ev.path.find(function(p){if (p.classList) return p.classList.contains('playarea')}); if (player == undefined) break vaild;
+        player = path.find(function(p){if (p.classList) return p.classList.contains('playarea')}); if (player == undefined) break vaild;
         player = lane.playAreas.findIndex(function(p){return p == player})
       } else if (target == "tower"){
-        player = ev.path.find(function(p){if (p.classList) return p.classList.contains('tower')}); if (player == undefined) break vaild;
+        player = path.find(function(p){if (p.classList) return p.classList.contains('tower')}); if (player == undefined) break vaild;
         player = lane.towers.findIndex(function(p){return p.div == player})
       }
       if (target == "card"){
-        target = ev.path.find(function(p){if (p.classList) return p.classList.contains('card')}); if (target == undefined) break vaild;
+        target = path.find(function(p){if (p.classList) return p.classList.contains('card')}); if (target == undefined) break vaild;
         target = lane.cards.findIndex(function(p){return p[player].div == target})
       }else if (target == "empty"){
-        target = ev.path.find(function(p){if (p.classList) return p.classList.contains('blank')}); if (target == undefined) break vaild;
+        target = path.find(function(p){if (p.classList) return p.classList.contains('blank')}); if (target == undefined) break vaild;
         target = lane.cards.findIndex(function(p){return p[player].div == target})
       }else if (target == "tower"){target = player}
       if (conditional(lane,player,target)){
