@@ -7,6 +7,43 @@ import {sum, shuffle} from './arrayFunctions'
 let effectMap = new Map()  // should i just be uisng an object instead? does it really matter?
 let targetMap = new Map()
 
+function doubleTarget(card, target, callback, conditional = () => true ){
+  card.div.classList.add("glow")
+  game.div.addEventListener("click",function f(ev){
+    ev.stopPropagation()
+    vaild: {
+      if (card != draggedCard) break vaild
+      let lane = ev.path.find(function(p){if (p.classList) return p.classList.contains('lane')}); if (lane == undefined) break vaild;
+      lane = board.lanes.find(function(p){return p.div == lane})
+      let player
+      if (target == "card" || target == "empty"){
+        player = ev.path.find(function(p){if (p.classList) return p.classList.contains('playarea')}); if (player == undefined) break vaild;
+        player = lane.playAreas.findIndex(function(p){return p == player})
+      } else if (target == "tower"){
+        player = ev.path.find(function(p){if (p.classList) return p.classList.contains('tower')}); if (player == undefined) break vaild;
+        player = lane.towers.findIndex(function(p){return p.div == player})
+      }
+      if (target == "card"){
+        target = ev.path.find(function(p){if (p.classList) return p.classList.contains('card')}); if (target == undefined) break vaild;
+        target = lane.cards.findIndex(function(p){return p[player].div == target})
+      }else if (target == "empty"){
+        target = ev.path.find(function(p){if (p.classList) return p.classList.contains('blank')}); if (target == undefined) break vaild;
+        target = lane.cards.findIndex(function(p){return p[player].div == target})
+      }else if (target == "tower"){target = player}
+      if (conditional(lane,player,target)){
+        callback(lane,player,target)
+        board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= card.ManaCost
+        board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay()
+        game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
+        draggedCard.div.parentNode.removeChild(draggedCard.div)
+        game.nextTurn()
+      }
+    }
+    card.div.classList.remove("glow")
+    game.div.removeEventListener("click",f,true)
+  },true)
+}
+
 
 // Targets : lane, unit, improvement
 
@@ -386,6 +423,34 @@ effectMap.set("Assassinate" , function(ev, lane, player, index){
   l.collapse()
   return true
 });
+
+targetMap.set("New Orders" , "unit")
+effectMap.set("New Orders" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  let card = l.cards[index][player]
+  doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
+    card.arrow = $targetCard - index
+    card.updateDisplay()
+  }, function($lane,$player,$targetCard){
+    return ( $lane == l && game.players[player] != $player && Math.abs($targetCard - index) <= 1)
+  })
+  return false
+});
+
+// targetMap.set("Pick A Fight" , "unit")
+// effectMap.set("Pick A Fight" , function(ev, lane, player, index){
+//   let l = board.lanes[lane]
+//   let card = l.cards[index][player]
+//   doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
+//     //ADD TAUNT HERE
+//     card.arrow = $targetCard - index
+//     card.updateDisplay()
+//   }, function($lane,$player,$targetCard){
+//     return ( $lane == l && game.players[player] != $player && Math.abs($targetCard - index) <= 1)
+//   })
+//   return false
+// });
+
 
 
 //"Grazing Shot","No Accident","Slay","Pick Off","Assassinate"

@@ -147,6 +147,7 @@ body{
   border-radius: 5px;
   font-family: sans-serif;
 }
+.card.glow { box-shadow: 0px 0px 30px 5px gold; }
 
 .card .name, .mana-cost{
   color: white;
