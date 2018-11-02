@@ -104,7 +104,7 @@ const game = (() => {
   const div = document.getElementById('game');
   // const bottomPassButton = document.getElementById("pass-btn-bottom");
   // const topPassButton = document.getElementById("pass-btn-top");
-  let deck = ["Steam Cannon","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
+  let deck = ["Steam Cannon","Keenfolk Turret","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
   deck = deck.concat(deck,deck)
   let players = [player(0,"Radiant",
                     ["Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"],
@@ -149,7 +149,7 @@ const game = (() => {
     }else if ( score[0] >= 2){
       alert(`${players[0].name} Wins`);
     }else if ( score[1] >= 2){
-      alert(`${players[1].name} Wins`);
+      alert(`DEFErunT : ${players[1].name} Wins`);
     }
 
     passButtonController.hide()

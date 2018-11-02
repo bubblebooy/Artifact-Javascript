@@ -5,6 +5,40 @@ import {sum} from './arrayFunctions'
 let abilityMap = new Map()  // should i just be uisng an object instead? does it really matter?
 let triggerMap = new Map()
 
+function doubleTarget(card, currentTarget, target, callback, conditional = true ){
+  let abilityIndex = card.Abilities.findIndex(function(p){ console.log(p.div , currentTarget) ;return p.div == currentTarget})
+  card.Abilities[abilityIndex].div.classList.add("glow")
+  game.div.addEventListener("click",function f(ev){
+    ev.stopPropagation()
+    vaild: {
+      let lane = ev.path.find(function(p){if (p.classList) return p.classList.contains('lane')}); if (lane == undefined) break vaild;
+      lane = board.lanes.find(function(p){return p.div == lane})
+      let player
+      if (target == "card" || target == "empty"){
+        player = ev.path.find(function(p){if (p.classList) return p.classList.contains('playarea')}); if (player == undefined) break vaild;
+        player = lane.playAreas.findIndex(function(p){return p == player})
+      } else if (target == "tower"){
+        player = ev.path.find(function(p){if (p.classList) return p.classList.contains('tower')}); if (player == undefined) break vaild;
+        player = lane.towers.findIndex(function(p){return p.div == player})
+      }
+      if (target == "card"){
+        target = ev.path.find(function(p){if (p.classList) return p.classList.contains('card')}); if (target == undefined) break vaild;
+        target = lane.cards.findIndex(function(p){return p[player].div == target})
+      }else if (target == "empty"){
+        target = ev.path.find(function(p){if (p.classList) return p.classList.contains('blank')}); if (target == undefined) break vaild;
+        target = lane.cards.findIndex(function(p){return p[player].div == target})
+      }else if (target == "tower"){target = player}
+      if (conditional(lane,player,target)){
+        callback(lane,player,target)
+        card.Abilities[abilityIndex].currentCooldown = card.Abilities[abilityIndex].Cooldown;
+        card.updateDisplay()
+        game.nextTurn()
+      }
+    }
+    card.Abilities[abilityIndex].div.classList.remove("glow")
+    game.div.removeEventListener("click",f,true)
+  },true)
+}
 abilityMap.set("testAbility" , function(){
   console.log("testAbility")
 });
@@ -112,35 +146,37 @@ abilityMap.set("Verdant Refuge : Effect" , function(card,e){
 
 triggerMap.set("Steam Cannon : Effect" , "click")
 abilityMap.set("Steam Cannon : Effect" , function(card,e){
-  let abilityIndex = card.Abilities.findIndex(function(p){ console.log(p.div , e.currentTarget) ;return p.div == e.currentTarget})
-  card.Abilities[abilityIndex].div.classList.add("glow")
-  game.div.addEventListener("click",function f(ev){
-    ev.stopPropagation()
-    vaild: {
-      let lane = ev.path.find(function(p){if (p.classList) return p.classList.contains('lane')}); if (lane == undefined) break vaild;
-      lane = board.lanes.find(function(p){return p.div == lane})
-      let player = ev.path.find(function(p){if (p.classList) return p.classList.contains('playarea')}); if (player == undefined) break vaild;
-      player = lane.playAreas.findIndex(function(p){return p == player})
-      let targetCard = ev.path.find(function(p){if (p.classList) return p.classList.contains('card')}); if (targetCard == undefined) break vaild;
-      targetCard = lane.cards.findIndex(function(p){return p[player].div == targetCard})
-      console.log(card.Name , lane.playAreas, targetCard)
-      if (true){
+  doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
+    lane.cards[targetCard][player].currentHealth[0] -= 4 - (sum(lane.cards[targetCard][player].currentArmor) < 0 ? sum(lane.cards[targetCard][player].currentArmor) : 0)
+    lane.collapse()
+  } , function(){return true})
+  return false
+});
 
-        lane.cards[targetCard][player].currentHealth[0] -= 4 - (sum(lane.cards[targetCard][player].currentArmor) < 0 ? sum(lane.cards[targetCard][player].currentArmor) : 0)
-        lane.collapse()
-
-        card.Abilities[abilityIndex].currentCooldown = card.Abilities[abilityIndex].Cooldown;
-        card.updateDisplay()
-        game.nextTurn()
-      }
-    }
-    card.Abilities[abilityIndex].div.classList.remove("glow")
-    game.div.removeEventListener("click",f,true)
-  },true)
+triggerMap.set("Keenfolk Turret : Effect" , "click")
+abilityMap.set("Keenfolk Turret : Effect" , function(card,e){
+  doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
+    lane.cards[targetCard][player].currentHealth[0] -= 2 - (sum(lane.cards[targetCard][player].currentArmor) < 0 ? sum(lane.cards[targetCard][player].currentArmor) : 0)
+    lane.collapse()
+  } , function(lane,player,targetCard){
+    return lane == board.lanes[game.getCurrentLane()]
+  })
   return false
 });
 
 //// creeps
+triggerMap.set("Assassin's Apprentice : Effect" , "click")
+abilityMap.set("Assassin's Apprentice : Effect" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = game.getTurn()
+  let index = lane.cards.findIndex(function(c){ return (c[player] == card) })
+  doubleTarget(card, e.currentTarget, "card", function($lane,$player,$targetCard){
+    card.arrow = $targetCard - index
+  } , function($lane,$player,$targetCard){
+    return ( $lane == board.lanes[game.getCurrentLane()] && player != $player && Math.abs($targetCard - index) <= 1)
+  })
+  return false
+});
 
 triggerMap.set("Troll Soothsayer : Effect" , "endOfRound")
 abilityMap.set("Troll Soothsayer : Effect" , function(card,e){

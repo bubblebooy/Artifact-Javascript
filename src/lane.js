@@ -18,7 +18,7 @@ const lane = (lane) => {
   let playAreas = [playAreaBottom,playAreaTop]
   let stages = []
   let cards = []
-  let improvements = [[],[]]
+  let improvements = [[],[]] 
 
   let improvementsContainers = [document.createElement('div'),document.createElement('div')]
   improvementsContainers.forEach(function(improvementsContainer,p){
