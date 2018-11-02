@@ -160,6 +160,17 @@ abilityMap.set("Mist of Avernus : Effect" , function(card,e){
   })
 });
 
+triggerMap.set("Altar of the Mad Moon : Effect" , "continuousEffect")
+abilityMap.set("Altar of the Mad Moon : Effect" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  lane.cards.forEach(function(card){
+    if (card[e.detail.player].Name != null && card[e.detail.player].CardType == "Creep") {
+      card[e.detail.player].regen[4] += 2
+      card[e.detail.player].updateDisplay()
+    }
+  })
+});
+
 triggerMap.set("Verdant Refuge : Effect" , "continuousEffect")
 abilityMap.set("Verdant Refuge : Effect" , function(card,e){
   let lane = board.lanes[e.detail.lane]
@@ -341,7 +352,20 @@ abilityMap.set("Revtel Convoy : Effect" , function(card,e){
   card.updateDisplay()
 });
 
-
+triggerMap.set("Emissary of the Quorum : Effect" , "click")
+abilityMap.set("Emissary of the Quorum : Effect" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = game.getTurn()
+  let index = lane.cards.findIndex(function(c){ return (c[player] == card) })
+  lane.cards.forEach(function(card){
+    if (card[player].Name != null) {
+      card[player].currentAttack[1] += 2
+      card[player].currentHealth[1] += 2
+      card[player].updateDisplay()
+    }
+  })
+  return true
+});
 
 
 

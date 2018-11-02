@@ -119,7 +119,7 @@ effectMap.set("Poised to Strike" , function(ev, lane, player, index){
 targetMap.set("Defensive Stance" , "unit")
 effectMap.set("Defensive Stance" , function(ev, lane, player, index){
   if (board.lanes[lane].cards[index][player].CardType != "Hero") return false
-  board.lanes[lane].cards[index][player].currentArmor[4] += 3;
+  board.lanes[lane].cards[index][player].currentArmor[5] += 3;
   board.lanes[lane].cards[index][player].updateDisplay()
   return true
 });
@@ -437,6 +437,60 @@ effectMap.set("New Orders" , function(ev, lane, player, index){
   return false
 });
 
+targetMap.set("Steal Strength" , "unit")
+effectMap.set("Steal Strength" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  let card = l.cards[index][player]
+  doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
+    card.currentAttack[3] -= 4
+    card.updateDisplay()
+    let $card = $lane.cards[$targetCard][$player]
+    $card.currentAttack[3] += 4
+    $card.updateDisplay()
+  }, function($lane,$player,$targetCard){
+    return ($lane == l)
+  })
+  return false
+});
+
+targetMap.set("Ion Shell" , "unit")
+effectMap.set("Ion Shell" , function(ev, lane, player, index){
+  board.lanes[lane].cards[index][player].retaliate[1 + (1 - player == game.getTurn())] += 3;
+  board.lanes[lane].cards[index][player].updateDisplay()
+  return true
+});
+
+targetMap.set("Forward Charge" , "lane")
+effectMap.set("Forward Charge" , function(ev, lane){
+  let l = board.lanes[lane]
+  let player = game.getTurn()
+  l.cards.forEach(function(card){
+    if (card[player].Name != null) {
+      card[player].siege[3] += 2;
+      card.arrow = 0
+      card[player].updateDisplay()
+    }
+  })
+  return true
+});
+
+targetMap.set("Time of Triumph" , "lane")
+effectMap.set("Time of Triumph" , function(ev, lane){
+  let l = board.lanes[lane]
+  let player = game.getTurn()
+  l.cards.forEach(function(card){
+    if (card[player].Name != null && card[player].CardType == "Hero") {
+      card[player].currentAttack[1] += 4;
+      card[player].currentArmor[1] += 4;
+      card[player].currentHealth[1] += 4;
+      card[player].cleave[1] += 4;
+      card[player].retaliate[1] += 4;
+      card[player].siege[1] += 4;
+      card[player].updateDisplay()
+    }
+  })
+  return true
+});
 // targetMap.set("Pick A Fight" , "unit")
 // effectMap.set("Pick A Fight" , function(ev, lane, player, index){
 //   let l = board.lanes[lane]
@@ -450,7 +504,6 @@ effectMap.set("New Orders" , function(ev, lane, player, index){
 //   })
 //   return false
 // });
-
 
 
 //"Grazing Shot","No Accident","Slay","Pick Off","Assassinate"

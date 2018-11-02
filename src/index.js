@@ -98,9 +98,9 @@ const game = (() => {
   const div = document.getElementById('game');
   // const bottomPassButton = document.getElementById("pass-btn-bottom");
   // const topPassButton = document.getElementById("pass-btn-top");
-  let deck = ["New Orders","Sister of the Veil","Rebel Decoy","Steam Cannon","Keenfolk Turret","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
-  let AIdeck = ["Sister of the Veil","Rebel Decoy","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
-  deck = deck.concat(deck,deck) ; AIdeck = deck.concat(AIdeck,AIdeck)
+  let deck = ["Ion Shell","Time of Triumph","Forward Charge","Altar of the Mad Moon","New Orders","Sister of the Veil","Rebel Decoy","Steam Cannon","Keenfolk Turret","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
+  let AIdeck = []//["Altar of the Mad Moon","Time of Triumph","Forward Charge","Ion Shell","Sister of the Veil","Rebel Decoy","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
+  deck = deck.concat(deck,deck) ; AIdeck = AIdeck.concat(AIdeck,AIdeck)
   let players = [player(0,"Radiant",
                     ["Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"],
                     deck.slice()),
@@ -286,21 +286,31 @@ function combat(){
       if (attacker.Name == null){ return; };
       let target = currentLane.cards[rowIndex + attacker.arrow][1 - attackerIndex] // cause arror if pointing to null (not blank), this shoud not happen anyways
       if (target == null || target.Name == null ){
-        target = ( attackerIndex ?  currentLane.towers[0] : currentLane.towers[1] ) ;
-        target.currentHealth[0] -= sum(attacker.currentAttack) - sum(target.currentArmor)
+        target = currentLane.towers[1-attackerIndex] ;
       }else{
-        target.currentHealth[0] -= sum(attacker.currentAttack) - sum(target.currentArmor)
+        if(sum(target.retaliate)>0){attacker.currentHealth[0] -= sum(target.retaliate) - sum(attacker.currentArmor)}
+        if(sum(attacker.siege)>0){currentLane.towers[1-attackerIndex].currentHealth[0] -= sum(attacker.siege)}
+        if(sum(attacker.cleave)>0){
+          for (var s = -1; s < 2; s+=2) {
+            let $target = currentLane.cards[rowIndex + attacker.arrow + s]
+            if ($target != null){
+              $target = currentLane.cards[rowIndex + attacker.arrow + s][1 - attackerIndex]
+              if ($target != null && $target.Name != null ){
+                $target.currentHealth[0] -= sum(attacker.siege) - sum($target.currentArmor)
+              }
+            }
+          }
+        }
       }
-      //divine Shield
-      //Retaliate
-      //Regen
+      target.currentHealth[0] -= sum(attacker.currentAttack) - sum(target.currentArmor)
     });
+
+    row.forEach(function(attacker, attackerIndex){
+      if (attacker.Name == null){ return };
+      if(sum(attacker.regen)>0){attacker.currentHealth[0] += sum(attacker.regen)}
+      if(attacker.currentHealth[0] > attacker.Health) {attacker.currentHealth[0] = attacker.Health}
+    })
   });
-  // currentLane.cards.flat().forEach(function(unit){
-  //   if (unit.currentHealth !=null && sum(unit.currentHealth) <= 0 ){
-  //     condemn(unit, currentLane)
-  //   }
-  // })
 
   board.collapse(); //should this be currentLane.collapse?
   currentLane.towers[1].updateDisplay();

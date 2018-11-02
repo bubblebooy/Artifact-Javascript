@@ -143,8 +143,27 @@ const card = (cardProto , player) => {
       arrowDiv.classList.remove("left", "middle", "right")
       arrowDiv.classList.add("arrow", directions[1 + cardProto.arrow])
     })
-  }
-  if (cardProto.Health != null){
+    properties.cleave = [0,0,0,0,0,0]
+    properties.retaliate = [0,0,0,0,0,0]
+    properties.siege = [0,0,0,0,0,0]
+    properties.regen = [0,0,0,0,0,0]
+    updateDisplay = addToFunction(updateDisplay , function(){
+      div.title = `Cleave : ${sum(cardProto.cleave)}\nRetaliate : ${sum(cardProto.retaliate)}\nSiege : ${sum(cardProto.siege)}\nRegeneration : ${sum(cardProto.regen)}`
+      sum(cardProto.cleave) > 0 ? arrowDiv.classList.add('cleave') : arrowDiv.classList.remove('cleave');
+      sum(cardProto.retaliate) > 0 ? div.classList.add('retaliate') : div.classList.remove('retaliate');
+      sum(cardProto.siege) > 0 ? arrowDiv.classList.add('siege') : arrowDiv.classList.remove('siege');
+    })
+    endOfRound = addToFunction(endOfRound , function(){
+      cardProto.cleave[3] = 0; cardProto.retaliate[3] = 0; cardProto.siege[3] = 0;
+    })
+    continuousRefresh = addToFunction(continuousRefresh , function(){
+      cardProto.cleave[4] = 0; cardProto.retaliate[4] = 0; cardProto.siege[4] = 0;
+    })
+    afterCombat = addToFunction(afterCombat , function(){
+      cardProto.cleave[5] = 0; cardProto.retaliate[5] = 0; cardProto.siege[5] = 0;
+    })
+  // }
+  // if (cardProto.Health != null){
     properties.currentHealth = [cardProto.Health,0,0,0,0,0];
     let healthContainer = document.createElement('div')
     healthContainer.classList.add("icon-container","health")
@@ -159,8 +178,8 @@ const card = (cardProto , player) => {
     endOfRound = addToFunction(endOfRound , function(){cardProto.currentHealth[3] = 0 })
     continuousRefresh = addToFunction(continuousRefresh , function(){cardProto.currentHealth[4] = 0 })
     afterCombat = addToFunction(afterCombat , function(){cardProto.currentHealth[5] = 0 })
-  }
-  if (cardProto.Attack != null){
+  // }
+  // if (cardProto.Attack != null){
     properties.currentAttack = [cardProto.Attack,0,0,0,0,0]
     let attackContainer = document.createElement('div')
     attackContainer.classList.add("icon-container","attack")
@@ -175,8 +194,8 @@ const card = (cardProto , player) => {
     endOfRound = addToFunction(endOfRound , function(){cardProto.currentAttack[3] = 0 })
     continuousRefresh = addToFunction(continuousRefresh , function(){cardProto.currentAttack[4] = 0 })
     afterCombat = addToFunction(afterCombat , function(){cardProto.currentAttack[5] = 0 })
-  }
-  if (cardProto.Armor != null){
+  // }
+  // if (cardProto.Armor != null){
     properties.currentArmor = [cardProto.Armor,0,0,0,0,0]
     let armorContainer = document.createElement('div')
     armorContainer.classList.add("icon-container","armor")
