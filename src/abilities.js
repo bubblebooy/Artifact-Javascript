@@ -110,6 +110,34 @@ abilityMap.set("Verdant Refuge : Effect" , function(card,e){
   })
 });
 
+triggerMap.set("Steam Cannon : Effect" , "click")
+abilityMap.set("Steam Cannon : Effect" , function(card,e){
+  let abilityIndex = card.Abilities.findIndex(function(p){ console.log(p.div , e.currentTarget) ;return p.div == e.currentTarget})
+  game.div.addEventListener("click",function f(ev){
+    ev.stopPropagation()
+    vaild: {
+      let lane = ev.path.find(function(p){if (p.classList) return p.classList.contains('lane')}); if (lane == undefined) break vaild;
+      lane = board.lanes.find(function(p){return p.div == lane})
+      let player = ev.path.find(function(p){if (p.classList) return p.classList.contains('playarea')}); if (player == undefined) break vaild;
+      player = lane.playAreas.findIndex(function(p){return p == player})
+      let targetCard = ev.path.find(function(p){if (p.classList) return p.classList.contains('card')}); if (targetCard == undefined) break vaild;
+      targetCard = lane.cards.findIndex(function(p){return p[player].div == targetCard})
+      console.log(card.Name , lane.playAreas, targetCard)
+      if (true){
+
+        lane.cards[targetCard][player].currentHealth[0] -= 4 - (sum(lane.cards[targetCard][player].currentArmor) < 0 ? sum(lane.cards[targetCard][player].currentArmor) : 0)
+        lane.collapse()
+
+        card.Abilities[abilityIndex].currentCooldown = card.Abilities[abilityIndex].Cooldown;
+        card.updateDisplay()
+        game.nextTurn()
+      }
+    }
+    game.div.removeEventListener("click",f,true)
+  },true)
+  return false
+});
+
 //// creeps
 
 triggerMap.set("Troll Soothsayer : Effect" , "endOfRound")
@@ -209,5 +237,9 @@ abilityMap.set("Revtel Convoy : Effect" , function(card,e){
   card.updateDisplay()
 });
 
-//"Selfish Cleric","Revtel Convoy"
+
+
+
+
+
 export {abilityMap,triggerMap};

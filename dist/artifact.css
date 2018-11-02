@@ -241,6 +241,10 @@ body{
 .Improvement .abilities-container{
   justify-content: center;
 }
+.Improvement .cooldown{
+  font-size: 3.5em;
+  border-radius: 50%
+}
 .ability-container{
   position: relative;
   width: 30%;
@@ -260,7 +264,9 @@ body{
     color: white;
     font-size: 4em;
     background-color: #000a;
-    width: 100%;
+    width: calc(100% + 6px);
+    height: 0;
+    padding-bottom: calc(100% + 6px);
 }
 
 .card-text{

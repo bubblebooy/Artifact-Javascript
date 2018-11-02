@@ -82,7 +82,12 @@ const card = (cardProto , player) => {
   artwork.src = `${assetPath}/artwork/large/${cardProto.fileName}.jpg`
   div.appendChild(artwork)
 
-  function lane(){ return board.lanes.findIndex(function(l){ return l.cards.flat().some(function(c){return c.div == cardProto.div }) })}
+  function lane(){
+    if (cardProto.CardType == "Improvement"){
+      return board.lanes.findIndex(function(l){ return l.improvements.flat().some(function(c){return c.div == cardProto.div }) })
+    }
+    else return board.lanes.findIndex(function(l){ return l.cards.flat().some(function(c){return c.div == cardProto.div }) })
+  }
 
   if (cardProto.CardType == "Hero"){
     properties.respawn = 0;
