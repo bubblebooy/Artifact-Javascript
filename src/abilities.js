@@ -79,6 +79,33 @@ abilityMap.set("Arcane Aura" , function(card,e){
   // console.log("Arcane Aura")
 });
 
+triggerMap.set("Arctic Burn" , "afterCardPlayed")
+abilityMap.set("Arctic Burn" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = game.getTurn()
+  let index = lane.cards.findIndex(function(c){ return (c[player] == card) })
+  doubleTarget(card, e.currentTarget, "empty", function($lane,$player,$targetCard){
+    card.currentAttack[3] += 4;
+    let nextSibling = index > $targetCard ? card.div.nextSibling : $lane.cards[$targetCard][$player].div.nextSibling
+    index > $targetCard ? $lane.cards[$targetCard][$player].div.parentNode.insertBefore(card.div,$lane.cards[$targetCard][$player].div) : card.div.parentNode.insertBefore($lane.cards[$targetCard][$player].div,card.div)
+    index > $targetCard ? card.div.parentNode.insertBefore($lane.cards[$targetCard][$player].div, nextSibling) : $lane.cards[$targetCard][$player].div.parentNode.insertBefore(card.div,nextSibling)
+    let temp = $lane.cards[$targetCard][$player]
+    $lane.cards[$targetCard][$player] = lane.cards[index][player]
+    lane.cards[index][player] = temp
+    if(lane.cards[index][1 - player].Name != null){
+        lane.cards[index][player].arrow = 0
+        lane.cards[index][player].updateDisplay()
+    }
+    if($lane.cards[$targetCard][1 - $player].Name != null){
+        $lane.cards[$targetCard][1 - $player].arrow = 0;
+        $lane.cards[$targetCard][1 - $player].updateDisplay()
+    }
+  } , function($lane,$player,$targetCard){
+    return ( $lane == lane && player == $player)
+  })
+  return false
+});
+
 
 //// improvements
 
@@ -173,7 +200,46 @@ abilityMap.set("Assassin's Apprentice : Effect" , function(card,e){
   doubleTarget(card, e.currentTarget, "card", function($lane,$player,$targetCard){
     card.arrow = $targetCard - index
   } , function($lane,$player,$targetCard){
-    return ( $lane == board.lanes[game.getCurrentLane()] && player != $player && Math.abs($targetCard - index) <= 1)
+    return ( $lane == lane && player != $player && Math.abs($targetCard - index) <= 1)
+  })
+  return false
+});
+
+triggerMap.set("Sister of the Veil : Effect" , "click")
+abilityMap.set("Sister of the Veil : Effect" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = game.getTurn()
+  let index = lane.cards.findIndex(function(c){ return (c[player] == card) })
+  doubleTarget(card, e.currentTarget, "card", function($lane,$player,$targetCard){
+    card.arrow = $targetCard - index
+  } , function($lane,$player,$targetCard){
+    return ( $lane == lane && player != $player && Math.abs($targetCard - index) <= 1)
+  })
+  return false
+});
+
+triggerMap.set("Rebel Decoy : Effect" , "click")
+abilityMap.set("Rebel Decoy : Effect" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = game.getTurn()
+  let index = lane.cards.findIndex(function(c){ return (c[player] == card) })
+  doubleTarget(card, e.currentTarget, "card", function($lane,$player,$targetCard){
+    let nextSibling = index > $targetCard ? card.div.nextSibling : $lane.cards[$targetCard][$player].div.nextSibling
+    index > $targetCard ? $lane.cards[$targetCard][$player].div.parentNode.insertBefore(card.div,$lane.cards[$targetCard][$player].div) : card.div.parentNode.insertBefore($lane.cards[$targetCard][$player].div,card.div)
+    index > $targetCard ? card.div.parentNode.insertBefore($lane.cards[$targetCard][$player].div, nextSibling) : $lane.cards[$targetCard][$player].div.parentNode.insertBefore(card.div,nextSibling)
+    let temp = $lane.cards[$targetCard][$player]
+    $lane.cards[$targetCard][$player] = lane.cards[index][player]
+    lane.cards[index][player] = temp
+    if(lane.cards[index][1 - player].Name != null){
+        lane.cards[index][player].arrow = 0
+        lane.cards[index][player].updateDisplay()
+    }
+    if($lane.cards[$targetCard][1 - $player].Name != null){
+        $lane.cards[$targetCard][$player].arrow = 0;
+        $lane.cards[$targetCard][$player].updateDisplay()
+    }
+  } , function($lane,$player,$targetCard){
+    return ( $lane == lane && player == $player)
   })
   return false
 });
