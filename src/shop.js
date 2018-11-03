@@ -22,7 +22,7 @@ const shop = (() => {
   itemDeck = itemDeck.concat(itemDeck,itemDeck)
   let item
   let consumableDeck = ["Leather Armor","Short Sword","Traveler's Cloak"]//["Healing Salve","Town Portal Scroll","Fountain Flask","Potion of Knowledge"]
-  let secretShopDeck = ["Demagicking Maul","Stonehall Plate","Stonehall Cloak","Leather Armor","Short Sword","Traveler's Cloak","Blade of the Vigil","Keenfolk Musket","Red Mist Maul","Shield of Basilius","Horn of the Alpha","Shop Deed","Phase Boots","Ring of Tarrasque"]
+  let secretShopDeck = ["Demagicking Maul","Stonehall Plate","Stonehall Cloak","Leather Armor","Short Sword","Traveler's Cloak","Blade of the Vigil","Keenfolk Musket","Red Mist Maul","Shield of Basilius","Horn of the Alpha","Phase Boots","Ring of Tarrasque"]
 
   closeButton.addEventListener("click",function(){
     div.classList.add('display-none');

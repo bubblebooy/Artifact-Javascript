@@ -1,4 +1,5 @@
 import {game , cardData, posAvail} from './index.js'
+import {card , blank, draggedCard} from './card'
 import {board} from './board'
 import {sum} from './arrayFunctions'
 
@@ -356,6 +357,12 @@ abilityMap.set("Revtel Convoy : Effect" , function(card,e){
   card.updateDisplay()
 });
 
+triggerMap.set("Thunderhide Pack : Effect" , "continuousEffect")
+abilityMap.set("Thunderhide Pack : Effect" , function(card,e){
+  card.siege[4] += 6
+  card.updateDisplay()
+});
+
 triggerMap.set("Emissary of the Quorum : Effect" , "click")
 abilityMap.set("Emissary of the Quorum : Effect" , function(card,e){
   let lane = board.lanes[game.getCurrentLane()]
@@ -383,7 +390,6 @@ abilityMap.set("Leather Armor : Effect" , function(card,e){
 
 triggerMap.set("Traveler's Cloak : Effect" , "continuousEffect")
 abilityMap.set("Traveler's Cloak : Effect" , function(card,e){
-  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
   let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
   $card.currentHealth[4] += 4
   $card.updateDisplay()
@@ -391,7 +397,6 @@ abilityMap.set("Traveler's Cloak : Effect" , function(card,e){
 
 triggerMap.set("Short Sword : Effect" , "continuousEffect")
 abilityMap.set("Short Sword : Effect" , function(card,e){
-  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
   let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
   $card.currentAttack[4] += 2
   $card.updateDisplay()
@@ -399,7 +404,6 @@ abilityMap.set("Short Sword : Effect" , function(card,e){
 
 triggerMap.set("Demagicking Maul : Effect" , "continuousEffect")
 abilityMap.set("Demagicking Maul : Effect" , function(card,e){
-  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
   let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
   $card.currentAttack[4] += 2
   $card.updateDisplay()
@@ -423,7 +427,6 @@ abilityMap.set("Demagicking Maul : EffectActive" , function(card,e){
 
 triggerMap.set("Stonehall Plate : Effect" , "continuousEffect")
 abilityMap.set("Stonehall Plate : Effect" , function(card,e){
-  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
   if (!card.stonehall){
     card.div.addEventListener("afterCombat", function(){card.Armor = card.Armor || 1 ; card.Armor += 1})
     card.stonehall = true
@@ -436,7 +439,6 @@ abilityMap.set("Stonehall Plate : Effect" , function(card,e){
 
 triggerMap.set("Stonehall Cloak : Effect" , "continuousEffect")
 abilityMap.set("Stonehall Cloak : Effect" , function(card,e){
-  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
   if (!card.stonehall){
     card.div.addEventListener("afterCombat", function(){card.Health = card.Health || 4 ; card.Health += 2})
     card.stonehall = true
@@ -447,13 +449,118 @@ abilityMap.set("Stonehall Cloak : Effect" , function(card,e){
   $card.updateDisplay()
 });
 
+triggerMap.set("Blade of the Vigil : Effect" , "continuousEffect")
+abilityMap.set("Blade of the Vigil : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentAttack[4] += 2
+  $card.cleave[4] += 2
+  $card.updateDisplay()
+});
 
+triggerMap.set("Keenfolk Musket : Effect" , "continuousEffect")
+abilityMap.set("Keenfolk Musket : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentAttack[4] += 2
+  $card.updateDisplay()
+});
+
+triggerMap.set("Keenfolk Musket : EffectActive" , "click")
+abilityMap.set("Keenfolk Musket : EffectActive" , function(card,e){
+  // let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
+    lane.cards[targetCard][player].currentHealth[0] -= 2 - sum(lane.cards[targetCard][player].currentArmor)
+    lane.collapse()
+  } , function(lane,player,targetCard){
+    return lane == board.lanes[game.getCurrentLane()]
+  })
+  return false
+});
+
+triggerMap.set("Red Mist Maul : Effect" , "continuousEffect")
+abilityMap.set("Red Mist Maul : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentAttack[4] += 2
+  $card.siege[4] += 5
+  $card.updateDisplay()
+});
+
+triggerMap.set("Shield of Basilius : Effect" , "continuousEffect")
+abilityMap.set("Shield of Basilius : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentArmor[4] += 2
+  $card.updateDisplay()
+  for (var i = -1; i < 2; i+=2) {
+    let lane = board.lanes[e.detail.lane]
+    let index = e.detail.card
+    if(lane.cards[index+i] != null && lane.cards[index+i][e.detail.player].Name != null){
+      lane.cards[index+i][e.detail.player].currentArmor[4] += 1;
+      lane.cards[index+i][e.detail.player].updateDisplay()
+    }
+  }
+});
+
+triggerMap.set("Horn of the Alpha : Effect" , "continuousEffect")
+abilityMap.set("Horn of the Alpha : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentHealth[4] += 4
+  $card.updateDisplay()
+});
+triggerMap.set("Horn of the Alpha : EffectActive" , "click")
+abilityMap.set("Horn of the Alpha : EffectActive" , function(c,e){
+  let summons = [[],[]]
+  let lane = board.lanes[game.getCurrentLane()]
+  let creep =  card(cardData.Cards.find( function(ev){  return ev.Name == "Thunderhide Pack" }),game.players[game.getTurn()])
+  summons[game.getTurn()].push(creep);
+  lane.summon(summons)
+  return true
+});
+
+triggerMap.set("Ring of Tarrasque : Effect" , "continuousEffect")
+abilityMap.set("Ring of Tarrasque : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentHealth[4] += 4
+  $card.regen[4] += 6
+  $card.updateDisplay()
+});
+
+triggerMap.set("Phase Boots : Effect" , "continuousEffect")
+abilityMap.set("Phase Boots : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentHealth[4] += 4
+  $card.updateDisplay()
+});
+triggerMap.set("Phase Boots : EffectActive" , "click")
+abilityMap.set("Phase Boots : EffectActive" , function(c,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = game.getTurn()
+  let index = lane.cards.findIndex(function(card){ return (card[player].Accessory == c) })
+  console.log(index)
+  let card = lane.cards[index][player]
+  doubleTarget(c, e.currentTarget, "card", function($lane,$player,$targetCard){
+    let nextSibling = index > $targetCard ? card.div.nextSibling : $lane.cards[$targetCard][$player].div.nextSibling
+    index > $targetCard ? $lane.cards[$targetCard][$player].div.parentNode.insertBefore(card.div,$lane.cards[$targetCard][$player].div) : card.div.parentNode.insertBefore($lane.cards[$targetCard][$player].div,card.div)
+    index > $targetCard ? card.div.parentNode.insertBefore($lane.cards[$targetCard][$player].div, nextSibling) : $lane.cards[$targetCard][$player].div.parentNode.insertBefore(card.div,nextSibling)
+    let temp = $lane.cards[$targetCard][$player]
+    $lane.cards[$targetCard][$player] = lane.cards[index][player]
+    lane.cards[index][player] = temp
+    if(lane.cards[index][1 - player].Name != null){
+        lane.cards[index][player].arrow = 0
+        lane.cards[index][player].updateDisplay()
+    }
+    if($lane.cards[$targetCard][1 - $player].Name != null){
+        $lane.cards[$targetCard][$player].arrow = 0;
+        $lane.cards[$targetCard][$player].updateDisplay()
+    }
+  } , function($lane,$player,$targetCard){
+    return ( $lane == lane && player == $player)
+  })
+  return false
+});
 
 // let lane = board.lanes[e.detail.lane]
 // let index = e.detail.card
 // lane.cards[index+i][e.detail.player]
 
-//["Blade of the Vigil","Keenfolk Musket","Red Mist Maul"."Shield of Basilius","Horn of the Alpha","Shop Deed","Phase Boots","Ring of Tarrasque"]
 
 
 

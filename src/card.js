@@ -287,7 +287,6 @@ const card = (cardProto , player) => {
           }
         })
       }else{
-        console.log(ability.Name)
         div.addEventListener(triggerMap.get(ability.Name), function(e){abilityMap.get(ability.Name)(cardProto,e)})
        }
        properties.Abilities.push(ability)
