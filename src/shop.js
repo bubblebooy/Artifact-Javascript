@@ -22,7 +22,7 @@ const shop = (() => {
   itemDeck = itemDeck.concat(itemDeck,itemDeck)
   let item
   let consumableDeck = ["Leather Armor","Short Sword","Traveler's Cloak"]//["Healing Salve","Town Portal Scroll","Fountain Flask","Potion of Knowledge"]
-  let secretShopDeck = ["Apotheosis Blade","Horn of the Alpha","Shop Deed"]
+  let secretShopDeck = ["Demagicking Maul","Stonehall Plate","Stonehall Cloak","Leather Armor","Short Sword","Traveler's Cloak","Blade of the Vigil","Keenfolk Musket","Red Mist Maul","Shield of Basilius","Horn of the Alpha","Shop Deed","Phase Boots","Ring of Tarrasque"]
 
   closeButton.addEventListener("click",function(){
     div.classList.add('display-none');
@@ -41,12 +41,11 @@ const shop = (() => {
     if (c != null){
       let newCard = card(cardData.Cards.find(function(e){
         return e.Name == c
-      }))
+      }),game.players[0])
       newCard.div.addEventListener("click", function buy(e) {
         if (game.players[0].gold > newCard.GoldCost){
           game.players[0].gold -= newCard.GoldCost
           game.infoDisplayUpdate()
-          newCard.player = game.players[0]  
           game.players[0].hand.push(newCard)
           game.players[0].handDiv.appendChild(newCard.div)
           if (depleting) {

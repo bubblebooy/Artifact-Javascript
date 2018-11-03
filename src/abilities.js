@@ -360,7 +360,7 @@ triggerMap.set("Emissary of the Quorum : Effect" , "click")
 abilityMap.set("Emissary of the Quorum : Effect" , function(card,e){
   let lane = board.lanes[game.getCurrentLane()]
   let player = game.getTurn()
-  let index = lane.cards.findIndex(function(c){ return (c[player] == card) })
+  // let index = lane.cards.findIndex(function(c){ return (c[player] == card) })
   lane.cards.forEach(function(card){
     if (card[player].Name != null) {
       card[player].currentAttack[1] += 2
@@ -370,6 +370,90 @@ abilityMap.set("Emissary of the Quorum : Effect" , function(card,e){
   })
   return true
 });
+
+// Items
+
+triggerMap.set("Leather Armor : Effect" , "continuousEffect")
+abilityMap.set("Leather Armor : Effect" , function(card,e){
+  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentArmor[4] += 1
+  $card.updateDisplay()
+});
+
+triggerMap.set("Traveler's Cloak : Effect" , "continuousEffect")
+abilityMap.set("Traveler's Cloak : Effect" , function(card,e){
+  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentHealth[4] += 4
+  $card.updateDisplay()
+});
+
+triggerMap.set("Short Sword : Effect" , "continuousEffect")
+abilityMap.set("Short Sword : Effect" , function(card,e){
+  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentAttack[4] += 2
+  $card.updateDisplay()
+});
+
+triggerMap.set("Demagicking Maul : Effect" , "continuousEffect")
+abilityMap.set("Demagicking Maul : Effect" , function(card,e){
+  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentAttack[4] += 2
+  $card.updateDisplay()
+});
+
+triggerMap.set("Demagicking Maul : EffectActive" , "click")
+abilityMap.set("Demagicking Maul : EffectActive" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = game.getTurn()
+  let index = lane.cards.findIndex(function(c){ return (c[player].Weapon == card) })
+  if (lane.cards[index + lane.cards[index][player].arrow][1 - player].Name == null){
+    if (lane.improvements[1 - player].length){
+      let improvment = Math.floor(Math.random()*lane.improvements[1 - player].length)
+      improvment = lane.improvements[1 - player].splice(improvment)[0]
+      improvment.div.parentNode.removeChild(improvment.div)
+      return true
+    }
+  }
+  return false
+});
+
+triggerMap.set("Stonehall Plate : Effect" , "continuousEffect")
+abilityMap.set("Stonehall Plate : Effect" , function(card,e){
+  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
+  if (!card.stonehall){
+    card.div.addEventListener("afterCombat", function(){card.Armor = card.Armor || 1 ; card.Armor += 1})
+    card.stonehall = true
+  }
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  card.Armor = card.Armor || 1
+  $card.currentArmor[4] += card.Armor
+  $card.updateDisplay()
+});
+
+triggerMap.set("Stonehall Cloak : Effect" , "continuousEffect")
+abilityMap.set("Stonehall Cloak : Effect" , function(card,e){
+  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
+  if (!card.stonehall){
+    card.div.addEventListener("afterCombat", function(){card.Health = card.Health || 4 ; card.Health += 2})
+    card.stonehall = true
+  }
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  card.Health = card.Health || 4
+  $card.currentHealth[4] += card.Health
+  $card.updateDisplay()
+});
+
+
+
+// let lane = board.lanes[e.detail.lane]
+// let index = e.detail.card
+// lane.cards[index+i][e.detail.player]
+
+//["Blade of the Vigil","Keenfolk Musket","Red Mist Maul"."Shield of Basilius","Horn of the Alpha","Shop Deed","Phase Boots","Ring of Tarrasque"]
 
 
 

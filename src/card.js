@@ -85,8 +85,11 @@ const card = (cardProto , player) => {
   function lane(){
     if (cardProto.CardType == "Improvement"){
       return board.lanes.findIndex(function(l){ return l.improvements.flat().some(function(c){return c.div == cardProto.div }) })
-    }
-    else return board.lanes.findIndex(function(l){ return l.cards.flat().some(function(c){return c.div == cardProto.div }) })
+    } else if(cardProto.CardType == "Item"){
+      if (cardProto.ItemType == "Weapon") return board.lanes.findIndex(function(l){ return l.cards.flat().some(function(c){ if (c.Weapon) return c.Weapon.div == cardProto.div }) })
+      if (cardProto.ItemType == "Armor") return board.lanes.findIndex(function(l){ return l.cards.flat().some(function(c){ if (c.Armor) return c.Armor.div == cardProto.div }) })
+      if (cardProto.ItemType == "Accessory") return board.lanes.findIndex(function(l){ return l.cards.flat().some(function(c){ if (c.Accessory) return c.Accessory.div == cardProto.div }) })
+    } else return board.lanes.findIndex(function(l){ return l.cards.flat().some(function(c){return c.div == cardProto.div }) })
   }
 
   if (cardProto.CardType == "Hero"){
@@ -252,6 +255,7 @@ const card = (cardProto , player) => {
         let abilityFileName = toFileName(ability.Name)
         abilityIcon.src = `${assetPath}/ability/${abilityFileName}.jpg`
       } else{
+        if (abilityIndex > 0) ability.Name = ability.Name + ability.Type
         abilityIcon.src = `${assetPath}/artwork/small/${cardProto.fileName}.jpg`
       }
       abilityIcon.title = ability.Text
@@ -283,6 +287,7 @@ const card = (cardProto , player) => {
           }
         })
       }else{
+        console.log(ability.Name)
         div.addEventListener(triggerMap.get(ability.Name), function(e){abilityMap.get(ability.Name)(cardProto,e)})
        }
        properties.Abilities.push(ability)
@@ -331,6 +336,8 @@ const card = (cardProto , player) => {
           cardProto.Weapon = draggedCard
           itemWeaponContainer.appendChild(draggedCard.div)
         }
+        game.dispatchEvent("continuousRefresh")
+        game.nextTurn()
       }
     }
   };

@@ -66,10 +66,10 @@ body{
   color: DarkRed;
   font-size: 10em;
   font-family: monospace;
-  left: 50%;
+  left: 16%;
   top: 50%;
   text-shadow: 4px 4px 12px #230303;
-  transform: translate(-50%, -50%) rotate(-30deg);
+  transform: translate(-50%, -50%) rotate(-60deg);
 }
 
 .shop{
