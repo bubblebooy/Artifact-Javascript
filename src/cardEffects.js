@@ -2,6 +2,7 @@ import {game , cardData, posAvail} from './index.js'
 import {board} from './board'
 import {card , blank, draggedCard} from './card'
 import {sum, shuffle} from './arrayFunctions'
+import getEnemyNeighbors from './utils/getEnemyNeighbors.js';
 
 
 let effectMap = new Map()  // should i just be uisng an object instead? does it really matter?
@@ -507,6 +508,44 @@ effectMap.set("Time of Triumph" , function(ev, lane){
 //   return false
 // });
 
+targetMap.set("Berserker's Call", "unit")
+effectMap.set("Berserker's Call", function(ev, lane, player, index) {
+  if (
+    board.lanes[lane].cards[index][player].Color != "Red" || 
+    board.lanes[lane].cards[index][player].CardType != "Hero" ||
+    player !== game.getTurn()
+  ) return false
+  const currentLane = board.lanes[lane]
+
+  game.dispatchEvent("whenAttacking")
+  const targetHero = currentLane.cards[index][player]
+  const enemyNeighbors = getEnemyNeighbors(lane, player, index)
+  const battleUnits = enemyNeighbors.map(function(enemy) {
+    const row = [enemy]
+    row.splice(player, 0, targetHero)
+    return row
+  })
+  battleUnits.forEach(function(row) {
+    row.forEach(function(attacker, attackerIndex) {
+      const target = row[(attackerIndex + 1) % 2]
+      if (target && target.Name && attacker && attacker.Name) {
+        if (sum(target.retaliate) > 0) {
+          attacker.currentHealth[0] -= sum(target.retaliate) - sum(attacker.currentArmor)
+        }
+        target.currentHealth[0] -= sum(attacker.currentAttack) - sum(target.currentArmor)
+      }
+    })
+
+    row.forEach(function(attacker, attackerIndex){
+      if (!attacker.Name){ return };
+      if(sum(attacker.regen)>0){attacker.currentHealth[0] += sum(attacker.regen)}
+      if(attacker.currentHealth[0] > attacker.Health) {attacker.currentHealth[0] = attacker.Health}
+    })
+  })
+  currentLane.collapse()
+  game.infoDisplayUpdate()
+  return true
+})
 
 //"Grazing Shot","No Accident","Slay","Pick Off","Assassinate"
 
