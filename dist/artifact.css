@@ -48,6 +48,9 @@ body{
 #shop{
   left: 50%;
   top: 50%;
+  width: 854px;
+  height: 450px;
+  white-space: nowrap;
   transform: translate(-50%, -50%);
   background-color: #502609;
   border-color: #291208;
@@ -55,27 +58,48 @@ body{
   border-style: solid;
   border-width: 10px;
   border-radius: 20px;
-  width: 100%;
-  height: 100%;
-  max-width: 500px;
-  max-height: 400px;
+  padding: 1em;
 }
-#shop div{
+#shop .closed{
   position: absolute;
   color: DarkRed;
   font-size: 10em;
   font-family: monospace;
   left: 50%;
   top: 50%;
-  text-shadow: 2px 2px #440707;
+  text-shadow: 4px 4px 12px #230303;
   transform: translate(-50%, -50%) rotate(-30deg);
 }
-#shop .close-btn{
-  position: absolute;
-  left: 50%;
-  bottom: 25px;
-  transform: translateX(-50%);
+
+.shop{
+  float: left;
+  background-color: #351a07;
+  margin: 10px;
+  display: inline-block;
+  width: 252px;
+  height: 355.2px;
+  border-radius: 7px;
+  border-style: solid;
+  border-width: 5px;
+  border-color: #401c0c;
+  box-shadow: inset 3px 2px 11px 5px #00000066
 }
+.shop .card{
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+#shop .close-btn{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.5em;
+  padding: .7em 2em .7em 2em;
+  color: #6f3c19;
+  background-color: #401c0c;
+  box-shadow: 3px 2px 11px 5px #00000011;
+}
+#shop .close-btn:focus{box-shadow: 3px 2px 11px 5px #00000066;outline:none;}
 
 .lane{
   position: relative;
@@ -134,6 +158,7 @@ body{
 }
 
 .card , .blank{
+  white-space: normal;
   position: relative;
   flex-shrink: 0;
   width: 200px;
@@ -236,7 +261,7 @@ body{
   height: 25px;
   bottom: 40%;
 }
-.Creep .abilities-container, .Improvement .abilities-container{
+.Item .abilities-container, .Creep .abilities-container, .Improvement .abilities-container{
   bottom: 50%
 }
 .Improvement .abilities-container{
@@ -250,6 +275,7 @@ body{
   position: relative;
   width: 30%;
 }
+.ability-container.Active > img { border-color: darkorchid;}
 .ability-container.glow > img{
   box-shadow: 0px 0px 30px 5px gold;
 }
@@ -285,6 +311,8 @@ body{
   position: absolute;
   color: white;
   font-size: .8em;
+  height: 80px;
+  overflow: hidden;
 }
 
 .playarea .retaliate::before{
@@ -562,6 +590,7 @@ body{
   background-color: SlateGrey;
   color: white;
 }
+.btn:active , .pass-btn:active {box-shadow: inset 3px 2px 11px 5px #00000066;}
 .btn.active{
   background-color: Gold;
   color: Black;
@@ -595,7 +624,7 @@ body{
 #start-game-btn{
   left: 50%;
   top: 50%;
-  position: relative;
+  position: absolute;
   transform: translate(-50%, -50%);
   font-size: 5vw;
   border-radius: .2em;
@@ -690,4 +719,23 @@ body{
 }
 .gold{
   color: gold;
+}
+
+
+.background{
+  z-index: -1;
+  position: absolute;
+  width: 100vw;
+  height: 100vw;
+  opacity: .20;
+  color: #96a2bd;
+}
+.background *{
+  box-shadow: inset 0px 0px 20px 2px #4d09d5,0px 0px 200px 2px #4d09d5;
+  position: absolute;
+  border-width: thin;
+  border-style: solid;
+}
+.background .circle{
+  border-radius: 50%;
 }

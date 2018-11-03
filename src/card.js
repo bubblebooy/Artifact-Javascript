@@ -230,6 +230,7 @@ const card = (cardProto , player) => {
       ability.div.appendChild(abilityIcon)
       abilitiesContainer.appendChild(ability.div)
       if (ability.Type == "Active"){
+        ability.div.classList.add("Active")
         if (cardProto.CardType == "Hero") {ability.currentCooldown = ability.Cooldown}
         else { ability.currentCooldown = 0 }
         ability.cooldownDiv = document.createElement('div')
