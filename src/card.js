@@ -92,7 +92,6 @@ const card = (cardProto , player) => {
   if (cardProto.CardType == "Hero"){
     properties.respawn = 0;
     properties.Bounty = 5;
-
   }
   if (cardProto.CardType == "Creep"){
     properties.Bounty = 1;
@@ -103,6 +102,17 @@ const card = (cardProto , player) => {
     manaCostContainer.classList.add('mana-cost')
     manaCostContainer.textContent = cardProto.ManaCost
     div.appendChild(manaCostContainer)
+  }
+
+  if(cardProto.ItemType == "Consumable"){
+    cardProto.ManaCost = 0
+  }
+
+  if (cardProto.GoldCost != null){
+    let goldCostContainer = document.createElement('div')
+    goldCostContainer.classList.add('gold-cost')
+    goldCostContainer.textContent = cardProto.GoldCost
+    div.appendChild(goldCostContainer)
   }
 
   if (cardProto.Text != null && cardProto.Text != ""){
@@ -117,11 +127,29 @@ const card = (cardProto , player) => {
     textContainer.appendChild(textSpan)
   }
 
-
   let nameContainer = document.createElement('div')
   nameContainer.classList.add('name')
   nameContainer.textContent = cardProto.Name
   div.appendChild(nameContainer)
+
+  if (cardProto.CardType == "Hero"){
+    var itemsContainer = document.createElement('div')
+    itemsContainer.classList.add('items')
+    div.appendChild(itemsContainer)
+    properties.Weapon = null
+    var itemWeaponContainer = document.createElement('div')
+    itemWeaponContainer.classList.add('Weapon')
+    itemsContainer.appendChild(itemWeaponContainer)
+    properties.Armor = null
+    var itemArmorContainer = document.createElement('div')
+    itemArmorContainer.classList.add('Armor')
+    itemsContainer.appendChild(itemArmorContainer)
+    properties.Accessory = null
+    var itemAccessoryContainer = document.createElement('div')
+    itemAccessoryContainer.classList.add('Accessory')
+    itemsContainer.appendChild(itemAccessoryContainer)
+
+  }
 
   if (cardProto.CardType == "Creep" || cardProto.CardType == "Hero" ){
     properties.arrow = 0;
@@ -265,25 +293,44 @@ const card = (cardProto , player) => {
   div.addEventListener("dragenter", function(ev) { ev.target.classList.add("dragover")} )
   div.addEventListener("dragleave", function(ev) { ev.target.classList.remove("dragover")}  )
   div.ondrop = (ev) => properties.drop(ev);  // would need div ,lane, parrent, index if onDrop Moves out of blank
-  properties.drop = (ev) => {ev.preventDefault();
+  properties.drop = (ev) => { ev.preventDefault();
     if (ev != null ) ev.target.classList.remove("dragover")
-    if (board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] < draggedCard.ManaCost) return
-    let lane = board.lanes.findIndex(function(lane){return lane.div == ev.currentTarget.parentNode.parentNode})
-    if ((lane == game.getCurrentLane() || draggedCard.CrossLane) && targetMap.get(draggedCard.Name) == "unit") {
-      if (board.lanes[game.getCurrentLane()].cards.some(colorCheck)){
-        let index = board.lanes[lane].cards.flat().findIndex(function(card){return card.div == ev.currentTarget});
-        let player = index % 2
-        index = Math.floor(index/2)
+    if (board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] >= draggedCard.ManaCost) {
+      let lane = board.lanes.findIndex(function(lane){return lane.div == ev.currentTarget.parentNode.parentNode})
+      if ((lane == game.getCurrentLane() || draggedCard.CrossLane) && targetMap.get(draggedCard.Name) == "unit") {
+        if (board.lanes[game.getCurrentLane()].cards.some(colorCheck) || draggedCard.CardType == "Item"){
+          let index = board.lanes[lane].cards.flat().findIndex(function(card){return card.div == ev.currentTarget});
+          let player = index % 2
+          index = Math.floor(index/2)
 
-        if (effectMap.get(draggedCard.Name)(ev, lane , player , index)){
-          draggedCard.div.draggable = false;
-          board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
-          board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay()
-          draggedCard.div.parentNode.removeChild(draggedCard.div)
-          game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
-          game.nextTurn()
-        } // make this a if statment and the effect return true or false?
-
+          if (effectMap.get(draggedCard.Name)(ev, lane , player , index)){
+            draggedCard.div.draggable = false;
+            board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
+            board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay()
+            draggedCard.div.parentNode.removeChild(draggedCard.div)
+            game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
+            game.nextTurn()
+          }
+        }
+      }
+    } else if(cardProto.CardType == "Hero" && draggedCard.CardType == "Item"){
+      let lane = board.lanes.findIndex(function(lane){return lane.div == ev.currentTarget.parentNode.parentNode})
+      if (lane == game.getCurrentLane()){
+        if(draggedCard.ItemType == "Armor"){
+          if(cardProto.Armor) itemArmorContainer.removeChild(itemArmorContainer.firstChild) //cardProto.Armor.div
+          cardProto.Armor = draggedCard
+          itemArmorContainer.appendChild(draggedCard.div)
+        }
+        if(draggedCard.ItemType == "Accessory"){
+          if(cardProto.Accessory) itemAccessoryContainer.removeChild(itemAccessoryContainer.firstChild)
+          cardProto.Accessory = draggedCard
+          itemAccessoryContainer.appendChild(draggedCard.div)
+        }
+        if(draggedCard.ItemType == "Weapon"){
+          if(cardProto.Weapon) itemWeaponContainer.removeChild(itemWeaponContainer.firstChild)
+          cardProto.Weapon = draggedCard
+          itemWeaponContainer.appendChild(draggedCard.div)
+        }
       }
     }
   };

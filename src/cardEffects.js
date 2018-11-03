@@ -9,6 +9,7 @@ let targetMap = new Map()
 
 function doubleTarget(card, target, callback, conditional = () => true ){
   card.div.classList.add("glow")
+  game.div.classList.add("target")
   game.div.addEventListener("click",function f(ev){
     ev.stopPropagation()
     let path = ev.path || (ev.composedPath && ev.composedPath());
@@ -42,6 +43,7 @@ function doubleTarget(card, target, callback, conditional = () => true ){
       }
     }
     card.div.classList.remove("glow")
+    game.div.classList.remove("target")
     game.div.removeEventListener("click",f,true)
   },true)
 }
@@ -392,6 +394,7 @@ effectMap.set("Payday" , function(ev, lane){
 
 targetMap.set("Slay" , "unit")
 effectMap.set("Slay" , function(ev, lane, player, index){
+  console.log("SLAY")
   let l = board.lanes[lane]
   if (l.cards[index][player].CardType != "Creep") return false
   game.condemn(l.cards[index][player],board.lanes[lane])

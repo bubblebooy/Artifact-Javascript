@@ -3,6 +3,8 @@ import {deployment} from './deploy.js'
 import {sum, shuffle} from './arrayFunctions'
 import {card} from './card'
 
+//shops only works for player 0
+
 const shop = (() => {
   const div = document.getElementById("shop");
   const secretShopShop = document.getElementById("secret-shop");
@@ -37,13 +39,23 @@ const shop = (() => {
     if (depleting) deck = shuffle(deck)
     c = depleting ? deck.shift() : deck[Math.floor(Math.random() * deck.length)]
     if (c != null){
-      if (typeof c == "string"){
-        let newCard = card(cardData.Cards.find(function(e){
-          return e.Name == c
-        }))
-        return newCard
-      } else {return c}
-
+      let newCard = card(cardData.Cards.find(function(e){
+        return e.Name == c
+      }))
+      newCard.div.addEventListener("click", function buy(e) {
+        if (game.players[0].gold > newCard.GoldCost){
+          game.players[0].gold -= newCard.GoldCost
+          game.infoDisplayUpdate()
+          newCard.player = game.players[0]  
+          game.players[0].hand.push(newCard)
+          game.players[0].handDiv.appendChild(newCard.div)
+          if (depleting) {
+            item = draw(itemDeck,true)
+            if (item) itemShop.appendChild(item.div)}
+          newCard.div.removeEventListener("click", buy)
+        }
+      })
+      return newCard
     }
     return false
   }
@@ -53,7 +65,7 @@ const shop = (() => {
     let consumable = draw(consumableDeck)
     let secretShop = draw(secretShopDeck)
     secretShopShop.appendChild(secretShop.div)
-    itemShop.appendChild(item.div)
+    if (item) itemShop.appendChild(item.div)
     consumableShop.appendChild(consumable.div)
     div.classList.remove('display-none');
     closeButton.focus();

@@ -8,6 +8,7 @@ let triggerMap = new Map()
 function doubleTarget(card, currentTarget, target, callback, conditional = true ){
   let abilityIndex = card.Abilities.findIndex(function(p){ console.log(p.div , currentTarget) ;return p.div == currentTarget})
   card.Abilities[abilityIndex].div.classList.add("glow")
+  game.div.classList.add("target")
   game.div.addEventListener("click",function f(ev){
     ev.stopPropagation()
     let path = ev.path || (ev.composedPath && ev.composedPath());
@@ -37,6 +38,7 @@ function doubleTarget(card, currentTarget, target, callback, conditional = true 
         game.nextTurn()
       }
     }
+    game.div.classList.remove("target")
     card.Abilities[abilityIndex].div.classList.remove("glow")
     game.div.removeEventListener("click",f,true)
   },true)
