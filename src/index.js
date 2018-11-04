@@ -390,9 +390,9 @@ startGamebtn.addEventListener("click",function(){
   heros = heros.map(function(card){return card.trim()})
   heros = heros.filter(function(card){return allheros.includes(card)})
   if (heros.length < 5) heros = allheros
+  localStorage.setItem("heros", heros)
   if (heros.length > 5) heros = heros.slice(0,5)
   localStorage.setItem("deck", deck)
-  localStorage.setItem("heros", heros)
   deck = deck.concat(deck,deck) ; AIdeck = AIdeck.concat(AIdeck,AIdeck)
   startScreen.parentNode.removeChild(startScreen)
   game.startGame()
