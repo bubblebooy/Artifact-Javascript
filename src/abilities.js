@@ -224,7 +224,7 @@ abilityMap.set("Assault Ladders : Effect" , function(card,e){
   let lane = board.lanes[e.detail.lane]
   lane.cards.forEach(function(card , index){
     if (card[e.detail.player].Name != null) {
-        if(lane.cards[index + card.arrow] == null || lane.cards[index + card.arrow][1 - e.detail.player].Name == null){
+        if(lane.cards[index + card[e.detail.player].arrow] == null || lane.cards[index + card[e.detail.player].arrow][1 - e.detail.player].Name == null){
           lane.cards[index][e.detail.player].currentAttack[4] += 2;
         }
     }
