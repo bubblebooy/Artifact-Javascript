@@ -78,10 +78,89 @@ abilityMap.set("Work the Knife" , function(card,e){
   card.currentAttack[4] += 2;
 });
 
+triggerMap.set("Call of the Wild" , "click")
+abilityMap.set("Call of the Wild" , function(c,e){
+  let summons = [[],[]]
+  let lane = board.lanes[game.getCurrentLane()]
+  let creep =  card(cardData.Cards.find( function(ev){  return ev.Name == "Loyal Beast" }),game.players[game.getTurn()])
+  summons[game.getTurn()].push(creep);
+  lane.summon(summons)
+  return true
+});
+
 
 triggerMap.set("Arcane Aura" , "afterCardPlayed")
 abilityMap.set("Arcane Aura" , function(card,e){
   // console.log("Arcane Aura")
+});
+
+triggerMap.set("Return" , "continuousEffect")
+abilityMap.set("Return" , function(card,e){
+  card.retaliate[4] += 2;
+});
+
+triggerMap.set("Moment of Courage" , "continuousEffect")
+abilityMap.set("Moment of Courage" , function(card,e){
+  card.retaliate[4] += 2;
+});
+
+
+triggerMap.set("Concussive Shot" , "click")
+abilityMap.set("Concussive Shot" , function(card,e){
+  doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
+    lane.cards[targetCard][player].currentArmor[3] -= 2
+    lane.cards[targetCard][player].updateDisplay()
+    if (lane.cards[targetCard -1 ] != null || lane.cards[targetCard -1 ][player].Name != null){
+      lane.cards[targetCard -1 ][player].currentArmor[3] -= 2
+      lane.cards[targetCard-1][player].updateDisplay()
+    }
+    if (lane.cards[targetCard +1 ] != null || lane.cards[targetCard +1 ][player].Name != null){
+      lane.cards[targetCard +1 ][player].currentArmor[3] -= 2
+      lane.cards[targetCard+1][player].updateDisplay()
+    }
+  } , function(lane,player,targetCard){
+    return lane == board.lanes[game.getCurrentLane()]
+  })
+  return false
+});
+
+triggerMap.set("Nature's Attendants" , "continuousEffect")
+abilityMap.set("Nature's Attendants" , function(card,e){
+  card.regen[4] += 2;
+  card.updateDisplay();
+  for (var i = -1; i < 2; i+=2) {
+    let lane = board.lanes[e.detail.lane]
+    let index = e.detail.card
+    if(lane.cards[index+i] != null && lane.cards[index+i][e.detail.player].Name != null){
+      lane.cards[index+i][e.detail.player].regen[4] += 2;
+      lane.cards[index+i][e.detail.player].updateDisplay()
+    }
+  }
+});
+
+
+triggerMap.set("Branches of Iron" , "continuousEffect")
+abilityMap.set("Branches of Iron" , function(card,e){
+  for (var i = -1; i < 2; i+=2) {
+    let lane = board.lanes[e.detail.lane]
+    let index = e.detail.card
+    if(lane.cards[index+i] != null && lane.cards[index+i][e.detail.player].Name != null){
+      lane.cards[index+i][e.detail.player].currentArmor[4] += 2;
+      lane.cards[index+i][e.detail.player].updateDisplay()
+    }
+  }
+});
+
+triggerMap.set("Feral Impulse" , "continuousEffect")
+abilityMap.set("Feral Impulse" , function(card,e){
+  for (var i = -1; i < 2; i+=2) {
+    let lane = board.lanes[e.detail.lane]
+    let index = e.detail.card
+    if(lane.cards[index+i] != null && lane.cards[index+i][e.detail.player].Name != null){
+      lane.cards[index+i][e.detail.player].currentAttack[4] += 2;
+      lane.cards[index+i][e.detail.player].updateDisplay()
+    }
+  }
 });
 
 triggerMap.set("Arctic Burn" , "afterCardPlayed")
@@ -97,14 +176,13 @@ abilityMap.set("Arctic Burn" , function(card,e){
     let temp = $lane.cards[$targetCard][$player]
     $lane.cards[$targetCard][$player] = lane.cards[index][player]
     lane.cards[index][player] = temp
-    if(lane.cards[index][1 - player].Name != null){
-        lane.cards[index][player].arrow = 0
-        lane.cards[index][player].updateDisplay()
-    }
     if($lane.cards[$targetCard][1 - $player].Name != null){
         $lane.cards[$targetCard][1 - $player].arrow = 0;
+        card.arrow = 0;
         $lane.cards[$targetCard][1 - $player].updateDisplay()
     }
+    card.updateDisplay()
+    lane.collapse()
   } , function($lane,$player,$targetCard){
     return ( $lane == lane && player == $player)
   })
@@ -265,6 +343,11 @@ abilityMap.set("Troll Soothsayer : Effect" , function(card,e){
   card.player.draw()
 });
 
+// triggerMap.set("Loyal Beast : Effect" , "endOfRound")
+// abilityMap.set("Loyal Beast : Effect" , function(card,e){
+//   let lane = board.lanes[e.detail.lane]
+// });
+
 triggerMap.set("Legion Standard Bearer : Effect" , "continuousEffect")
 abilityMap.set("Legion Standard Bearer : Effect" , function(card,e){
   for (var i = -1; i < 2; i+=2) {
@@ -328,6 +411,13 @@ abilityMap.set("Ravenous Mass : Effect" , function(card,e){
 triggerMap.set("Rampaging Hellbear : Effect" , "afterCombat")
 abilityMap.set("Rampaging Hellbear : Effect" , function(card,e){
   card.currentAttack[1] += 4
+  card.updateDisplay()
+});
+
+triggerMap.set("Savage Wolf : Effect" , "afterCombat")
+abilityMap.set("Savage Wolf : Effect" , function(card,e){
+  card.currentAttack[1] += 1
+  card.currentHealth[1] += 2
   card.updateDisplay()
 });
 

@@ -62,7 +62,7 @@ const tower = (currentHealth, player) => {
 
 const player = (turn, name, heros, deck, computer = false) => {
   let player = {}
-  setTimeout(function(){
+  // setTimeout(function(){
     heros = heros.map(function(hero){
       return card(cardData.Cards.find(function(e){
         return e.Name == hero
@@ -72,7 +72,7 @@ const player = (turn, name, heros, deck, computer = false) => {
     heros[4].respawn = 2;
     // add sig cards to deck
     shuffle(deck);
-  },300)
+  // },0)
   player.turn = turn
   player.handDiv = ( turn ? document.getElementById("hand-top") : document.getElementById("hand-bottom") )
   player.hand = []
@@ -98,16 +98,8 @@ const game = (() => {
   const div = document.getElementById('game');
   // const bottomPassButton = document.getElementById("pass-btn-bottom");
   // const topPassButton = document.getElementById("pass-btn-top");
-  let deck = ["Thunderhide Pack","Emissary of the Quorum","New Orders","Ion Shell","Time of Triumph","Forward Charge","Altar of the Mad Moon","New Orders","Sister of the Veil","Rebel Decoy","Steam Cannon","Keenfolk Turret","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
-  let AIdeck = ["Thunderhide Pack","Altar of the Mad Moon","Time of Triumph","Forward Charge","Ion Shell","Sister of the Veil","Rebel Decoy","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
-  deck = deck.concat(deck,deck) ; AIdeck = AIdeck.concat(AIdeck,AIdeck)
-  let players = [player(0,"Radiant",
-                    ["Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"],
-                    deck.slice()),
-                 player(1,"Dire",
-                    ["Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"],
-                    AIdeck,
-                    true)];
+  let players = [0,1]
+
   let turn = Math.random() < 0.5;
   let round = 0;
   let currentLane = 0;
@@ -122,6 +114,13 @@ const game = (() => {
 
   const startGame = () => {
     console.log("Game Started")
+    players[0] = player(0,"Radiant",
+                      heros,
+                      deck)
+    players[1] = player(1,"Dire",
+                      ["Axe","Enchantress","Debbi the Cunning","J\'Muy the Wise","Legion Commander"],
+                      AIdeck,
+                      true);
     buildLanes();
     _infoDisplay = infoDisplay()
     board.lanes[currentLane].div.classList.add("active");
@@ -353,15 +352,58 @@ function buildLanes(){
   })
 }
 
+const allcards = ["Savage Wolf","Fighting Instinct","Thunderhide Pack","Emissary of the Quorum","New Orders","Ion Shell","Time of Triumph","Forward Charge","Altar of the Mad Moon","New Orders","Sister of the Veil","Rebel Decoy","Steam Cannon","Keenfolk Turret","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
+let deck
+let AIdeck = ["Thunderhide Pack","Altar of the Mad Moon","Time of Triumph","Forward Charge","Ion Shell","Sister of the Veil","Rebel Decoy","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
+
+let allheros = ["Legion Commander","Lycan","Winter Wyvern","Skywrath Mage","Centaur Warrunner","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"] // "Beastmaster"
+let heros
 
 const startGamebtn = document.getElementById("start-game-btn");
+const deckTextarea = document.getElementById("deck-textarea");
+const heroTextarea = document.getElementById("heros-textarea");
+const deckBtn = document.getElementById("deck-game-btn");
+const heroBtn = document.getElementById("heros-game-btn");
 const startScreen = document.getElementById("start-screen");
+
+deckBtn.title = "If card is not vaild or implemented it will be ignored"
+heroBtn.title = "Uses the 1st 5 heros"
+
+deckTextarea.value = localStorage.getItem("deck")
+deckTextarea.value = deckTextarea.value || allcards;
+deckTextarea.placeholder = "  If empty all cards will be added to your deck."
+
+heroTextarea.value = localStorage.getItem("heros")
+heroTextarea.value = heroTextarea.value || allheros;
+deckTextarea.title = "adds 3 of each listed card"
+heroTextarea.placeholder = "  If empty your heros will be Legion Commander, Lycan, Winter Wyvern, Skywrath Mage, Centaur Warrunner"
+
 startGamebtn.disabled = true;
 let loading = true
 setTimeout( function(){ startGamebtn.disabled = false;} , 500)
 startGamebtn.addEventListener("click",function(){
+  deck = deckTextarea.value.split(",")
+  deck = deck.map(function(card){return card.trim()})
+  deck = deck.filter(function(card){return allcards.includes(card)})
+  if (!deck.length) deck = allcards
+  heros = heroTextarea.value.split(",")
+  heros = heros.map(function(card){return card.trim()})
+  heros = heros.filter(function(card){return allheros.includes(card)})
+  if (heros.length < 5) heros = allheros
+  if (heros.length > 5) heros = heros.slice(0,5)
+  localStorage.setItem("deck", deck)
+  localStorage.setItem("heros", heros)
+  deck = deck.concat(deck,deck) ; AIdeck = AIdeck.concat(AIdeck,AIdeck)
   startScreen.parentNode.removeChild(startScreen)
   game.startGame()
+})
+deckBtn.addEventListener("click", function(){
+  deckTextarea.classList.toggle('display-none')
+  heroTextarea.classList.add('display-none')
+})
+heroBtn.addEventListener("click", function(){
+  heroTextarea.classList.toggle('display-none')
+  deckTextarea.classList.add('display-none')
 })
 
 

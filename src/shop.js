@@ -43,7 +43,7 @@ const shop = (() => {
         return e.Name == c
       }),game.players[0])
       newCard.div.addEventListener("click", function buy(e) {
-        if (game.players[0].gold > newCard.GoldCost){
+        if (game.players[0].gold >= newCard.GoldCost){
           game.players[0].gold -= newCard.GoldCost
           game.infoDisplayUpdate()
           game.players[0].hand.push(newCard)

@@ -185,13 +185,13 @@ const card = (cardProto , player) => {
       sum(cardProto.siege) > 0 ? arrowDiv.classList.add('siege') : arrowDiv.classList.remove('siege');
     })
     endOfRound = addToFunction(endOfRound , function(){
-      cardProto.cleave[3] = 0; cardProto.retaliate[3] = 0; cardProto.siege[3] = 0;
+      cardProto.cleave[3] = 0; cardProto.retaliate[3] = 0; cardProto.siege[3] = 0;cardProto.regen[3] = 0;
     })
     continuousRefresh = addToFunction(continuousRefresh , function(){
-      cardProto.cleave[4] = 0; cardProto.retaliate[4] = 0; cardProto.siege[4] = 0;
+      cardProto.cleave[4] = 0; cardProto.retaliate[4] = 0; cardProto.siege[4] = 0;cardProto.regen[4] = 0;
     })
     afterCombat = addToFunction(afterCombat , function(){
-      cardProto.cleave[5] = 0; cardProto.retaliate[5] = 0; cardProto.siege[5] = 0;
+      cardProto.cleave[5] = 0; cardProto.retaliate[5] = 0; cardProto.siege[5] = 0;cardProto.regen[5] = 0;
     })
   // }
   // if (cardProto.Health != null){

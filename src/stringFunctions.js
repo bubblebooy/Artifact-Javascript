@@ -9,7 +9,7 @@ function toFunctionName(str){
 }
 
 function toFileName(str){
-  return str.replace(" : Effect", '').replace(/\s/g,"_").replace("\'","").toLowerCase()
+  return str.replace(" : Effect", '').replace(/\s/g,"_").replace("\'","-").toLowerCase()
 }
 
 

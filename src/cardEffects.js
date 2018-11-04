@@ -496,6 +496,15 @@ effectMap.set("Time of Triumph" , function(ev, lane){
   })
   return true
 });
+
+targetMap.set("Fighting Instinct" , "unit")
+effectMap.set("Fighting Instinct" , function(ev, lane, player, index){
+  if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
+  board.lanes[lane].cards[index][player].currentArmor[1] += 1;
+  board.lanes[lane].cards[index][player].currentAttack[1] += 1;
+  board.lanes[lane].cards[index][player].updateDisplay()
+  return true
+});
 // targetMap.set("Pick A Fight" , "unit")
 // effectMap.set("Pick A Fight" , function(ev, lane, player, index){
 //   let l = board.lanes[lane]
