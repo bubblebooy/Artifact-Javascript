@@ -189,6 +189,25 @@ abilityMap.set("Arctic Burn" , function(card,e){
   return false
 });
 
+triggerMap.set("Nether Blast" , "click")
+abilityMap.set("Nether Blast" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = game.getTurn()
+  let index = lane.cards.findIndex(function(c){ return (c[player] == card) })
+  if (lane.improvements[1 - player].length){
+    let improvment = Math.floor(Math.random()*lane.improvements[1 - player].length)
+    improvment = lane.improvements[1 - player].splice(improvment)[0]
+    improvment.div.parentNode.removeChild(improvment.div)
+    return true
+  }
+  return false
+});
+
+triggerMap.set("Great Cleave" , "continuousEffect")
+abilityMap.set("Great Cleave" , function(card,e){
+  card.cleave[4] += Math.floor(sum(card.currentAttack)/2);
+});
+
 
 //// improvements
 

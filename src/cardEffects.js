@@ -106,8 +106,8 @@ effectMap.set("Avernus' Blessing" , function(ev, lane, player, index){
 targetMap.set("Double Edge" , "unit")
 effectMap.set("Double Edge" , function(ev, lane, player, index){
   if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
-  board.lanes[lane].cards[index][player].currentArmor[4] -= 8;
-  board.lanes[lane].cards[index][player].currentAttack[4] += 8;
+  board.lanes[lane].cards[index][player].currentArmor[3] -= 8;
+  board.lanes[lane].cards[index][player].currentAttack[3] += 8;
   board.lanes[lane].cards[index][player].updateDisplay()
   return true
 });
@@ -115,7 +115,7 @@ effectMap.set("Double Edge" , function(ev, lane, player, index){
 targetMap.set("Poised to Strike" , "unit")
 effectMap.set("Poised to Strike" , function(ev, lane, player, index){
   if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
-  board.lanes[lane].cards[index][player].currentAttack[4] += 4;
+  board.lanes[lane].cards[index][player].currentAttack[3] += 4;
   board.lanes[lane].cards[index][player].updateDisplay()
   return true
 });
@@ -139,8 +139,8 @@ effectMap.set("Combat Training" , function(ev, lane, player, index){
 targetMap.set("Enrage" , "unit")
 effectMap.set("Enrage" , function(ev, lane, player, index){
   if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
-  board.lanes[lane].cards[index][player].currentArmor[4] += 4;
-  board.lanes[lane].cards[index][player].currentAttack[4] += 4;
+  board.lanes[lane].cards[index][player].currentArmor[3] += 4;
+  board.lanes[lane].cards[index][player].currentAttack[3] += 4;
   board.lanes[lane].cards[index][player].updateDisplay()
   return true
 });

@@ -313,6 +313,7 @@ const card = (cardProto , player) => {
             board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay()
             draggedCard.div.parentNode.removeChild(draggedCard.div)
             game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
+            game.dispatchEvent("continuousRefresh")
             game.nextTurn()
           }
         }

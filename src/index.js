@@ -356,7 +356,7 @@ const allcards = ["Savage Wolf","Fighting Instinct","Thunderhide Pack","Emissary
 let deck
 let AIdeck = ["Thunderhide Pack","Altar of the Mad Moon","Time of Triumph","Forward Charge","Ion Shell","Sister of the Veil","Rebel Decoy","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
 
-let allheros = ["Legion Commander","Lycan","Winter Wyvern","Skywrath Mage","Centaur Warrunner","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"] // "Beastmaster"
+let allheros = ["Legion Commander","Lycan","Winter Wyvern","Skywrath Mage","Centaur Warrunner","Pugna","Sven","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"] // "Beastmaster"
 let heros
 
 const startGamebtn = document.getElementById("start-game-btn");
