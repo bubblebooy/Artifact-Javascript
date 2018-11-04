@@ -2,6 +2,7 @@ import {game , cardData, posAvail} from './index.js'
 import {board} from './board'
 import {card , blank, draggedCard} from './card'
 import {sum, shuffle} from './arrayFunctions'
+import {targetUnitsAvail,targetHerossAvail,targetCreepsAvail} from './AI'
 
 
 let effectMap = new Map()  // should i just be uisng an object instead? does it really matter?
@@ -394,7 +395,6 @@ effectMap.set("Payday" , function(ev, lane){
 
 targetMap.set("Slay" , "unit")
 effectMap.set("Slay" , function(ev, lane, player, index){
-  console.log("SLAY")
   let l = board.lanes[lane]
   if (l.cards[index][player].CardType != "Creep") return false
   game.condemn(l.cards[index][player],board.lanes[lane])
@@ -505,6 +505,41 @@ effectMap.set("Fighting Instinct" , function(ev, lane, player, index){
   board.lanes[lane].cards[index][player].updateDisplay()
   return true
 });
+
+
+targetMap.set("Eclipse" , "lane")
+effectMap.set("Eclipse" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  let $player = game.getTurn()
+  let beams = game.players[game.getTurn()].getHeros().find(function(luna){return luna.Name == "Luna"}).beams
+  if (beams){
+    for (var i = 0; i < beams; i++) {
+      let $card = l.cards.reduce(targetUnitsAvail , [[],[]])[1-$player]
+      if ($card.length != 0){
+        $card = $card[Math.floor(Math.random()*$card.length)]
+        $card = l.cards[$card]
+        if ($card[1-$player].Name != null) {
+          $card[1-$player].currentHealth[0] -= 3 - (sum($card[1-$player].currentArmor) < 0 ? sum($card[1-$player].currentArmor) : 0)
+          l.collapse()
+        }
+      }
+    }
+  }
+  return true
+});
+
+targetMap.set("Sow Venom" , "lane")
+effectMap.set("Sow Venom" , function(ev, lane){
+  let summons = [[],[]]
+  lane = board.lanes[lane]
+  for (let i = 0; i < 2; i++){
+    let creep =  card(cardData.Cards.find(function(e){  return e.Name == "Plague Ward"  }),game.players[game.getTurn()])
+    summons[game.getTurn()].push(creep);
+  }
+  lane.summon(summons)
+  return true
+});
+
 // targetMap.set("Pick A Fight" , "unit")
 // effectMap.set("Pick A Fight" , function(ev, lane, player, index){
 //   let l = board.lanes[lane]

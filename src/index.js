@@ -8,7 +8,7 @@ import {deployment} from './deploy'
 import infoDisplay from './infoDisplay'
 import {sum, shuffle} from './arrayFunctions'
 import {board} from './board'
-import AI from './AI'
+import {AI} from './AI'
 
 let cardData = "not loaded yet";
 loadJSON(function(response){
@@ -104,6 +104,7 @@ const game = (() => {
   let round = 0;
   let currentLane = 0;
   let score = [0,0];
+  let extraDeploy = [[[],[],[]],[[],[],[]]]
   let _infoDisplay;
 
   const getCurrentLane = () => currentLane ;
@@ -115,7 +116,7 @@ const game = (() => {
   const startGame = () => {
     console.log("Game Started")
     players[0] = player(0,"Radiant",
-                      heros,
+                      heroes,
                       deck)
     players[1] = player(1,"Dire",
                       ["Axe","Enchantress","Debbi the Cunning","J\'Muy the Wise","Legion Commander"],
@@ -203,6 +204,7 @@ const game = (() => {
         player.getHeros().forEach(function(hero){
           let evnt = events[e]()
           evnt.detail.player = playerIndex;
+          evnt.detail.lane = null
           if (hero.respawn >= 0) hero.div.dispatchEvent(evnt)
         })
       })
@@ -267,7 +269,7 @@ const game = (() => {
 
 
 
-  return {div, getCurrentLane, startGame, getRound, score, gameOver, getTurn, nextTurn, pass, condemn, players, infoDisplayUpdate , dispatchEvent}
+  return {div, getCurrentLane, startGame, getRound, score, gameOver, getTurn, nextTurn, pass, condemn, players,extraDeploy, infoDisplayUpdate , dispatchEvent}
 })();
 
 
@@ -352,37 +354,37 @@ function buildLanes(){
   })
 }
 
-const allcards = ["Savage Wolf","Fighting Instinct","Thunderhide Pack","Emissary of the Quorum","New Orders","Ion Shell","Time of Triumph","Forward Charge","Altar of the Mad Moon","New Orders","Sister of the Veil","Rebel Decoy","Steam Cannon","Keenfolk Turret","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
+const allcards = ["Sow Venom","Barracks","Eclipse","Savage Wolf","Fighting Instinct","Thunderhide Pack","Emissary of the Quorum","New Orders","Ion Shell","Time of Triumph","Forward Charge","Altar of the Mad Moon","New Orders","Sister of the Veil","Rebel Decoy","Steam Cannon","Keenfolk Turret","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
 let deck
-let AIdeck = ["Thunderhide Pack","Altar of the Mad Moon","Time of Triumph","Forward Charge","Ion Shell","Sister of the Veil","Rebel Decoy","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
+let AIdeck = ["Sow Venom","Barracks","Thunderhide Pack","Altar of the Mad Moon","Time of Triumph","Forward Charge","Ion Shell","Sister of the Veil","Rebel Decoy","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
 
-let allheros = ["Legion Commander","Lycan","Winter Wyvern","Skywrath Mage","Centaur Warrunner","Pugna","Sven","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"] // "Beastmaster"
-let heros
+let allheroes = ["Legion Commander","Lycan","Winter Wyvern","Skywrath Mage","Centaur Warrunner","Venomancer","Prellex","Pugna","Sven","Luna","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"] // "Beastmaster"
+let heroes
 
 const startGamebtn = document.getElementById("start-game-btn");
 const deckTextarea = document.getElementById("deck-textarea");
-const heroTextarea = document.getElementById("heros-textarea");
+const heroTextarea = document.getElementById("heroes-textarea");
 const deckBtn = document.getElementById("deck-game-btn");
-const heroBtn = document.getElementById("heros-game-btn");
+const heroBtn = document.getElementById("heroes-game-btn");
 const startScreen = document.getElementById("start-screen");
 const deckOptions = document.getElementById("deck-options")
-const herosOptions = document.getElementById("heros-options")
+const heroesOptions = document.getElementById("heroes-options")
 const deckResetBtn = document.getElementById("deck-reset-btn")
 const deck3of = document.getElementById("deck-3of")
-const herosResetBtn = document.getElementById("heros-reset-btn")
+const heroesResetBtn = document.getElementById("heroes-reset-btn")
 
 deckBtn.title = "If card is not vaild or implemented it will be ignored"
-heroBtn.title = "Uses the 1st 5 heros"
+heroBtn.title = "Uses the 1st 5 heroes"
 
 deckTextarea.value = localStorage.getItem("deck")
 deckTextarea.value = deckTextarea.value || allcards;
 deckTextarea.placeholder = "  If empty all cards will be added to your deck."
 deck3of.checked = (localStorage.getItem("3of") == null ? true : localStorage.getItem("3of") == "true")
 
-heroTextarea.value = localStorage.getItem("heros")
-heroTextarea.value = heroTextarea.value || allheros;
+heroTextarea.value = localStorage.getItem("heroes")
+heroTextarea.value = heroTextarea.value || allheroes;
 deckTextarea.title = "adds 3 of each listed card"
-heroTextarea.placeholder = "  If empty your heros will be Legion Commander, Lycan, Winter Wyvern, Skywrath Mage, Centaur Warrunner"
+heroTextarea.placeholder = "  If empty your heroes will be Legion Commander, Lycan, Winter Wyvern, Skywrath Mage, Centaur Warrunner"
 
 startGamebtn.disabled = true;
 let loading = true
@@ -392,12 +394,12 @@ startGamebtn.addEventListener("click",function(){
   deck = deck.map(function(card){return card.trim()})
   deck = deck.filter(function(card){return allcards.includes(card)})
   if (!deck.length) deck = allcards
-  heros = heroTextarea.value.split(",")
-  heros = heros.map(function(card){return card.trim()})
-  heros = heros.filter(function(card){return allheros.includes(card)})
-  if (heros.length < 5) heros = allheros
-  localStorage.setItem("heros", heros)
-  if (heros.length > 5) heros = heros.slice(0,5)
+  heroes = heroTextarea.value.split(",")
+  heroes = heroes.map(function(card){return card.trim()})
+  heroes = heroes.filter(function(card){return allheroes.includes(card)})
+  if (heroes.length < 5) heroes = allheroes
+  localStorage.setItem("heroes", heroes)
+  if (heroes.length > 5) heroes = heroes.slice(0,5)
   localStorage.setItem("deck", deck)
   localStorage.setItem("3of", deck3of.checked)
   if (deck3of.checked) deck = deck.concat(deck,deck) ;
@@ -409,19 +411,19 @@ deckBtn.addEventListener("click", function(){
   deckTextarea.classList.toggle('display-none')
   heroTextarea.classList.add('display-none')
   deckOptions.classList.toggle('display-none')
-  herosOptions.classList.add('display-none')
+  heroesOptions.classList.add('display-none')
 })
 heroBtn.addEventListener("click", function(){
   heroTextarea.classList.toggle('display-none')
   deckTextarea.classList.add('display-none')
-  herosOptions.classList.toggle('display-none')
+  heroesOptions.classList.toggle('display-none')
   deckOptions.classList.add('display-none')
 })
 deckResetBtn.addEventListener("click", function(){
   deckTextarea.value = allcards;
 })
-herosResetBtn.addEventListener("click", function(){
-  heroTextarea.value = allheros;
+heroesResetBtn.addEventListener("click", function(){
+  heroTextarea.value = allheroes;
 })
 
 

@@ -2,6 +2,7 @@ import {game , cardData, posAvail} from './index.js'
 import {card , blank, draggedCard} from './card'
 import {board} from './board'
 import {sum} from './arrayFunctions'
+import {targetUnitsAvail,targetHerossAvail,targetCreepsAvail} from './AI'
 
 let abilityMap = new Map()  // should i just be uisng an object instead? does it really matter?
 let triggerMap = new Map()
@@ -89,10 +90,6 @@ abilityMap.set("Call of the Wild" , function(c,e){
 });
 
 
-triggerMap.set("Arcane Aura" , "afterCardPlayed")
-abilityMap.set("Arcane Aura" , function(card,e){
-  // console.log("Arcane Aura")
-});
 
 triggerMap.set("Return" , "continuousEffect")
 abilityMap.set("Return" , function(card,e){
@@ -208,8 +205,45 @@ abilityMap.set("Great Cleave" , function(card,e){
   card.cleave[4] += Math.floor(sum(card.currentAttack)/2);
 });
 
+triggerMap.set("Lucent Beam" , "beforeTheActionPhase")
+abilityMap.set("Lucent Beam" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  let $card = lane.cards.reduce(targetUnitsAvail , [[],[]])[1-e.detail.player]
+  if ($card.length != 0){
+    $card = $card[Math.floor(Math.random()*$card.length)]
+    $card = lane.cards[$card]
+    if ($card[1-e.detail.player].Name != null) {
+      card.beams = card.beams || 0
+      card.beams += 1
+      $card[1-e.detail.player].currentHealth[0] -= 1 - (sum($card[1-e.detail.player].currentArmor) < 0 ? sum($card[1-e.detail.player].currentArmor) : 0)
+      lane.collapse()
+    }
+  }
+});
+
+triggerMap.set("Bringer of the Faithful", "endOfRound")
+abilityMap.set("Bringer of the Faithful" , function(c,e){
+  // let lane = board.lanes[e.detail.lane]
+  if (e.detail.lane != null) game.extraDeploy[e.detail.player][e.detail.lane].push(card(cardData.Cards[132],game.players[e.detail.player]))
+  //card(cardData.Cards.find( function(ev){  return ev.Name == "Thunderhide Pack" })
+});
+
+triggerMap.set("Venomous Nature", "endOfRound")
+abilityMap.set("Venomous Nature" , function(c,e){
+  // let lane = board.lanes[e.detail.lane]
+  if (e.detail.lane != null) game.extraDeploy[e.detail.player][e.detail.lane].push(card(cardData.Cards.find( function(ev){  return ev.Name == "Plague Ward" }),game.players[e.detail.player]))
+});
+// extraDeploy[0][0].push(card(cardData.Cards[132],game.players[0]))
 
 //// improvements
+
+triggerMap.set("Barracks : Effect", "endOfRound")
+abilityMap.set("Barracks : Effect" , function(c,e){
+  // let lane = board.lanes[e.detail.lane]
+  if (e.detail.lane != null) game.extraDeploy[e.detail.player][e.detail.lane].push(card(cardData.Cards[132],game.players[e.detail.player]))
+  //card(cardData.Cards.find( function(ev){  return ev.Name == "Thunderhide Pack" })
+});
+
 
 triggerMap.set("Ignite : Effect" , "beforeTheActionPhase")
 abilityMap.set("Ignite : Effect" , function(card,e){
@@ -485,6 +519,23 @@ abilityMap.set("Emissary of the Quorum : Effect" , function(card,e){
     }
   })
   return true
+});
+
+triggerMap.set("Plague Ward : Effect" , "beforeTheActionPhase")
+abilityMap.set("Plague Ward : Effect" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  let start = e.detail.card - 1  < 0 ? 0 : (e.detail.card - 1)
+  console.log(lane.cards.slice(start , e.detail.card + 2))
+  let $card = lane.cards.slice(start , e.detail.card + 2).reduce(targetUnitsAvail , [[],[]])[1-e.detail.player]
+  console.log($card , start)
+  if ($card.length != 0){
+    $card = $card[Math.floor(Math.random()*$card.length)] + start
+    $card = lane.cards[$card]
+    if ($card[1-e.detail.player].Name != null) {
+      $card[1-e.detail.player].currentHealth[0] -= 2 - (sum($card[1-e.detail.player].currentArmor) < 0 ? sum($card[1-e.detail.player].currentArmor) : 0)
+      $card[1-e.detail.player].updateDisplay()
+    }
+  }
 });
 
 // Items
