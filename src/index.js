@@ -365,6 +365,11 @@ const heroTextarea = document.getElementById("heros-textarea");
 const deckBtn = document.getElementById("deck-game-btn");
 const heroBtn = document.getElementById("heros-game-btn");
 const startScreen = document.getElementById("start-screen");
+const deckOptions = document.getElementById("deck-options")
+const herosOptions = document.getElementById("heros-options")
+const deckResetBtn = document.getElementById("deck-reset-btn")
+const deck3of = document.getElementById("deck-3of")
+const herosResetBtn = document.getElementById("heros-reset-btn")
 
 deckBtn.title = "If card is not vaild or implemented it will be ignored"
 heroBtn.title = "Uses the 1st 5 heros"
@@ -372,6 +377,7 @@ heroBtn.title = "Uses the 1st 5 heros"
 deckTextarea.value = localStorage.getItem("deck")
 deckTextarea.value = deckTextarea.value || allcards;
 deckTextarea.placeholder = "  If empty all cards will be added to your deck."
+deck3of.checked = (localStorage.getItem("3of") == null ? true : localStorage.getItem("3of") == "true")
 
 heroTextarea.value = localStorage.getItem("heros")
 heroTextarea.value = heroTextarea.value || allheros;
@@ -393,19 +399,30 @@ startGamebtn.addEventListener("click",function(){
   localStorage.setItem("heros", heros)
   if (heros.length > 5) heros = heros.slice(0,5)
   localStorage.setItem("deck", deck)
-  deck = deck.concat(deck,deck) ; AIdeck = AIdeck.concat(AIdeck,AIdeck)
+  localStorage.setItem("3of", deck3of.checked)
+  if (deck3of.checked) deck = deck.concat(deck,deck) ;
+  AIdeck = AIdeck.concat(AIdeck,AIdeck)
   startScreen.parentNode.removeChild(startScreen)
   game.startGame()
 })
 deckBtn.addEventListener("click", function(){
   deckTextarea.classList.toggle('display-none')
   heroTextarea.classList.add('display-none')
+  deckOptions.classList.toggle('display-none')
+  herosOptions.classList.add('display-none')
 })
 heroBtn.addEventListener("click", function(){
   heroTextarea.classList.toggle('display-none')
   deckTextarea.classList.add('display-none')
+  herosOptions.classList.toggle('display-none')
+  deckOptions.classList.add('display-none')
 })
-
+deckResetBtn.addEventListener("click", function(){
+  deckTextarea.value = allcards;
+})
+herosResetBtn.addEventListener("click", function(){
+  heroTextarea.value = allheros;
+})
 
 
 export {game, cardData, posAvail};
