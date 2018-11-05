@@ -111,6 +111,4 @@ const AI = (() => {
   return {actionPhase}
 })();
 
-export {board}
-
-export default AI
+export {AI,targetUnitsAvail,targetHerossAvail,targetCreepsAvail}

@@ -18,7 +18,7 @@ const lane = (lane) => {
   let playAreas = [playAreaBottom,playAreaTop]
   let stages = []
   let cards = []
-  let improvements = [[],[]] 
+  let improvements = [[],[]]
 
   let improvementsContainers = [document.createElement('div'),document.createElement('div')]
   improvementsContainers.forEach(function(improvementsContainer,p){
@@ -51,6 +51,7 @@ const lane = (lane) => {
         game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1);
         collapse();
         expand();
+        game.dispatchEvent("continuousRefresh")
         game.nextTurn();
       }
     }

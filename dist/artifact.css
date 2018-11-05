@@ -18,6 +18,7 @@ body{
   box-shadow: inset 0 0 1000px 100px black;
 }
 #game.zoom-out{width: 100vw}
+#game.target{cursor: crosshair;}
 
 #board{
   padding: 10px;
@@ -48,6 +49,9 @@ body{
 #shop{
   left: 50%;
   top: 50%;
+  width: 854px;
+  height: 450px;
+  white-space: nowrap;
   transform: translate(-50%, -50%);
   background-color: #502609;
   border-color: #291208;
@@ -55,27 +59,48 @@ body{
   border-style: solid;
   border-width: 10px;
   border-radius: 20px;
-  width: 100%;
-  height: 100%;
-  max-width: 500px;
-  max-height: 400px;
+  padding: 1em;
 }
-#shop div{
+#shop .closed{
   position: absolute;
   color: DarkRed;
   font-size: 10em;
   font-family: monospace;
+  left: 16%;
+  top: 50%;
+  text-shadow: 4px 4px 12px #230303;
+  transform: translate(-50%, -50%) rotate(-60deg);
+}
+
+.shop{
+  float: left;
+  background-color: #351a07;
+  margin: 10px;
+  display: inline-block;
+  width: 252px;
+  height: 355.2px;
+  border-radius: 7px;
+  border-style: solid;
+  border-width: 5px;
+  border-color: #401c0c;
+  box-shadow: inset 3px 2px 11px 5px #00000066
+}
+.shop .card{
   left: 50%;
   top: 50%;
-  text-shadow: 2px 2px #440707;
-  transform: translate(-50%, -50%) rotate(-30deg);
+  transform: translate(-50%, -50%);
 }
 #shop .close-btn{
-  position: absolute;
-  left: 50%;
-  bottom: 25px;
-  transform: translateX(-50%);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.5em;
+  padding: .7em 2em .7em 2em;
+  color: #6f3c19;
+  background-color: #401c0c;
+  box-shadow: 3px 2px 11px 5px #00000011;
 }
+#shop .close-btn:focus{box-shadow: 3px 2px 11px 5px #00000066;outline:none;}
 
 .lane{
   position: relative;
@@ -134,6 +159,7 @@ body{
 }
 
 .card , .blank{
+  white-space: normal;
   position: relative;
   flex-shrink: 0;
   width: 200px;
@@ -161,6 +187,29 @@ body{
   line-height: .5em;
   top: -18px;
 }
+.card .gold-cost{
+  color: gold;
+  text-shadow: 1px 1px 2px black;
+  font-size: 1.5em;
+  bottom: -.4em;
+  right: -.1em;
+  padding: .3em;
+  position: absolute;
+  z-index: 99;
+}
+.card .gold-cost::before{
+  content: "";
+  position: absolute;
+  background-color: #736100;
+  border-style: double;
+  border-radius: 100%;
+  padding: .5em;
+  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 50%;
+  z-index: -1;
+}
+
 .card.Black{
   background-color: #333035;
   border-color: #333035;
@@ -236,8 +285,28 @@ body{
   height: 25px;
   bottom: 40%;
 }
-.Creep .abilities-container, .Improvement .abilities-container{
+.Item .abilities-container, .Creep .abilities-container, .Improvement .abilities-container{
   bottom: 50%
+}
+
+.items{
+  position: absolute;
+  display: flex;
+  justify-content: space-around;
+  top: 0;
+  width: calc(100% - 4px);
+  background-color: #3e3e3e;
+  border-style: solid;
+  border-width: 2px;
+}
+.Accessory , .Weapon , .Armor{
+  background-color: #2d2c2c;
+  border-style: solid;
+  border-width: 2px;
+  width: 30%;
+  height: 60px;
+  margin-top: 1px;
+  margin-bottom: 1px;
 }
 .Improvement .abilities-container{
   justify-content: center;
@@ -250,6 +319,7 @@ body{
   position: relative;
   width: 30%;
 }
+.ability-container.Active > img { border-color: darkorchid;}
 .ability-container.glow > img{
   box-shadow: 0px 0px 30px 5px gold;
 }
@@ -285,6 +355,8 @@ body{
   position: absolute;
   color: white;
   font-size: .8em;
+  height: 80px;
+  overflow: hidden;
 }
 
 .playarea .retaliate::before{
@@ -548,8 +620,24 @@ body{
 }
 .improvement .card:not(:hover) .ability-container{ width: 100px;}
 
-
-
+.card .card.Item > * {display: none;}
+.card .card.Item > .abilities-container{display: flex;}
+.card .card.Item > .abilities-container > * {display: none;}
+.card .card.Item  .ability-container:last-child {display: block;}
+.card .card.Item{
+  width: 100%;
+  height: auto;
+  padding: 0;
+  margin: 0 !important;
+  border-style: none;
+  background: none;
+}
+.card .card.Item .ability-container{
+  width: 100px;
+  left: -3px;
+  top: calc(100% - 3px);
+}
+#board.zoom-out .card .card.Item{transform: none !important;}
 
 .board-nav{
   top: 15px;
@@ -562,6 +650,7 @@ body{
   background-color: SlateGrey;
   color: white;
 }
+.btn:active , .pass-btn:active {box-shadow: inset 3px 2px 11px 5px #00000066;}
 .btn.active{
   background-color: Gold;
   color: Black;
@@ -595,18 +684,12 @@ body{
 #start-game-btn{
   left: 50%;
   top: 50%;
-  position: relative;
+  position: absolute;
   transform: translate(-50%, -50%);
   font-size: 5vw;
   border-radius: .2em;
   background-color: #233525;
   transition: opacity 0.3s ease-in-out;
-  /* padding: 1em 2em 1em 2em;
-  font-size: 10vw;
-  border-radius: 1em;
-  background-color: DarkGreen;
-  color: black;
-  text-shadow: 2px 2px 1px DarkRed; */
 }
 #start-game-btn::after{
   content: '';
@@ -622,6 +705,18 @@ body{
   transition: opacity 3s ease-in-out;
 }
 #start-game-btn:hover::after{opacity: .8;}
+.game-options{
+  position: absolute;
+  left: 50%;
+  top: 68%;
+  transform: translate(-50%, -50%);
+  box-shadow:  0px 0px 80px 0px #4d09d555;
+}
+#deck-game-btn , #heroes-game-btn,#deck-reset-btn,#heroes-reset-btn{
+    background-color: #233525;
+    position: initial;
+    display: inline-block;
+}
 #start-screen{
   top: 0;
   left: 0;
@@ -660,6 +755,22 @@ body{
   color: inherit;
   text-decoration: none;
 }
+#start-screen textarea{
+  width: 95%;
+  height: 17%;
+  max-width: 800px;
+  resize: none;
+  position: absolute;
+  left: 50%;
+  top: 79%;
+  transform: translate(-50%, -50%);
+}
+#deck-options, #heroes-options{
+  position: absolute;
+  left: 50%;
+  top: 90%;
+  transform: translate(-50%, -50%);
+}
 
 
 .info{
@@ -690,4 +801,68 @@ body{
 }
 .gold{
   color: gold;
+}
+
+
+.background{
+  z-index: -1;
+  position: absolute;
+  width: 100vw;
+  height: 100vw;
+  opacity: .20;
+  color: #96a2bd;
+}
+.background *{
+  box-shadow: inset 0px 0px 20px 2px #4d09d5,0px 0px 200px 2px #4d09d5;
+  position: absolute;
+  border-width: thin;
+  border-style: solid;
+}
+.background .circle{
+  border-radius: 50%;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  top: -5px;
+  width: 75px;
+  height: 28px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  border-radius: .25em;
+  background-color: #939bbf;
+  transition: .4s;
+  line-height: 1.8em;
+  color: #ccc;
+  text-align: right;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  border-radius: .25em;
+  background-color: #ccc;
+  transition: .4s;
+}
+input:checked + .slider {
+  text-align: left;
+  background-color: #3f51b5;
+  color: #b6bbd4;
+}
+input:checked + .slider:before {
+  background-color: #b6bbd4;
+  transform: translateX(47px);
 }

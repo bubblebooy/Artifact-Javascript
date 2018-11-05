@@ -37,18 +37,38 @@
 
         <button type="button" name="startGame" id='start-game-btn' class="btn UI">Start Game</button>
 
+        <textarea id='deck-textarea' class = 'display-none'  rows="12" cols="70"> Deck </textarea>
+        <textarea id='heroes-textarea' class = 'display-none' rows="12" cols="70"> Heroes </textarea>
+
+        <div id="deck-options" class = 'display-none'>
+          <button type="button" name="resetDeck" id='deck-reset-btn' class="btn">Rest</button>
+          <label class="switch"><input type="checkbox" id='deck-3of'><span class="slider round"> &nbsp;&nbsp;&nbsp;3 of&nbsp;&nbsp;&nbsp; </span></label>
+        </div>
+        <div id="heroes-options" class = 'display-none'>
+          <button type="button" name="resetHeroes" id='heroes-reset-btn' class="btn">Rest</button>
+        </div>
+
+        <div class="game-options">
+          <button type="button" name="editDeck" id='deck-game-btn' class="btn UI">Deck</button>
+          <button type="button" name="editHeroes" id='heroes-game-btn' class="btn UI">Heroes</button>
+        </div>
+
         <div class="credit">
           <a>Bubblebooy</a> /
           <a href="https://github.com/bubblebooy/Artifact-Javascript">Git Hub</a> /
           <a href="https://www.reddit.com/r/Artifact/comments/9t3uw1/artifact_javascript_clone_update_now_with_spells/">reddit</a>
         </div>
+        <div class="background">
+          <div class="circle" style="padding: 50%; bottom: -5%;right: -20%"></div>
+          <div class="circle" style="padding: 10%; bottom: 68%;left: 25%"></div>
+        </div>
       </div>
 
 
       <div class="display-none UI" id="shop">
-        <div>
-          Closed
-        </div>
+        <div class="shop" id="secret-shop"></div>
+        <div class="shop" id="item-deck"></div>
+        <div class="shop" id="consumables"></div>
       </div>
     </main>
     <script src="main.js"></script>

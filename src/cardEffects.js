@@ -2,6 +2,7 @@ import {game , cardData, posAvail} from './index.js'
 import {board} from './board'
 import {card , blank, draggedCard} from './card'
 import {sum, shuffle} from './arrayFunctions'
+import {targetUnitsAvail,targetHerossAvail,targetCreepsAvail} from './AI'
 
 
 let effectMap = new Map()  // should i just be uisng an object instead? does it really matter?
@@ -9,6 +10,7 @@ let targetMap = new Map()
 
 function doubleTarget(card, target, callback, conditional = () => true ){
   card.div.classList.add("glow")
+  game.div.classList.add("target")
   game.div.addEventListener("click",function f(ev){
     ev.stopPropagation()
     let path = ev.path || (ev.composedPath && ev.composedPath());
@@ -42,6 +44,7 @@ function doubleTarget(card, target, callback, conditional = () => true ){
       }
     }
     card.div.classList.remove("glow")
+    game.div.classList.remove("target")
     game.div.removeEventListener("click",f,true)
   },true)
 }
@@ -104,8 +107,8 @@ effectMap.set("Avernus' Blessing" , function(ev, lane, player, index){
 targetMap.set("Double Edge" , "unit")
 effectMap.set("Double Edge" , function(ev, lane, player, index){
   if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
-  board.lanes[lane].cards[index][player].currentArmor[4] -= 8;
-  board.lanes[lane].cards[index][player].currentAttack[4] += 8;
+  board.lanes[lane].cards[index][player].currentArmor[3] -= 8;
+  board.lanes[lane].cards[index][player].currentAttack[3] += 8;
   board.lanes[lane].cards[index][player].updateDisplay()
   return true
 });
@@ -113,7 +116,7 @@ effectMap.set("Double Edge" , function(ev, lane, player, index){
 targetMap.set("Poised to Strike" , "unit")
 effectMap.set("Poised to Strike" , function(ev, lane, player, index){
   if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
-  board.lanes[lane].cards[index][player].currentAttack[4] += 4;
+  board.lanes[lane].cards[index][player].currentAttack[3] += 4;
   board.lanes[lane].cards[index][player].updateDisplay()
   return true
 });
@@ -137,8 +140,8 @@ effectMap.set("Combat Training" , function(ev, lane, player, index){
 targetMap.set("Enrage" , "unit")
 effectMap.set("Enrage" , function(ev, lane, player, index){
   if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
-  board.lanes[lane].cards[index][player].currentArmor[4] += 4;
-  board.lanes[lane].cards[index][player].currentAttack[4] += 4;
+  board.lanes[lane].cards[index][player].currentArmor[3] += 4;
+  board.lanes[lane].cards[index][player].currentAttack[3] += 4;
   board.lanes[lane].cards[index][player].updateDisplay()
   return true
 });
@@ -493,6 +496,87 @@ effectMap.set("Time of Triumph" , function(ev, lane){
   })
   return true
 });
+
+targetMap.set("Fighting Instinct" , "unit")
+effectMap.set("Fighting Instinct" , function(ev, lane, player, index){
+  if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
+  board.lanes[lane].cards[index][player].currentArmor[1] += 1;
+  board.lanes[lane].cards[index][player].currentAttack[1] += 1;
+  board.lanes[lane].cards[index][player].updateDisplay()
+  return true
+});
+
+
+targetMap.set("Eclipse" , "lane")
+effectMap.set("Eclipse" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  let $player = game.getTurn()
+  let beams = game.players[game.getTurn()].getHeros().find(function(luna){return luna.Name == "Luna"}).beams
+  if (beams){
+    for (var i = 0; i < beams; i++) {
+      let $card = l.cards.reduce(targetUnitsAvail , [[],[]])[1-$player]
+      if ($card.length != 0){
+        $card = $card[Math.floor(Math.random()*$card.length)]
+        $card = l.cards[$card]
+        if ($card[1-$player].Name != null) {
+          $card[1-$player].currentHealth[0] -= 3 - (sum($card[1-$player].currentArmor) < 0 ? sum($card[1-$player].currentArmor) : 0)
+          l.collapse()
+        }
+      }
+    }
+  }
+  return true
+});
+
+targetMap.set("Sow Venom" , "lane")
+effectMap.set("Sow Venom" , function(ev, lane){
+  let summons = [[],[]]
+  lane = board.lanes[lane]
+  for (let i = 0; i < 2; i++){
+    let creep =  card(cardData.Cards.find(function(e){  return e.Name == "Plague Ward"  }),game.players[game.getTurn()])
+    summons[game.getTurn()].push(creep);
+  }
+  lane.summon(summons)
+  return true
+});
+
+targetMap.set("Mystic Flare" , "unit")
+effectMap.set("Mystic Flare" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  for (var i = 0; i < 12 ; ) {
+    for (var j = -1; j <= 1; j++) {
+      if(l.cards[index + j] != null && l.cards[index + j][player].Name != null){
+        l.cards[index+j][player].currentHealth[0] -= 2 - sum(l.cards[index+j][player].currentArmor)
+        i +=2
+      }
+    }
+  }
+  for (var j = -1; j <= 1; j++) {
+    if(l.cards[index + j] != null && l.cards[index + j][player].Name != null){
+      l.cards[index+j][player].updateDisplay()
+    }
+  }
+  l.collapse()
+  return true
+});
+
+targetMap.set("Coup de Grace" , "unit")
+effectMap.set("Coup de Grace" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  if (l.cards[index][player].CardType != "Hero") return false
+  game.condemn(l.cards[index][player],board.lanes[lane])
+  game.infoDisplayUpdate();
+  l.collapse()
+  let hand = game.players[game.getTurn()].hand
+  if (hand.length > 1){
+    let card = Math.floor(Math.random()*hand.length)
+    if (hand[card] == draggedCard) card = ( card + 1 ) % hand.length
+    card = hand.splice(card,1)[0]
+    card.div.parentNode.removeChild(card.div)
+  }
+  return true
+});
+
 // targetMap.set("Pick A Fight" , "unit")
 // effectMap.set("Pick A Fight" , function(ev, lane, player, index){
 //   let l = board.lanes[lane]
