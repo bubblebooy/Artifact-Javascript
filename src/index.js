@@ -404,6 +404,8 @@ const deckResetBtn = document.getElementById("deck-reset-btn")
 const deck3of = document.getElementById("deck-3of")
 const heroesResetBtn = document.getElementById("heroes-reset-btn")
 
+const refreshBtn = document.getElementById("refresh-btn")
+
 deckBtn.title = "If card is not vaild or implemented it will be ignored"
 heroBtn.title = "Uses the 1st 5 heroes"
 
@@ -441,6 +443,7 @@ startGamebtn.addEventListener("click",function(){
   if (deck3of.checked) deck = deck.concat(deck,deck) ;
   AIdeck = AIdeck.concat(AIdeck,AIdeck)
   startScreen.parentNode.removeChild(startScreen)
+  refreshBtn.disabled = false
   game.startGame()
 })
 deckBtn.addEventListener("click", function(){
@@ -460,6 +463,13 @@ deckResetBtn.addEventListener("click", function(){
 })
 heroesResetBtn.addEventListener("click", function(){
   heroTextarea.value = allheroes;
+})
+
+refreshBtn.title = "Makes sure everything is updated and you have at least one space to play a creep"
+refreshBtn.addEventListener("click", function(){
+  board.collapse()
+  board.lanes[game.getCurrentLane()].expand()
+  game.dispatchEvent("continuousRefresh")
 })
 
 

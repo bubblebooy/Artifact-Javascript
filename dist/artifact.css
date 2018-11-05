@@ -815,6 +815,10 @@ body{
   transform: translate(-50%, -50%);
 }
 
+.refresh-btn{
+  bottom: 3px;
+  left: 3px;
+}
 
 .info{
   background-color: #FFD70055;
