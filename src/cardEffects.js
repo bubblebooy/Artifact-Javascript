@@ -1,4 +1,4 @@
-import {game , cardData, posAvail} from './index.js'
+import {game , cardData, posAvail , battle} from './index.js'
 import {board} from './board'
 import {card , blank, draggedCard} from './card'
 import {sum, shuffle} from './arrayFunctions'
@@ -577,6 +577,50 @@ effectMap.set("Coup de Grace" , function(ev, lane, player, index){
   return true
 });
 
+targetMap.set("Berserker's Call", "unit")
+effectMap.set("Berserker's Call", function(ev, lane, player, index) {
+  if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero" || player !== game.getTurn()) return false
+  game.dispatchEvent("whenAttacking")
+  const currentLane = board.lanes[lane]
+  for (var i = -1; i <= 1; i++) {
+    if (currentLane.cards[index + i] != null && currentLane.cards[index + i][1-player].Name != null){
+      battle( lane, player, index, lane, 1 - player, index + i , false)
+    }
+  }
+  currentLane.collapse()
+  return true
+
+});
+
+targetMap.set("Duel", "unit")
+effectMap.set("Duel", function(ev, lane, player, index) {
+  if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero" || player !== game.getTurn()) return false
+  // let l = board.lanes[lane]
+  // let card = l.cards[index][player]
+  doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
+    battle( lane, player, index, board.lanes.indexOf($lane), $player, $targetCard , false)
+    board.lanes[lane].collapse()
+  }, function($lane,$player,$targetCard){
+    return ( $lane == board.lanes[lane] )
+  })
+  return false
+
+});
+
+targetMap.set("Gank", "unit")
+effectMap.set("Gank", function(ev, lane, player, index) {
+  if (lane != game.getCurrentLane() || board.lanes[lane].cards[index][player].Color != "Black" || board.lanes[lane].cards[index][player].CardType != "Hero" || player !== game.getTurn()) return false
+  // let l = board.lanes[lane]
+  // let card = l.cards[index][player]
+  doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
+    battle( lane, player, index, board.lanes.indexOf($lane), $player, $targetCard , false)
+    board.lanes[lane].collapse()
+  }, function($lane,$player,$targetCard){
+    return (true)
+  })
+  return false
+
+});
 // targetMap.set("Pick A Fight" , "unit")
 // effectMap.set("Pick A Fight" , function(ev, lane, player, index){
 //   let l = board.lanes[lane]

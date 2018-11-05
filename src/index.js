@@ -283,6 +283,32 @@ function posAvail(total, position, index) {
   return total
 }
 
+function battle( attackerLane, attackerPlayer, attackerIndex, targetLane, targetPlayer, targetIndex , dispatchAttackingEvent = true, bidirectional = true){
+  let attacker = board.lanes[attackerLane].cards[attackerIndex][attackerPlayer]
+  let target = board.lanes[targetLane].cards[targetIndex][targetPlayer]
+  if (dispatchAttackingEvent) {
+    let evnt = new CustomEvent('whenAttacking', { detail: {lane: attackerLane, card: attackerIndex, player: attackerPlayer} })
+    attacker.div.dispatchEvent(evnt); attacker.updateDisplay();
+    if (attacker.CardType == "Hero"){
+      if (attacker.Accessory) {attacker.Accessory.div.dispatchEvent(evnt); attacker.Accessory.updateDisplay();}
+      if (attacker.Armor) {attacker.Armor.div.dispatchEvent(evnt); attacker.Armor.updateDisplay();}
+      if (attacker.Weapon) {attacker.Weapon.div.dispatchEvent(evnt); attacker.Weapon.updateDisplay();}
+    }
+    evnt.detail.lane = targetLane; evnt.detail.card = targetIndex; evnt.detail.player = targetPlayer;
+    target.div.dispatchEvent(evnt); target.updateDisplay();
+    if (target.CardType == "Hero"){
+      if (target.Accessory) {target.Accessory.div.dispatchEvent(evnt); target.Accessory.updateDisplay();}
+      if (target.Armor) {target.Armor.div.dispatchEvent(evnt); target.Armor.updateDisplay();}
+      if (target.Weapon) {target.Weapon.div.dispatchEvent(evnt); target.Weapon.updateDisplay();}
+    }
+  }
+  if(sum(target.retaliate)>0){attacker.currentHealth[0] -= sum(target.retaliate) - sum(attacker.currentArmor)}
+  target.currentHealth[0] -= sum(attacker.currentAttack) - sum(target.currentArmor)
+  game.infoDisplayUpdate();
+
+  if (bidirectional) battle(targetLane, targetPlayer, targetIndex, attackerLane, attackerPlayer, attackerIndex, false, false)
+}
+
 function combat(){
 
   let currentLane = board.lanes[game.getCurrentLane()]
@@ -323,7 +349,7 @@ function combat(){
   currentLane.towers[0].updateDisplay();
   game.dispatchEvent("afterCombat")
   game.infoDisplayUpdate();
-  if (game.gameOver()) {};
+  if (game.gameOver()) {};  // does this do anything??
 }
 
 
@@ -354,9 +380,9 @@ function buildLanes(){
   })
 }
 
-const allcards = ["Prowler Vanguard","Coup de Grace","Mystic Flare","Sow Venom","Barracks","Eclipse","Savage Wolf","Fighting Instinct","Thunderhide Pack","Emissary of the Quorum","New Orders","Ion Shell","Time of Triumph","Forward Charge","Altar of the Mad Moon","New Orders","Sister of the Veil","Rebel Decoy","Steam Cannon","Keenfolk Turret","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
+const allcards = ["Gank","Duel","Berserker's Call","Prowler Vanguard","Coup de Grace","Mystic Flare","Sow Venom","Barracks","Eclipse","Savage Wolf","Fighting Instinct","Thunderhide Pack","Emissary of the Quorum","New Orders","Ion Shell","Time of Triumph","Forward Charge","Altar of the Mad Moon","New Orders","Sister of the Veil","Rebel Decoy","Steam Cannon","Keenfolk Turret","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
 let deck
-let AIdeck = ["Prowler Vanguard","Coup de Grace","Mystic Flare","Sow Venom","Barracks","Thunderhide Pack","Altar of the Mad Moon","Time of Triumph","Forward Charge","Ion Shell","Sister of the Veil","Rebel Decoy","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
+let AIdeck = ["Berserker's Call","Prowler Vanguard","Coup de Grace","Mystic Flare","Sow Venom","Barracks","Thunderhide Pack","Altar of the Mad Moon","Time of Triumph","Forward Charge","Ion Shell","Sister of the Veil","Rebel Decoy","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
 let AIheros = ["J\'Muy the Wise","Legion Commander","Lycan","Centaur Warrunner","Drow Ranger","Sorla Khan","Phantom Assassin","Bounty Hunter","Venomancer","Prellex","Sven","Luna","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","Axe"] // "Beastmaster"
 AIheros = shuffle(AIheros).slice(0,5)
 
@@ -433,4 +459,4 @@ heroesResetBtn.addEventListener("click", function(){
 })
 
 
-export {game, cardData, posAvail};
+export {game, cardData, posAvail, battle};

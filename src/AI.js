@@ -36,7 +36,7 @@ function targetCreepsAvail(total, position, index) {
   return total
 }
 
-let targetEnemy = ["Intimidation","Bellow","Relentless Pursuit","Viscous Nasal Goo","Crippling Blow","Rend Armor","Grazing Shot","No Accident","Slay","Pick Off","Assassinate"]
+let targetEnemy = ["Coup de Grace","Mystic Flare","Intimidation","Bellow","Relentless Pursuit","Viscous Nasal Goo","Crippling Blow","Rend Armor","Grazing Shot","No Accident","Slay","Pick Off","Assassinate"]
 targetEnemy = new Map(targetEnemy.map(x => [x,true]))
 
 let targetCreeps = ["Slay","Bellow"]
