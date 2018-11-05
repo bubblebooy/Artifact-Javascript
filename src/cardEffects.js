@@ -149,7 +149,7 @@ effectMap.set("Enrage" , function(ev, lane, player, index){
 targetMap.set("God's Strength" , "unit")
 effectMap.set("God's Strength" , function(ev, lane, player, index){
   if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
-  board.lanes[lane].cards[index][player].currentAttack[1 + (1 - player == game.getTurn())] += 2;
+  board.lanes[lane].cards[index][player].currentAttack[1 + (1 - player == game.getTurn())] += 4;
   board.lanes[lane].cards[index][player].updateDisplay()
   return true
 });
