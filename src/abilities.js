@@ -107,11 +107,11 @@ abilityMap.set("Concussive Shot" , function(card,e){
   doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
     lane.cards[targetCard][player].currentArmor[3] -= 2
     lane.cards[targetCard][player].updateDisplay()
-    if (lane.cards[targetCard -1 ] != null || lane.cards[targetCard -1 ][player].Name != null){
+    if (lane.cards[targetCard -1 ] != null && lane.cards[targetCard -1 ][player].Name != null){
       lane.cards[targetCard -1 ][player].currentArmor[3] -= 2
       lane.cards[targetCard-1][player].updateDisplay()
     }
-    if (lane.cards[targetCard +1 ] != null || lane.cards[targetCard +1 ][player].Name != null){
+    if (lane.cards[targetCard +1 ] != null && lane.cards[targetCard +1 ][player].Name != null){
       lane.cards[targetCard +1 ][player].currentArmor[3] -= 2
       lane.cards[targetCard+1][player].updateDisplay()
     }
@@ -223,17 +223,95 @@ abilityMap.set("Lucent Beam" , function(card,e){
 
 triggerMap.set("Bringer of the Faithful", "endOfRound")
 abilityMap.set("Bringer of the Faithful" , function(c,e){
-  // let lane = board.lanes[e.detail.lane]
   if (e.detail.lane != null) game.extraDeploy[e.detail.player][e.detail.lane].push(card(cardData.Cards[132],game.players[e.detail.player]))
   //card(cardData.Cards.find( function(ev){  return ev.Name == "Thunderhide Pack" })
 });
 
 triggerMap.set("Venomous Nature", "endOfRound")
 abilityMap.set("Venomous Nature" , function(c,e){
-  // let lane = board.lanes[e.detail.lane]
   if (e.detail.lane != null) game.extraDeploy[e.detail.player][e.detail.lane].push(card(cardData.Cards.find( function(ev){  return ev.Name == "Plague Ward" }),game.players[e.detail.player]))
 });
-// extraDeploy[0][0].push(card(cardData.Cards[132],game.players[0]))
+
+triggerMap.set("Jinada" , "beforeTheActionPhase")
+abilityMap.set("Jinada" , function(card,e){
+  if (Math.random() < .5) {card.currentAttack[3] += 4; card.updateDisplay()}
+
+});
+
+triggerMap.set("Sacrifice" , "click")
+abilityMap.set("Sacrifice" , function(card,e){
+  doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
+    card.player.draw()
+    if(sum(lane.cards[targetCard][player].currentAttack) >= 6) card.player.draw()
+    game.condemn(lane.cards[targetCard][player],lane)
+    game.infoDisplayUpdate();
+    lane.collapse()
+  } , function($lane,$player,$targetCard){
+    return ( $lane == board.lanes[game.getCurrentLane()] && game.getTurn() == $player && $lane.cards[$targetCard][$player] != card)
+  })
+  return false
+});
+
+triggerMap.set("Finger of Death" , "click")
+abilityMap.set("Finger of Death" , function(card,e){
+  doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
+    lane.cards[targetCard][player].currentHealth[0] -= 8 - (sum(lane.cards[targetCard][player].currentArmor) < 0 ? sum(lane.cards[targetCard][player].currentArmor) : 0)
+    lane.cards[targetCard][player].updateDisplay()
+    lane.collapse()
+  } , function(lane,player,targetCard){
+    return lane == board.lanes[game.getCurrentLane()]
+  })
+  return false
+});
+
+triggerMap.set("Efficient Killer" , "whenAttacking")
+abilityMap.set("Efficient Killer" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  let index = e.detail.card + card.arrow
+  if(lane.cards[index] != null && lane.cards[index][1 - e.detail.player].Name != null){
+    if (lane.cards[index][1 - e.detail.player].CardType == "Hero") {
+      card.currentAttack[4] += 4;
+    }
+  }
+});
+
+triggerMap.set("Warmonger" , "whenAttacking")
+abilityMap.set("Warmonger" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  let index = e.detail.card + card.arrow
+  if(lane.cards[index] != null && lane.cards[index][1 - e.detail.player].Name != null){
+    return
+  }
+  card.currentAttack[4] += 4;
+});
+
+triggerMap.set("Precision Aura" , "continuousEffect")
+abilityMap.set("Precision Aura" , function(card,e){
+  board.lanes.forEach(function(lane){
+    lane.cards.forEach(function($card){
+      if ($card[e.detail.player].Name != null && $card[e.detail.player] != card) {
+        $card[e.detail.player].currentAttack[4] += 1
+        $card[e.detail.player].updateDisplay()
+      }
+    })
+  })
+});
+
+triggerMap.set("Purification" , "click")
+abilityMap.set("Purification" , function(card,e){
+  doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
+    lane.cards[targetCard][player].currentHealth[0] += 3
+    if (lane.cards[targetCard][player].currentHealth[0] > lane.cards[targetCard][player].Health) lane.cards[targetCard][player].currentHealth[0] = lane.cards[targetCard][player].Health
+    lane.cards[targetCard][player].updateDisplay()
+  } , function(lane,player,targetCard){
+    return lane == board.lanes[game.getCurrentLane()]
+  })
+  return false
+});
+
+// game.condemn(l.cards[index][player],board.lanes[lane])
+// game.infoDisplayUpdate();
+// l.collapse()
 
 //// improvements
 
