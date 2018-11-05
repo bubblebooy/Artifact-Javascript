@@ -119,7 +119,7 @@ const game = (() => {
                       heroes,
                       deck)
     players[1] = player(1,"Dire",
-                      ["Axe","Enchantress","Debbi the Cunning","J\'Muy the Wise","Legion Commander"],
+                      AIheros,
                       AIdeck,
                       true);
     buildLanes();
@@ -357,6 +357,8 @@ function buildLanes(){
 const allcards = ["Sow Venom","Barracks","Eclipse","Savage Wolf","Fighting Instinct","Thunderhide Pack","Emissary of the Quorum","New Orders","Ion Shell","Time of Triumph","Forward Charge","Altar of the Mad Moon","New Orders","Sister of the Veil","Rebel Decoy","Steam Cannon","Keenfolk Turret","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
 let deck
 let AIdeck = ["Sow Venom","Barracks","Thunderhide Pack","Altar of the Mad Moon","Time of Triumph","Forward Charge","Ion Shell","Sister of the Veil","Rebel Decoy","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
+let AIheros = ["J\'Muy the Wise","Legion Commander","Lycan","Centaur Warrunner","Drow Ranger","Sorla Khan","Phantom Assassin","Bounty Hunter","Venomancer","Prellex","Sven","Luna","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","Axe"] // "Beastmaster"
+AIheros = shuffle(AIheros).slice(0,5)
 
 let allheroes = ["Legion Commander","Lycan","Winter Wyvern","Skywrath Mage","Centaur Warrunner","Omniknight","Drow Ranger","Sorla Khan","Phantom Assassin","Lion","Lich","Bounty Hunter","Venomancer","Prellex","Pugna","Sven","Luna","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"] // "Beastmaster"
 let heroes
@@ -390,6 +392,10 @@ startGamebtn.disabled = true;
 let loading = true
 setTimeout( function(){ startGamebtn.disabled = false;} , 500)
 startGamebtn.addEventListener("click",function(){
+  AIdeck = AIdeck.filter(function(card){
+    let color =cardData.Cards.find( function(ev){  return ev.Name == card }).Color
+    return AIheros.map(function(hero){ return cardData.Cards.find( function(ev){  return ev.Name == hero }).Color}).includes(color)
+   })
   deck = deckTextarea.value.split(",")
   deck = deck.map(function(card){return card.trim()})
   deck = deck.filter(function(card){return allcards.includes(card)})
