@@ -433,6 +433,20 @@ targetMap.set("New Orders" , "unit")
 effectMap.set("New Orders" , function(ev, lane, player, index){
   let l = board.lanes[lane]
   let card = l.cards[index][player]
+  if (player != game.getTurn()) return false
+  doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
+    card.arrow = $targetCard - index
+    card.updateDisplay()
+  }, function($lane,$player,$targetCard){
+    return ( $lane == l && game.players[player] != $player && Math.abs($targetCard - index) <= 1)
+  })
+  return false
+});
+
+targetMap.set("Battlefield Control" , "unit")
+effectMap.set("Battlefield Control" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  let card = l.cards[index][player]
   doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
     card.arrow = $targetCard - index
     card.updateDisplay()
@@ -621,6 +635,70 @@ effectMap.set("Gank", function(ev, lane, player, index) {
   return false
 
 });
+
+targetMap.set("Frostbite" , "unit")
+effectMap.set("Frostbite" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  l.cards[index][player].currentHealth[0] -= 2 - sum(l.cards[index][player].currentArmor)
+  l.cards[index][player].disarmed = true;
+  l.collapse()
+  return true
+});
+
+
+targetMap.set("Act of Defiance" , "unit")
+effectMap.set("Act of Defiance" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  l.cards[index][player].silenced = true;
+  return true
+});
+
+targetMap.set("Gust" , "lane")
+effectMap.set("Gust" , function(ev, lane){
+  let l = board.lanes[lane]
+  let player = game.getTurn()
+  l.cards.forEach(function(card){
+    if (card[1-player].Name != null && card[1-player].CardType == "Hero") {
+      card[1-player].silenced = true;
+    }
+  })
+  return true
+});
+
+targetMap.set("Winter's Curse", "unit")
+effectMap.set("Winter's Curse", function(ev, lane, player, index) {
+  board.lanes[lane].cards[index][player] .disarmed = true;
+  game.dispatchEvent("whenAttacking")
+  const currentLane = board.lanes[lane]
+  for (var i = -1; i <= 1; i+=2) {
+    if (currentLane.cards[index + i] != null && currentLane.cards[index + i][player].Name != null){
+      battle( lane, player, index, lane, player, index + i , false)
+    }
+  }
+  currentLane.collapse()
+  return true
+
+});
+
+targetMap.set("Echo Slam" , "lane")
+effectMap.set("Echo Slam" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  let $player = game.getTurn()
+
+  let enemies = l.cards.reduce(targetUnitsAvail , [[],[]])[1-$player]
+  if (enemies.length != 0){
+    enemies.forEach(function(enemy){
+      enemy = l.cards[enemy]
+      if (enemy[1-$player].Name != null) {
+        enemy[1-$player].currentHealth[0] -= enemies.length - sum(enemy[1-$player].currentArmor)
+      }
+    })
+  }
+  l.collapse()
+  return true
+});
+
+
 // targetMap.set("Pick A Fight" , "unit")
 // effectMap.set("Pick A Fight" , function(ev, lane, player, index){
 //   let l = board.lanes[lane]

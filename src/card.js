@@ -20,7 +20,7 @@ function addToFunction( someFunction , callback){
 let draggedCard;
 
 const colorCheck = (card) => {
-  if (card[game.getTurn()].CardType == "Hero"){
+  if (card[game.getTurn()].CardType == "Hero" && !card[game.getTurn()].silenced){
     return card[game.getTurn()].Color == draggedCard.Color
   }
 }
@@ -178,14 +178,19 @@ const card = (cardProto , player) => {
     properties.retaliate = [0,0,0,0,0,0]
     properties.siege = [0,0,0,0,0,0]
     properties.regen = [0,0,0,0,0,0]
+    properties.silenced = false
+    properties.disarmed = false
     updateDisplay = addToFunction(updateDisplay , function(){
       div.title = `Cleave : ${sum(cardProto.cleave)}\nRetaliate : ${sum(cardProto.retaliate)}\nSiege : ${sum(cardProto.siege)}\nRegeneration : ${sum(cardProto.regen)}`
       sum(cardProto.cleave) > 0 ? arrowDiv.classList.add('cleave') : arrowDiv.classList.remove('cleave');
       sum(cardProto.retaliate) > 0 ? div.classList.add('retaliate') : div.classList.remove('retaliate');
       sum(cardProto.siege) > 0 ? arrowDiv.classList.add('siege') : arrowDiv.classList.remove('siege');
+      cardProto.silenced ?  div.classList.add('silenced') : div.classList.remove('silenced');
+      cardProto.disarmed ?  div.classList.add('disarmed') : div.classList.remove('disarmed');
     })
     endOfRound = addToFunction(endOfRound , function(){
       cardProto.cleave[3] = 0; cardProto.retaliate[3] = 0; cardProto.siege[3] = 0;cardProto.regen[3] = 0;
+      cardProto.silenced = false ; cardProto.disarmed = false;
     })
     continuousRefresh = addToFunction(continuousRefresh , function(){
       cardProto.cleave[4] = 0; cardProto.retaliate[4] = 0; cardProto.siege[4] = 0;cardProto.regen[4] = 0;
@@ -270,7 +275,7 @@ const card = (cardProto , player) => {
         ability.cooldownDiv.textContent = ability.currentCooldown;
         ability.div.appendChild(ability.cooldownDiv)
         ability.div.addEventListener("click", function(e){
-          if (game.players[game.getTurn()] == player && game.getCurrentLane() == lane() && cardProto.Abilities[abilityIndex].currentCooldown <= 0){
+          if (!cardProto.silenced && game.players[game.getTurn()] == player && game.getCurrentLane() == lane() && cardProto.Abilities[abilityIndex].currentCooldown <= 0){
             if (abilityMap.get(ability.Name)(cardProto,e)) {
               cardProto.Abilities[abilityIndex].currentCooldown = cardProto.Abilities[abilityIndex].Cooldown;
               updateDisplay()

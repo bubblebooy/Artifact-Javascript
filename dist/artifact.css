@@ -370,6 +370,49 @@ body{
   left: -10px;
   top: -10px;
 }
+.playarea .silenced::after{
+  content: "🤫";
+  font-size: 8em;
+  text-align: center;
+  position: absolute;
+  background-color: #3338;
+  width: 100%;
+  height: 85%;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+}
+.playarea .disarmed::after{
+  content: '\0020E0';
+  font-size: 3em;
+  text-align: left;
+  color: red;
+  position: absolute;
+  background-color: #3338;
+  width: 79%;
+  padding-left: 21%;
+  height: 20%;
+  left: 50%;
+  bottom: -15%;
+  border-radius: .5em;
+  transform: translate(-50%, -50%);
+}
+.playarea .silenced.disarmed::after{
+  content: '\0020E0';
+  font-size: 8em;
+  text-align: center;
+  position: absolute;
+  background-color: #3338;
+  line-height: 2em;
+  height: 100%;
+  left: 50%;
+  top: 50%;
+  border-radius: 3px;
+  transform: translate(-50%, -50%);
+}
+
+
+
 .playarea .arrow{
   display: block;
 }

@@ -8,7 +8,7 @@ let abilityMap = new Map()  // should i just be uisng an object instead? does it
 let triggerMap = new Map()
 
 function doubleTarget(card, currentTarget, target, callback, conditional = true ){
-  let abilityIndex = card.Abilities.findIndex(function(p){ console.log(p.div , currentTarget) ;return p.div == currentTarget})
+  let abilityIndex = card.Abilities.findIndex(function(p){ return p.div == currentTarget})
   card.Abilities[abilityIndex].div.classList.add("glow")
   game.div.classList.add("target")
   game.div.addEventListener("click",function f(ev){
@@ -120,6 +120,8 @@ abilityMap.set("Concussive Shot" , function(card,e){
   })
   return false
 });
+
+
 
 triggerMap.set("Nature's Attendants" , "continuousEffect")
 abilityMap.set("Nature's Attendants" , function(card,e){
@@ -307,6 +309,21 @@ abilityMap.set("Purification" , function(card,e){
     return lane == board.lanes[game.getCurrentLane()]
   })
   return false
+});
+
+triggerMap.set("Fissure" , "click")
+abilityMap.set("Fissure" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = game.getTurn()
+  let index = lane.cards.findIndex(function(c){ return (c[player] == card) })
+  for (var i = -1; i < 2; i+=1) {
+    if(lane.cards[index+i] != null && lane.cards[index+i][1-player].Name != null){
+      lane.cards[index+i][1 - player].disarmed = true;
+      lane.cards[index+i][1 - player].silenced = true;
+      lane.cards[index+i][1 - player].updateDisplay()
+    }
+  }
+  return true
 });
 
 // game.condemn(l.cards[index][player],board.lanes[lane])
@@ -603,9 +620,7 @@ triggerMap.set("Plague Ward : Effect" , "beforeTheActionPhase")
 abilityMap.set("Plague Ward : Effect" , function(card,e){
   let lane = board.lanes[e.detail.lane]
   let start = e.detail.card - 1  < 0 ? 0 : (e.detail.card - 1)
-  console.log(lane.cards.slice(start , e.detail.card + 2))
   let $card = lane.cards.slice(start , e.detail.card + 2).reduce(targetUnitsAvail , [[],[]])[1-e.detail.player]
-  console.log($card , start)
   if ($card.length != 0){
     $card = $card[Math.floor(Math.random()*$card.length)] + start
     $card = lane.cards[$card]
@@ -784,7 +799,6 @@ abilityMap.set("Phase Boots : EffectActive" , function(c,e){
   let lane = board.lanes[game.getCurrentLane()]
   let player = game.getTurn()
   let index = lane.cards.findIndex(function(card){ return (card[player].Accessory == c) })
-  console.log(index)
   let card = lane.cards[index][player]
   doubleTarget(c, e.currentTarget, "card", function($lane,$player,$targetCard){
     let nextSibling = index > $targetCard ? card.div.nextSibling : $lane.cards[$targetCard][$player].div.nextSibling
@@ -806,6 +820,7 @@ abilityMap.set("Phase Boots : EffectActive" , function(c,e){
   })
   return false
 });
+
 
 // let lane = board.lanes[e.detail.lane]
 // let index = e.detail.card
