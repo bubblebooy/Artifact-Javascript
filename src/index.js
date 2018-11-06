@@ -218,7 +218,7 @@ const game = (() => {
     handController.enable();
     board.lanes[currentLane].collapse(false)
     board.lanes[currentLane].expand()
-    if (players[turn].computer ){ AI.actionPhase(players[turn]) }//setTimeout( AI.actionPhase , 300) }  // AI AUTO PASS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if (players[turn].computer ){ setTimeout( function(){ AI.actionPhase(players[turn]) } , 300) }//setTimeout( AI.actionPhase , 300) }  // AI AUTO PASS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   }
 
   function nextLane(){
@@ -228,6 +228,8 @@ const game = (() => {
       passButtonController.hide()
       handController.hide();
       shop.show();
+      if (players[0].computer ){ AI.shop(0) }
+      if (players[1].computer ){ AI.shop(1) }
       dispatchEvent("endOfRound")
       currentLane = 0
       round += 1

@@ -343,6 +343,7 @@ const card = (cardProto , player) => {
           cardProto.Weapon = draggedCard
           itemWeaponContainer.appendChild(draggedCard.div)
         }
+        game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
         game.dispatchEvent("continuousRefresh")
         game.nextTurn()
       }

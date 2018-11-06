@@ -14,6 +14,4 @@ when is delt damage
 Todo:
 refresh button
 AI - buy items
-Silence
-Disarm
 When unit dies trigger

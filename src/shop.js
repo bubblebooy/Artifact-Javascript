@@ -49,7 +49,8 @@ const shop = (() => {
           game.players[0].handDiv.appendChild(newCard.div)
           if (depleting) {
             item = draw(itemDeck,true)
-            if (item) itemShop.appendChild(item.div)}
+            if (item) itemShop.appendChild(item.div)
+          }
           newCard.div.removeEventListener("click", buy)
         }
       })

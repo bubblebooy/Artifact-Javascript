@@ -1,8 +1,9 @@
-import {game, posAvail} from './index.js'
+import {game, posAvail, cardData, secretShopDeck} from './index.js'
 import {board} from './board'
 import {colorCheck , draggedCard} from './card'
 import {sum, shuffle} from './arrayFunctions'
 import {targetMap} from './cardEffects.js'
+import {card} from './card'
 
 const lastPlayed = document.getElementById("last-played-top");
 let lastCard = document.createElement('div');
@@ -52,7 +53,7 @@ const AI = (() => {
       card = player.hand[i]
       if ((card.ManaCost||0) <= board.lanes[game.getCurrentLane()].towers[player.turn].mana[0]) {
         card.div.ondragstart(new DragEvent({setData:null}))
-        if (board.lanes[game.getCurrentLane()].cards.some(colorCheck)){
+        if (board.lanes[game.getCurrentLane()].cards.some(colorCheck) || draggedCard.CardType == "Item"){
           if (draggedCard.CardType == "Creep") {
             let blank = board.lanes[game.getCurrentLane()].cards.reduce(posAvail , [[],[]])[player.turn]
             blank = board.lanes[game.getCurrentLane()].cards[blank[Math.floor(Math.random() * blank.length)]][player.turn]
@@ -70,8 +71,11 @@ const AI = (() => {
             lane.drop(ev)
             break played;
           }
-          if (draggedCard.CardType == "Spell") {
+          if (draggedCard.CardType == "Spell" || draggedCard.CardType == "Item") {
             let spellTarget = targetMap.get(draggedCard.Name)
+            if (draggedCard.CardType == "Item" && draggedCard.ItemType != "Consumable"){
+              spellTarget = "unit"
+            }
             let lane;
             if (draggedCard.CrossLane){
               lane = board.lanes[Math.floor(Math.random()*3)]
@@ -82,9 +86,13 @@ const AI = (() => {
               let targetPlayer = targetEnemy.get(card.Name) ? 1 - player.turn : player.turn
               if (targetCreeps.get(card.Name)){spellTarget = lane.cards.reduce(targetCreepsAvail , [[],[]])[targetPlayer]}
               else {spellTarget = lane.cards.reduce(targetHerossAvail , [[],[]])[targetPlayer]}
-
               if (spellTarget.length <= 0 ) break played;
               spellTarget = lane.cards[spellTarget[Math.floor(Math.random() * spellTarget.length)]][targetPlayer]
+              if (draggedCard.CardType == "Item"){
+                if(draggedCard.ItemType == "Armor"){ if(spellTarget.Armor) break played; }
+                else if(draggedCard.ItemType == "Accessory"){ if(spellTarget.Accessory) break played; }
+                else if(draggedCard.ItemType == "Weapon"){ if(spellTarget.Weapon) break played; }
+              }
             }
             let ev = {preventDefault: () => {},
                   target: spellTarget.div,
@@ -108,7 +116,24 @@ const AI = (() => {
     // setTimeout( game.pass , 300)
   }
 
-  return {actionPhase}
+  const shop = (player) => {
+    for (var i = 0; i < 2; i++) {
+      let deck = secretShopDeck
+      let newCard = deck[Math.floor(Math.random() * deck.length)]
+      newCard = card(cardData.Cards.find(function(e){
+        return e.Name == newCard
+      }),game.players[player])
+      console.log(newCard)
+      if (game.players[player].gold >= newCard.GoldCost){
+        game.players[player].gold -= newCard.GoldCost
+        game.players[player].hand.push(newCard)
+        game.players[player].handDiv.appendChild(newCard.div)
+      }
+    }
+    game.infoDisplayUpdate()
+  }
+
+  return {actionPhase , shop}
 })();
 
 export {AI,targetUnitsAvail,targetHerossAvail,targetCreepsAvail}
