@@ -37,7 +37,7 @@ const lane = (lane) => {
     if (ev != null ) ev.target.classList.remove("dragover")
     if (board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] < draggedCard.ManaCost) return ;
     if ((lane == game.getCurrentLane() || draggedCard.CrossLane) && (targetMap.get(draggedCard.Name) == "lane" || draggedCard.CardType == "Improvement")) {
-      if (board.lanes[game.getCurrentLane()].cards.some(colorCheck)){
+      if (board.lanes[game.getCurrentLane()].cards.some(colorCheck) || draggedCard.CardType == "Item"){
         if (draggedCard.CardType == "Improvement"){
           draggedCard.div.draggable = false;
           improvements[game.getTurn()].push(draggedCard);

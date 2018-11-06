@@ -389,19 +389,26 @@ let AIdeck = ["Echo Slam","Winter's Curse","Gust","Act of Defiance","Frostbite",
 let AIheros = ["J\'Muy the Wise","Legion Commander","Lycan","Centaur Warrunner","Drow Ranger","Sorla Khan","Phantom Assassin","Bounty Hunter","Venomancer","Prellex","Sven","Luna","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","Axe"] // "Beastmaster"
 AIheros = shuffle(AIheros).slice(0,5)
 
-let allheroes = ["Legion Commander","Lycan","Winter Wyvern","Skywrath Mage","Centaur Warrunner","Earthshaker","Omniknight","Drow Ranger","Sorla Khan","Phantom Assassin","Lion","Lich","Bounty Hunter","Venomancer","Prellex","Pugna","Sven","Luna","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"] // "Beastmaster"
+let allheroes = ["Legion Commander","Lycan","Winter Wyvern","Skywrath Mage","Centaur Warrunner","Sniper","Earthshaker","Omniknight","Drow Ranger","Sorla Khan","Phantom Assassin","Lion","Lich","Bounty Hunter","Venomancer","Prellex","Pugna","Sven","Luna","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"] // "Beastmaster"
 let heroes
+
+let secretShopDeck = ["Demagicking Maul","Stonehall Plate","Stonehall Cloak","Leather Armor","Short Sword","Traveler's Cloak","Blade of the Vigil","Keenfolk Musket","Red Mist Maul","Shield of Basilius","Horn of the Alpha","Phase Boots","Ring of Tarrasque"]
+let itemDeck
 
 const startGamebtn = document.getElementById("start-game-btn");
 const deckTextarea = document.getElementById("deck-textarea");
+const itemTextarea = document.getElementById("item-textarea");
 const heroTextarea = document.getElementById("heroes-textarea");
 const deckBtn = document.getElementById("deck-game-btn");
+const itemBtn = document.getElementById("item-game-btn");
 const heroBtn = document.getElementById("heroes-game-btn");
 const startScreen = document.getElementById("start-screen");
 const deckOptions = document.getElementById("deck-options")
+const itemOptions = document.getElementById("item-options")
 const heroesOptions = document.getElementById("heroes-options")
 const deckResetBtn = document.getElementById("deck-reset-btn")
 const deck3of = document.getElementById("deck-3of")
+const itemResetBtn = document.getElementById("item-reset-btn")
 const heroesResetBtn = document.getElementById("heroes-reset-btn")
 
 const refreshBtn = document.getElementById("refresh-btn")
@@ -419,6 +426,10 @@ heroTextarea.value = heroTextarea.value || allheroes;
 deckTextarea.title = "adds 3 of each listed card"
 heroTextarea.placeholder = "  If empty your heroes will be Legion Commander, Lycan, Winter Wyvern, Skywrath Mage, Centaur Warrunner"
 
+itemTextarea.value = localStorage.getItem("item")
+itemTextarea.value = itemTextarea.value || secretShopDeck;
+itemTextarea.placeholder = "  If empty all items will be added to your item deck."
+
 startGamebtn.disabled = true;
 let loading = true
 setTimeout( function(){ startGamebtn.disabled = false;} , 500)
@@ -431,6 +442,14 @@ startGamebtn.addEventListener("click",function(){
   deck = deck.map(function(card){return card.trim()})
   deck = deck.filter(function(card){return allcards.includes(card)})
   if (!deck.length) deck = allcards
+  localStorage.setItem("deck", deck)
+  localStorage.setItem("3of", deck3of.checked)
+  if (deck3of.checked) deck = deck.concat(deck,deck) ;
+  itemDeck = itemTextarea.value.split(",")
+  itemDeck = itemDeck.map(function(card){return card.trim()})
+  itemDeck = itemDeck.filter(function(card){return secretShopDeck.includes(card)})
+  if (itemDeck.length < 9) itemDeck = secretShopDeck
+  localStorage.setItem("item", itemDeck)
   heroes = heroTextarea.value.split(",")
   heroes = heroes.map(function(card){return card.trim()})
   heroes = heroes.filter(function(card){return allheroes.includes(card)})
@@ -438,9 +457,6 @@ startGamebtn.addEventListener("click",function(){
   if (heroes.length < 5) heroes = allheroes
   localStorage.setItem("heroes", heroes)
   if (heroes.length > 5) heroes = heroes.slice(0,5)
-  localStorage.setItem("deck", deck)
-  localStorage.setItem("3of", deck3of.checked)
-  if (deck3of.checked) deck = deck.concat(deck,deck) ;
   AIdeck = AIdeck.concat(AIdeck,AIdeck)
   startScreen.parentNode.removeChild(startScreen)
   refreshBtn.disabled = false
@@ -448,18 +464,33 @@ startGamebtn.addEventListener("click",function(){
 })
 deckBtn.addEventListener("click", function(){
   deckTextarea.classList.toggle('display-none')
+  itemTextarea.classList.add('display-none')
   heroTextarea.classList.add('display-none')
   deckOptions.classList.toggle('display-none')
+  itemOptions.classList.add('display-none')
   heroesOptions.classList.add('display-none')
+})
+itemBtn.addEventListener("click", function(){
+  itemTextarea.classList.toggle('display-none')
+  deckTextarea.classList.add('display-none')
+  heroTextarea.classList.add('display-none')
+  itemOptions.classList.toggle('display-none')
+  heroesOptions.classList.add('display-none')
+  deckOptions.classList.add('display-none')
 })
 heroBtn.addEventListener("click", function(){
   heroTextarea.classList.toggle('display-none')
   deckTextarea.classList.add('display-none')
+  itemTextarea.classList.add('display-none')
   heroesOptions.classList.toggle('display-none')
   deckOptions.classList.add('display-none')
+  itemOptions.classList.add('display-none')
 })
 deckResetBtn.addEventListener("click", function(){
   deckTextarea.value = allcards;
+})
+itemResetBtn.addEventListener("click", function(){
+  itemTextarea.value = secretShopDeck;
 })
 heroesResetBtn.addEventListener("click", function(){
   heroTextarea.value = allheroes;
@@ -473,4 +504,4 @@ refreshBtn.addEventListener("click", function(){
 })
 
 
-export {game, cardData, posAvail, battle};
+export {game, cardData, posAvail, battle, itemDeck, secretShopDeck};

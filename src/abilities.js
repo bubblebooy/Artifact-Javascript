@@ -225,8 +225,7 @@ abilityMap.set("Lucent Beam" , function(card,e){
 
 triggerMap.set("Bringer of the Faithful", "endOfRound")
 abilityMap.set("Bringer of the Faithful" , function(c,e){
-  if (e.detail.lane != null) game.extraDeploy[e.detail.player][e.detail.lane].push(card(cardData.Cards[132],game.players[e.detail.player]))
-  //card(cardData.Cards.find( function(ev){  return ev.Name == "Thunderhide Pack" })
+  if (e.detail.lane != null) game.extraDeploy[e.detail.player][e.detail.lane].push(card(cardData.Cards.find( function(ev){  return ev.Name == "Melee Creep" }),game.players[e.detail.player]))
 });
 
 triggerMap.set("Venomous Nature", "endOfRound")
@@ -335,7 +334,7 @@ abilityMap.set("Fissure" , function(card,e){
 triggerMap.set("Barracks : Effect", "endOfRound")
 abilityMap.set("Barracks : Effect" , function(c,e){
   // let lane = board.lanes[e.detail.lane]
-  if (e.detail.lane != null) game.extraDeploy[e.detail.player][e.detail.lane].push(card(cardData.Cards[132],game.players[e.detail.player]))
+  if (e.detail.lane != null) game.extraDeploy[e.detail.player][e.detail.lane].push(card(cardData.Cards.find( function(ev){  return ev.Name == "Melee Creep" }),game.players[e.detail.player]))
   //card(cardData.Cards.find( function(ev){  return ev.Name == "Thunderhide Pack" })
 });
 

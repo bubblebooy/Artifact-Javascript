@@ -85,7 +85,7 @@ function deployment(){
     sides.forEach(function(side, sideIndex){
       for (let i = 0; i < 2; i++){
         let rand = Math.floor(Math.random() * 3)
-        let creep = card(cardData.Cards[132],game.players[sideIndex])
+        let creep = card(cardData.Cards.find( function(ev){  return ev.Name == "Melee Creep" }),game.players[sideIndex])
         side[rand].push(creep);
         board.lanes[rand].stages[sideIndex].appendChild(creep.div)
       }

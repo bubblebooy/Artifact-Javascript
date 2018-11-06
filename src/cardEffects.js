@@ -58,7 +58,7 @@ effectMap.set("Dimensional Portal" , function(ev, lane){
   let summons = [[],[]]
   lane = board.lanes[lane]
   for (let i = 0; i < 3; i++){
-    let creep = card(cardData.Cards[132],game.players[game.getTurn()])
+    let creep = card(cardData.Cards.find( function(ev){  return ev.Name == "Melee Creep" }),game.players[game.getTurn()])
     summons[game.getTurn()].push(creep);
   }
   lane.summon(summons)
@@ -70,7 +70,7 @@ effectMap.set("Better Late Than Never" , function(ev, lane){
   let summons = [[],[]]
   lane = board.lanes[lane]
   for (let i = 0; i < 1; i++){
-    let creep = card(cardData.Cards[132],game.players[game.getTurn()])
+    let creep = card(cardData.Cards.find( function(ev){  return ev.Name == "Melee Creep" }),game.players[game.getTurn()])
     summons[game.getTurn()].push(creep);
   }
   lane.summon(summons)
@@ -82,7 +82,7 @@ effectMap.set("Call the Reserves" , function(ev, lane){
   let summons = [[],[]]
   lane = board.lanes[lane]
   for (let i = 0; i < 2; i++){
-    let creep = card(cardData.Cards[132],game.players[game.getTurn()])
+    let creep = card(cardData.Cards.find( function(ev){  return ev.Name == "Melee Creep" }),game.players[game.getTurn()])
     summons[game.getTurn()].push(creep);
   }
   lane.summon(summons)
@@ -160,7 +160,6 @@ effectMap.set("Spring the Trap" , function(ev, lane){
   lane = board.lanes[lane]
   for (let i = 0; i < 2; i++){
     let creep =  card(cardData.Cards.find(function(e){  return e.Name == "Centaur Hunter"  }),game.players[game.getTurn()])
-    // card(cardData.Cards[132],game.players[game.getTurn()])
     summons[game.getTurn()].push(creep);
   }
   lane.summon(summons)
@@ -698,6 +697,44 @@ effectMap.set("Echo Slam" , function(ev, lane, player, index){
   return true
 });
 
+targetMap.set("Healing Salve" , "unit")
+effectMap.set("Healing Salve" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  l.cards[index][player].currentHealth[0] += 6
+  if(l.cards[index][player].currentHealth[0] > l.cards[index][player].Health) {l.cards[index][player].currentHealth[0] = l.cards[index][player].Health}
+  l.cards[index][player].updateDisplay()
+  return true
+});
+
+targetMap.set("Fountain Flask" , "unit")
+effectMap.set("Fountain Flask" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  l.cards[index][player].currentHealth[0] = l.cards[index][player].Health
+  l.cards[index][player].updateDisplay()
+  return true
+});
+
+targetMap.set("Potion of Knowledge" , "lane")
+effectMap.set("Potion of Knowledge" , function(ev, lane, player, index){
+  game.players[game.getTurn()].draw()
+  return true
+});
+
+targetMap.set("Town Portal Scroll" , "unit")
+effectMap.set("Town Portal Scroll" , function(ev, lane, player, index){
+  if (board.lanes[lane].cards[index][player].CardType != "Hero" || player != game.getTurn()) return false
+  let card = board.lanes[lane].cards[index][player]
+  console.log(1)
+  let empty = blank(lane);
+  card.div.parentNode.replaceChild(empty.div , card.div);
+  board.lanes[lane].cards[index][player] = empty;
+  console.log(2)
+  card.respawn = 0;
+  card.currentHealth[0] = card.Health;
+  card.updateDisplay();
+
+  return true
+});
 
 // targetMap.set("Pick A Fight" , "unit")
 // effectMap.set("Pick A Fight" , function(ev, lane, player, index){

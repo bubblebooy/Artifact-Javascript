@@ -79,7 +79,8 @@ const card = (cardProto , player) => {
   // div.draggable = true;
   // let imageFileName = toFileName(cardProto.Name) // .replace(/\s/g,"_").replace("\'","").toLowerCase()
   let artwork = document.createElement('IMG'); artwork.draggable = false;
-  artwork.src = `${assetPath}/artwork/large/${cardProto.fileName}.jpg`
+  artwork.src = `${assetPath}/artwork/large/${cardProto.FileName}.jpg`
+  artwork.onerror = function () { artwork.src = "../src/placeholder.png"}
   div.appendChild(artwork)
 
   function lane(){
@@ -108,7 +109,7 @@ const card = (cardProto , player) => {
   }
 
   if(cardProto.ItemType == "Consumable"){
-    cardProto.ManaCost = 0
+    properties.ManaCost = 0
   }
 
   if (cardProto.GoldCost != null){
@@ -261,8 +262,9 @@ const card = (cardProto , player) => {
         abilityIcon.src = `${assetPath}/ability/${abilityFileName}.jpg`
       } else{
         if (abilityIndex > 0) ability.Name = ability.Name + ability.Type
-        abilityIcon.src = `${assetPath}/artwork/small/${cardProto.fileName}.jpg`
+        abilityIcon.src = `${assetPath}/artwork/small/${cardProto.FileName}.jpg`
       }
+      abilityIcon.onerror = function () { abilityIcon.src = "../src/placeholder.png"}
       abilityIcon.title = ability.Text
       ability.div.appendChild(abilityIcon)
       abilitiesContainer.appendChild(ability.div)
