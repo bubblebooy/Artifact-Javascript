@@ -34,10 +34,11 @@ function doubleTarget(card, currentTarget, target, callback, conditional = true 
         target = lane.cards.findIndex(function(p){return p[player].div == target})
       }else if (target == "tower"){target = player}
       if (conditional(lane,player,target)){
-        callback(lane,player,target)
-        card.Abilities[abilityIndex].currentCooldown = card.Abilities[abilityIndex].Cooldown;
-        card.updateDisplay()
-        game.nextTurn()
+        if (callback(lane,player,target)) {
+          card.Abilities[abilityIndex].currentCooldown = card.Abilities[abilityIndex].Cooldown;
+          card.updateDisplay()
+          game.nextTurn()
+        }
       }
     }
     game.div.classList.remove("target")
@@ -105,15 +106,17 @@ abilityMap.set("Moment of Courage" , function(card,e){
 triggerMap.set("Concussive Shot" , "click")
 abilityMap.set("Concussive Shot" , function(card,e){
   doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
-    lane.cards[targetCard][player].currentArmor[3] -= 2
-    lane.cards[targetCard][player].updateDisplay()
-    if (lane.cards[targetCard -1 ] != null && lane.cards[targetCard -1 ][player].Name != null){
-      lane.cards[targetCard -1 ][player].currentArmor[3] -= 2
-      lane.cards[targetCard-1][player].updateDisplay()
-    }
-    if (lane.cards[targetCard +1 ] != null && lane.cards[targetCard +1 ][player].Name != null){
-      lane.cards[targetCard +1 ][player].currentArmor[3] -= 2
-      lane.cards[targetCard+1][player].updateDisplay()
+    if (lane.cards[targetCard][player].CardType == "Hero") {
+      lane.cards[targetCard][player].currentArmor[3] -= 2
+      lane.cards[targetCard][player].updateDisplay()
+      if (lane.cards[targetCard -1 ] != null && lane.cards[targetCard -1 ][player].Name != null){
+        lane.cards[targetCard -1 ][player].currentArmor[3] -= 2
+        lane.cards[targetCard-1][player].updateDisplay()
+      }
+      if (lane.cards[targetCard +1 ] != null && lane.cards[targetCard +1 ][player].Name != null){
+        lane.cards[targetCard +1 ][player].currentArmor[3] -= 2
+        lane.cards[targetCard+1][player].updateDisplay()
+      }
     }
   } , function(lane,player,targetCard){
     return lane == board.lanes[game.getCurrentLane()]
