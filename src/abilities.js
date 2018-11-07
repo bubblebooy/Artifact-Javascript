@@ -325,6 +325,18 @@ abilityMap.set("Fissure" , function(card,e){
   return true
 });
 
+triggerMap.set("Headshot" , "click")
+abilityMap.set("Headshot" , function(card,e){
+  doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
+    lane.cards[targetCard][player].currentHealth[0] -= 5 - sum(lane.cards[targetCard][player].currentArmor)
+    lane.cards[targetCard][player].updateDisplay()
+    lane.collapse()
+  } , function(lane,player,targetCard){
+    return lane == board.lanes[game.getCurrentLane()]
+  })
+  return false
+});
+
 // game.condemn(l.cards[index][player],board.lanes[lane])
 // game.infoDisplayUpdate();
 // l.collapse()
