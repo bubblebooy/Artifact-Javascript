@@ -89,7 +89,7 @@ const player = (turn, name, heros, deck, computer = false) => {
   player.getHeros = () => heros ;
   player.name = name
   player.computer = computer
-  player.gold = 25;
+  player.gold = 0;
   return player
 }
 

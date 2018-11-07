@@ -1059,8 +1059,8 @@ abilityMap.set("Rumusque Vestments : EffectActive" , function(card,e){
   return false
 });
 
-triggerMap.set("Shield of Basilius : Effect" , "continuousEffect")
-abilityMap.set("Shield of Basilius : Effect" , function(card,e){
+triggerMap.set("Shield of Aquila : Effect" , "continuousEffect")
+abilityMap.set("Shield of Aquila : Effect" , function(card,e){
   let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
   $card.currentArmor[4] += 2
   $card.updateDisplay()
@@ -1074,7 +1074,8 @@ abilityMap.set("Shield of Basilius : Effect" , function(card,e){
   }
 });
 
-// ,,,,,,,,Shield of Aquila,Seraphim Shield,,Shiva's Guard,Nyctasha's Guard,Assassin's Veil,
+//Shield of Aquila missing from data base
+// ,,,,,,,,,Seraphim Shield,,Shiva's Guard,Nyctasha's Guard,Assassin's Veil,
 //Stonehall Pike,Blink Dagger,Wingfall Hammer,Rumusque Vestments
 //Broadsword,Claymore,Chainmail,Fur-lined Mantle,Hero's Cape,Platemail,Barbed Mail
 ["Demagicking Maul","Stonehall Plate","Stonehall Cloak","Leather Armor","Short Sword","Traveler's Cloak","Blade of the Vigil","Keenfolk Musket","Red Mist Maul","Shield of Basilius","Horn of the Alpha","Phase Boots","Ring of Tarrasque"]
