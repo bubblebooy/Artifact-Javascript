@@ -13,5 +13,4 @@ when is delt damage
 
 Todo:
 refresh button
-AI - buy items
 When unit dies trigger
