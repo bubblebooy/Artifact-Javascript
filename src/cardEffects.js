@@ -667,7 +667,7 @@ effectMap.set("Gust" , function(ev, lane){
 
 targetMap.set("Winter's Curse", "unit")
 effectMap.set("Winter's Curse", function(ev, lane, player, index) {
-  board.lanes[lane].cards[index][player] .disarmed = true;
+  board.lanes[lane].cards[index][player].disarmed = true;
   game.dispatchEvent("whenAttacking")
   const currentLane = board.lanes[lane]
   for (var i = -1; i <= 1; i+=2) {
