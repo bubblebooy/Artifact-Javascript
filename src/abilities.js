@@ -979,7 +979,103 @@ abilityMap.set("Fur-lined Mantle : Effect" , function(card,e){
   $card.currentHealth[4] += 8
   $card.updateDisplay()
 });
-// Stonehall Pike,Blink Dagger,,,Wingfall Hammer,,,Rumusque Vestments,Shield of Aquila,Seraphim Shield,,Shiva's Guard,Nyctasha's Guard,Assassin's Veil,
+
+triggerMap.set("Stonehall Pike : Effect" , "continuousEffect")
+abilityMap.set("Stonehall Pike : Effect" , function(card,e){
+  if (!card.stonehall){
+    card.div.addEventListener("afterCombat", function(){card.Attack = card.Attack || 2 ; card.Attack += 1})
+    card.stonehall = true
+  }
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  card.Attack = card.Attack || 2
+  $card.currentAttack[4] += card.Attack
+  $card.updateDisplay()
+});
+
+triggerMap.set("Blink Dagger : Effect" , "continuousEffect")
+abilityMap.set("Blink Dagger : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentAttack[4] += 2
+  $card.updateDisplay()
+});
+triggerMap.set("Blink Dagger : EffectActive" , "click")
+abilityMap.set("Blink Dagger : EffectActive" , function(c,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = game.getTurn()
+  let index = lane.cards.findIndex(function(card){ return (card[player].Weapon == c) })
+  let card = lane.cards[index][player]
+  let summons = [[],[]]
+  let empty = blank(lane)
+  doubleTarget(c, e.currentTarget, "lane", function($lane){
+    lane.cards[index][player] = empty
+    card.div.parentNode.replaceChild(empty.div , card.div);
+    summons[player].push(card)
+    $lane.summon(summons)
+  } , function($lane){
+    return ( $lane != lane)
+  })
+  return false
+});
+
+triggerMap.set("Wingfall Hammer : Effect" , "continuousEffect")
+abilityMap.set("Wingfall Hammer : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentAttack[4] += 4
+  $card.updateDisplay()
+});
+triggerMap.set("Wingfall Hammer : EffectActive" , "click")
+abilityMap.set("Wingfall Hammer : EffectActive" , function(c,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = game.getTurn()
+  let index = lane.cards.findIndex(function(card){ return (card[player].Weapon == c) })
+  for (var i = -1; i <= 1; i++) {
+    console.log(index)
+    if (lane.cards[index + i] != null && lane.cards[index + i][player].Name != null){
+      lane.cards[index+i][player].regen[3] += Math.floor(sum(lane.cards[index][player].currentAttack)/2)
+      lane.cards[index+i][player].updateDisplay()
+    }
+  }
+  return true
+});
+
+
+triggerMap.set("Rumusque Vestments : Effect" , "continuousEffect")
+abilityMap.set("Rumusque Vestments : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentArmor[4] += 1
+  $card.updateDisplay()
+});
+
+triggerMap.set("Rumusque Vestments : EffectActive" , "click")
+abilityMap.set("Rumusque Vestments : EffectActive" , function(card,e){
+  // let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
+    lane.cards[targetCard][player].currentHealth[0] += 4
+    if (lane.cards[targetCard][player].currentHealth[0] > lane.cards[targetCard][player].Health) lane.cards[targetCard][player].currentHealth[0] = lane.cards[targetCard][player].Health
+    lane.cards[targetCard][player].updateDisplay()
+  } , function(lane,player,targetCard){
+    return lane == board.lanes[game.getCurrentLane()]
+  })
+  return false
+});
+
+triggerMap.set("Shield of Basilius : Effect" , "continuousEffect")
+abilityMap.set("Shield of Basilius : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentArmor[4] += 2
+  $card.updateDisplay()
+  for (var i = -1; i < 2; i+=2) {
+    let lane = board.lanes[e.detail.lane]
+    let index = e.detail.card
+    if(lane.cards[index+i] != null && lane.cards[index+i][e.detail.player].Name != null){
+      lane.cards[index+i][e.detail.player].currentArmor[4] += 3;
+      lane.cards[index+i][e.detail.player].updateDisplay()
+    }
+  }
+});
+
+// ,,,,,,,,Shield of Aquila,Seraphim Shield,,Shiva's Guard,Nyctasha's Guard,Assassin's Veil,
+//Stonehall Pike,Blink Dagger,Wingfall Hammer,Rumusque Vestments
 //Broadsword,Claymore,Chainmail,Fur-lined Mantle,Hero's Cape,Platemail,Barbed Mail
 ["Demagicking Maul","Stonehall Plate","Stonehall Cloak","Leather Armor","Short Sword","Traveler's Cloak","Blade of the Vigil","Keenfolk Musket","Red Mist Maul","Shield of Basilius","Horn of the Alpha","Phase Boots","Ring of Tarrasque"]
 

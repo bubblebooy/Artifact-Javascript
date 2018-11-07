@@ -89,7 +89,7 @@ const player = (turn, name, heros, deck, computer = false) => {
   player.getHeros = () => heros ;
   player.name = name
   player.computer = computer
-  player.gold = 0;
+  player.gold = 25;
   return player
 }
 
@@ -394,7 +394,7 @@ AIheros = shuffle(AIheros).slice(0,5)
 let allheroes = ["Legion Commander","Lycan","Winter Wyvern","Skywrath Mage","Centaur Warrunner","Earthshaker","Omniknight","Drow Ranger","Sorla Khan","Phantom Assassin","Lion","Lich","Bounty Hunter","Venomancer","Prellex","Pugna","Sven","Luna","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Sniper","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"] // "Beastmaster"
 let heroes
 
-let secretShopDeck = ["Broadsword","Claymore","Chainmail","Fur-lined Mantle","Hero's Cape","Platemail","Barbed Mail","Demagicking Maul","Stonehall Plate","Stonehall Cloak","Leather Armor","Short Sword","Traveler's Cloak","Blade of the Vigil","Keenfolk Musket","Red Mist Maul","Shield of Basilius","Horn of the Alpha","Phase Boots","Ring of Tarrasque"]
+let secretShopDeck = ["Rumusque Vestments","Wingfall Hammer","Blink Dagger","Broadsword","Claymore","Chainmail","Fur-lined Mantle","Hero's Cape","Platemail","Barbed Mail","Demagicking Maul","Stonehall Plate","Stonehall Cloak","Leather Armor","Short Sword","Traveler's Cloak","Blade of the Vigil","Keenfolk Musket","Red Mist Maul","Shield of Basilius","Horn of the Alpha","Phase Boots","Ring of Tarrasque"]
 let itemDeck
 
 const startGamebtn = document.getElementById("start-game-btn");
