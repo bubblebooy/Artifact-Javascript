@@ -927,6 +927,62 @@ abilityMap.set("Phase Boots : EffectActive" , function(c,e){
   return false
 });
 
+triggerMap.set("Broadsword : Effect" , "continuousEffect")
+abilityMap.set("Broadsword : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentAttack[4] += 4
+  $card.updateDisplay()
+});
+
+triggerMap.set("Claymore : Effect" , "continuousEffect")
+abilityMap.set("Claymore : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentAttack[4] += 8
+  $card.updateDisplay()
+});
+
+triggerMap.set("Chainmail : Effect" , "continuousEffect")
+abilityMap.set("Chainmail : Effect" , function(card,e){
+  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentArmor[4] += 2
+  $card.updateDisplay()
+});
+
+triggerMap.set("Platemail : Effect" , "continuousEffect")
+abilityMap.set("Platemail : Effect" , function(card,e){
+  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentArmor[4] += 4
+  $card.updateDisplay()
+});
+
+triggerMap.set("Barbed Mail : Effect" , "continuousEffect")
+abilityMap.set("Barbed Mail : Effect" , function(card,e){
+  //let lane = board.lanes[e.detail.lane]; let index = e.detail.card; lane.cards[index][e.detail.player]
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentArmor[4] += 2
+  $card.retaliate[4] += 2
+  $card.updateDisplay()
+});
+
+triggerMap.set("Hero's Cape : Effect" , "continuousEffect")
+abilityMap.set("Hero's Cape : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentHealth[4] += 16
+  $card.updateDisplay()
+});
+
+triggerMap.set("Fur-lined Mantle: Effect" , "continuousEffect")
+abilityMap.set("Fur-lined Mantle : Effect" , function(card,e){
+  let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
+  $card.currentHealth[4] += 8
+  $card.updateDisplay()
+});
+// Stonehall Pike,Blink Dagger,,,Wingfall Hammer,,,Rumusque Vestments,Shield of Aquila,Seraphim Shield,,Shiva's Guard,Nyctasha's Guard,Assassin's Veil,
+//Broadsword,Claymore,Chainmail,Fur-lined Mantle,Hero's Cape,Platemail,Barbed Mail
+["Demagicking Maul","Stonehall Plate","Stonehall Cloak","Leather Armor","Short Sword","Traveler's Cloak","Blade of the Vigil","Keenfolk Musket","Red Mist Maul","Shield of Basilius","Horn of the Alpha","Phase Boots","Ring of Tarrasque"]
+
 
 // let lane = board.lanes[e.detail.lane]
 // let index = e.detail.card
