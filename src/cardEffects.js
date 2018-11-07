@@ -623,7 +623,7 @@ effectMap.set("Duel", function(ev, lane, player, index) {
 targetMap.set("Gank", "unit")
 effectMap.set("Gank", function(ev, lane, player, index) {
   if (lane != game.getCurrentLane() || board.lanes[lane].cards[index][player].Color != "Black" || board.lanes[lane].cards[index][player].CardType != "Hero" || player !== game.getTurn()) return false
-  let l = board.lanes[lane]
+  // let l = board.lanes[lane]
   // let card = l.cards[index][player]
   doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
     battle( lane, player, index, board.lanes.indexOf($lane), $player, $targetCard , false)
@@ -631,7 +631,6 @@ effectMap.set("Gank", function(ev, lane, player, index) {
   }, function($lane,$player,$targetCard){
     return (true)
   })
-  l.collapse()
   return false
 
 });
