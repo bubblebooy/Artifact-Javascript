@@ -144,7 +144,7 @@ const game = (() => {
     }else if ( score[0] >= 2){
       alert(`${players[0].name} Wins`);
     }else if ( score[1] >= 2){
-      alert(`DEFErunT : ${players[1].name} Wins`);
+      alert(`DEFEAT : ${players[1].name} Wins`);
     }
 
     passButtonController.hide()
