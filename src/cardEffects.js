@@ -724,11 +724,9 @@ targetMap.set("Town Portal Scroll" , "unit")
 effectMap.set("Town Portal Scroll" , function(ev, lane, player, index){
   if (board.lanes[lane].cards[index][player].CardType != "Hero" || player != game.getTurn()) return false
   let card = board.lanes[lane].cards[index][player]
-  console.log(1)
   let empty = blank(lane);
   card.div.parentNode.replaceChild(empty.div , card.div);
   board.lanes[lane].cards[index][player] = empty;
-  console.log(2)
   card.respawn = 0;
   card.currentHealth[0] = card.Health;
   card.updateDisplay();

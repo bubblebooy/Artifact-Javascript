@@ -338,6 +338,46 @@ abilityMap.set("Barracks : Effect" , function(c,e){
   //card(cardData.Cards.find( function(ev){  return ev.Name == "Thunderhide Pack" })
 });
 
+triggerMap.set("Grand Melee : Effect", "continuousEffect")
+abilityMap.set("Grand Melee : Effect" , function(c,e){
+  let lane = board.lanes[e.detail.lane]
+  if (lane.cards.some(function(c){
+    return c[e.detail.player].CardType == "Hero" && c[e.detail.player].Color == "Red"
+  })){
+    lane.cards.forEach(function(card){
+      if (card[e.detail.player].Name != null && card[e.detail.player].CardType == "Hero") {
+        card[e.detail.player].cleave[4] += 2
+        card[e.detail.player].updateDisplay()
+      }
+      if (card[1-e.detail.player].Name != null && card[1-e.detail.player].CardType == "Hero") {
+        card[1-e.detail.player].cleave[4] += 2
+        card[1-e.detail.player].updateDisplay()
+      }
+    })
+  }
+});
+
+triggerMap.set("Assured Destruction : Effect", "continuousEffect")
+abilityMap.set("Assured Destruction : Effect" , function(c,e){
+  let lane = board.lanes[e.detail.lane]
+  lane.cards.forEach(function(card){
+    if (card[e.detail.player].Name != null && card[e.detail.player].CardType == "Hero") {
+      card[e.detail.player].siege[4] += 4
+      card[e.detail.player].updateDisplay()
+    }
+    if (card[1-e.detail.player].Name != null && card[1-e.detail.player].CardType == "Hero") {
+      card[1-e.detail.player].siege[4] += 4
+      card[1-e.detail.player].updateDisplay()
+    }
+  })
+});
+
+triggerMap.set("Howling Mind : Effect" , "endOfRound")
+abilityMap.set("Howling Mind : Effect" , function(card,e){
+  game.players[0].draw()
+  game.players[1].draw()
+});
+
 
 triggerMap.set("Ignite : Effect" , "beforeTheActionPhase")
 abilityMap.set("Ignite : Effect" , function(card,e){
@@ -376,7 +416,6 @@ abilityMap.set("Assault Ladders : Effect" , function(card,e){
         }
     }
   })
-
 });
 
 triggerMap.set("Mist of Avernus : Effect" , "beforeTheActionPhase")
@@ -412,6 +451,42 @@ abilityMap.set("Verdant Refuge : Effect" , function(card,e){
   })
 });
 
+
+triggerMap.set("Escape Route : Effect" , "click")
+abilityMap.set("Escape Route : Effect" , function(card,e){
+  doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
+    let card = lane.cards[targetCard][player]
+    let empty = blank(lane);
+    card.div.parentNode.replaceChild(empty.div , card.div);
+    lane.cards[targetCard][player] = empty;
+    card.respawn = 0;
+    card.currentHealth[0] = card.Health;
+    card.updateDisplay();
+  } , function($lane,$player,$targetCard){
+    return board.lanes[game.getCurrentLane()] == $lane && game.getTurn() == $player && $lane.cards[$targetCard][$player].CardType == "Hero"
+  })
+  return false
+});
+
+triggerMap.set("Trebuchets : Effect" , "beforeTheActionPhase")
+abilityMap.set("Trebuchets : Effect" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  lane.towers[1-e.detail.player].currentHealth[0] -= 2
+  lane.towers[1-e.detail.player].updateDisplay()
+});
+
+triggerMap.set("Unsupervised Artillery : Effect" , "click")
+abilityMap.set("Unsupervised Artillery : Effect" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let enemies = lane.cards.reduce(targetUnitsAvail , [[],[]])[1-game.getTurn()]
+  for (var i = 0; i < enemies.length; i++) {
+    if (lane.cards[enemies[i]][game.getTurn()].Name == null) return false
+  }
+  lane.towers[1-game.getTurn()].currentHealth[0] -= 4;
+  lane.towers[1-game.getTurn()].updateDisplay();
+  return true
+});
+
 triggerMap.set("Steam Cannon : Effect" , "click")
 abilityMap.set("Steam Cannon : Effect" , function(card,e){
   doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
@@ -430,6 +505,26 @@ abilityMap.set("Keenfolk Turret : Effect" , function(card,e){
     return lane == board.lanes[game.getCurrentLane()]
   })
   return false
+});
+
+triggerMap.set("Iron Fog Goldmine : Effect" , "afterCombat")
+abilityMap.set("Iron Fog Goldmine : Effect" , function(card,e){
+  card.player.gold += 3
+  game.infoDisplayUpdate();
+});
+
+triggerMap.set("Homefield Advantage : Effect" , "beforeTheActionPhase")
+abilityMap.set("Homefield Advantage : Effect" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  let $card = lane.cards.reduce(targetUnitsAvail , [[],[]])[1-e.detail.player]
+  if ($card.length != 0){
+    $card = $card[Math.floor(Math.random()*$card.length)]
+    $card = lane.cards[$card]
+    if ($card[1-e.detail.player].Name != null) {
+      $card[1-e.detail.player].disarmed = true;
+      $card[1-e.detail.player].updateDisplay()
+    }
+  }
 });
 
 //// creeps
