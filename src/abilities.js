@@ -337,6 +337,20 @@ abilityMap.set("Headshot" , function(card,e){
   return false
 });
 
+triggerMap.set("Barroom Brawler" , "afterUnitDies")
+abilityMap.set("Barroom Brawler" , function(card, e){
+  let l = board.lanes[game.getCurrentLane()]
+  let player = e.detail.player
+  let index = e.detail.card
+  if (e.detail.player == e.detail.triggerPlayer ||
+     l.cards[e.detail.triggerCard][e.detail.triggerPlayer].CardType != "Hero" ||
+     sum(card.currentHealth) < 0 ||
+     e.detail.card + card.arrow != e.detail.triggerCard ) return false
+  card.currentArmor[1] += 2;
+  card.updateDisplay()
+  return true
+});
+
 // game.condemn(l.cards[index][player],board.lanes[lane])
 // game.infoDisplayUpdate();
 // l.collapse()
@@ -705,6 +719,20 @@ triggerMap.set("Thunderhide Pack : Effect" , "continuousEffect")
 abilityMap.set("Thunderhide Pack : Effect" , function(card,e){
   card.siege[4] += 6
   card.updateDisplay()
+});
+
+triggerMap.set("Ogre Corpse Tosser : Effect" , "afterUnitDies")
+abilityMap.set("Ogre Corpse Tosser : Effect" , function(card, e){
+  let l = board.lanes[game.getCurrentLane()]
+  let player = e.detail.player
+  console.log(l.cards[e.detail.triggerCard][e.detail.triggerPlayer].Name )
+  if (e.detail.player != e.detail.triggerPlayer ||
+     l.cards[e.detail.triggerCard][e.detail.triggerPlayer].Name != "Melee Creep" ||
+     sum(card.currentHealth) < 0 ) return false
+  console.log("Tossed")
+  l.towers[1-player].currentHealth[0] -= 2 - (sum(l.towers[1-player].currentArmor) < 0 ? sum(l.towers[1-player].currentArmor) : 0)
+  l.towers[1-player].updateDisplay()
+  return true
 });
 
 triggerMap.set("Emissary of the Quorum : Effect" , "click")
