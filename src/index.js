@@ -438,11 +438,27 @@ startGamebtn.addEventListener("click",function(){
   AIdeck = AIdeck.filter(function(card){
     let color =cardData.Cards.find( function(ev){  return ev.Name == card }).Color
     return AIheros.map(function(hero){ return cardData.Cards.find( function(ev){  return ev.Name == hero }).Color}).includes(color)
-   })
+  })
+  heroes = heroTextarea.value.split(",")
+  heroes = heroes.map(function(card){return card.trim()})
+  heroes = heroes.filter(function(card){return allheroes.includes(card)})
+  if (heroes.length < 5) heroes = allheroes
+  localStorage.setItem("heroes", heroes)
+  if (heroes.length > 5) heroes = heroes.slice(0,5)
   deck = deckTextarea.value.split(",")
   deck = deck.map(function(card){return card.trim()})
   deck = deck.filter(function(card){return allcards.includes(card)})
-  if (!deck.length) deck = allcards
+  deck = deck.filter(function(card){
+    let color =cardData.Cards.find( function(ev){  return ev.Name == card }).Color
+    return heroes.map(function(hero){ return cardData.Cards.find( function(ev){  return ev.Name == hero }).Color}).includes(color)
+  })
+  if (!deck.length) {
+    deck = allcards
+    deck = deck.filter(function(card){
+      let color =cardData.Cards.find( function(ev){  return ev.Name == card }).Color
+      return heroes.map(function(hero){ return cardData.Cards.find( function(ev){  return ev.Name == hero }).Color}).includes(color)
+    })
+  }
   localStorage.setItem("deck", deck)
   localStorage.setItem("3of", deck3of.checked)
   if (deck3of.checked) deck = deck.concat(deck,deck) ;
@@ -451,13 +467,7 @@ startGamebtn.addEventListener("click",function(){
   itemDeck = itemDeck.filter(function(card){return secretShopDeck.includes(card)})
   if (itemDeck.length < 9) itemDeck = secretShopDeck
   localStorage.setItem("item", itemDeck)
-  heroes = heroTextarea.value.split(",")
-  heroes = heroes.map(function(card){return card.trim()})
-  heroes = heroes.filter(function(card){return allheroes.includes(card)})
-  //heroes = heroes.filter(function(card){return allheroes.map(function(hero){return hero.toLowerCase()}).includes(card.toLowerCase())})
-  if (heroes.length < 5) heroes = allheroes
-  localStorage.setItem("heroes", heroes)
-  if (heroes.length > 5) heroes = heroes.slice(0,5)
+
   AIdeck = AIdeck.concat(AIdeck,AIdeck)
   startScreen.parentNode.removeChild(startScreen)
   refreshBtn.disabled = false

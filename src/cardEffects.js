@@ -328,6 +328,7 @@ effectMap.set("Restoration Effort" , function(ev, lane){
   let l = board.lanes[lane]
   let player = game.getTurn()
   l.towers[player].currentHealth[0] += 8
+  if (l.towers[player].currentHealth[0] > 40 ) l.towers[player].currentHealth[0] = 40
   l.towers[player].updateDisplay()
   return true
 });
