@@ -137,6 +137,14 @@ effectMap.set("Combat Training" , function(ev, lane, player, index){
   return true
 });
 
+targetMap.set("Collateral Damage" , "unit")
+effectMap.set("Collateral Damage" , function(ev, lane, player, index){
+  if (board.lanes[lane].cards[index][player].CardType != "Hero" || board.lanes[lane].cards[index][player].Color != "Black" ) return false
+  board.lanes[lane].cards[index][player].siege[1 + (1 - player == game.getTurn())] += 3;
+  board.lanes[lane].cards[index][player].updateDisplay()
+  return true
+});
+
 targetMap.set("Enrage" , "unit")
 effectMap.set("Enrage" , function(ev, lane, player, index){
   if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
@@ -449,6 +457,21 @@ effectMap.set("Battlefield Control" , function(ev, lane, player, index){
   let card = l.cards[index][player]
   doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
     card.arrow = $targetCard - index
+    card.updateDisplay()
+  }, function($lane,$player,$targetCard){
+    return ( $lane == l && game.players[player] != $player && Math.abs($targetCard - index) <= 1)
+  })
+  return false
+});
+
+targetMap.set("Murder Plot" , "unit")
+effectMap.set("Murder Plot" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  let card = l.cards[index][player]
+  if (board.lanes[lane].cards[index][player].CardType != "Hero" || board.lanes[lane].cards[index][player].Color != "Black" ) return false
+  doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
+    card.arrow = $targetCard - index
+    card.currentAttack[3] += 8;
     card.updateDisplay()
   }, function($lane,$player,$targetCard){
     return ( $lane == l && game.players[player] != $player && Math.abs($targetCard - index) <= 1)
