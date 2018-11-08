@@ -781,6 +781,12 @@ effectMap.set("Pick a Fight" , function(ev, lane, player, index){
   return false
 });
 
+targetMap.set("Viscous Nasal Goo" , "unit")
+effectMap.set("Viscous Nasal Goo" , function(ev, lane, player, index){
+  board.lanes[lane].cards[index][player].currentArmor[2] -= 2;
+  board.lanes[lane].cards[index][player].updateDisplay()
+  return true
+});
 
 //"Grazing Shot","No Accident","Slay","Pick Off","Assassinate"
 
