@@ -351,6 +351,20 @@ abilityMap.set("Barroom Brawler" , function(card, e){
   return true
 });
 
+triggerMap.set("Pit Fighter of Quoidge : Effect" , "afterUnitDies")
+abilityMap.set("Pit Fighter of Quoidge : Effect" , function(card, e){
+  let l = board.lanes[game.getCurrentLane()]
+  let player = e.detail.player
+  let index = e.detail.card
+  console.log("boop");
+  if (e.detail.player != e.detail.triggerPlayer ||
+     sum(card.currentHealth) < 0 ||
+     !(e.detail.card + 1 == e.detail.triggerCard || e.detail.card - 1 == e.detail.triggerCard )) return false
+  card.currentAttack[1] += 2;
+  card.updateDisplay()
+  return true
+});
+
 // game.condemn(l.cards[index][player],board.lanes[lane])
 // game.infoDisplayUpdate();
 // l.collapse()
