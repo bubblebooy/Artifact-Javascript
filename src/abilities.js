@@ -116,7 +116,7 @@ abilityMap.set("Concussive Shot" , function(card,e){
       lane.cards[targetCard+1][player].updateDisplay()
     }
   } , function(lane,player,targetCard){
-    return lane == board.lanes[game.getCurrentLane()]
+    return lane == board.lanes[game.getCurrentLane()] && lane.cards[targetCard][player].CardType == "Hero"
   })
   return false
 });
@@ -973,7 +973,7 @@ abilityMap.set("Hero's Cape : Effect" , function(card,e){
   $card.updateDisplay()
 });
 
-triggerMap.set("Fur-lined Mantle: Effect" , "continuousEffect")
+triggerMap.set("Fur-lined Mantle : Effect" , "continuousEffect")
 abilityMap.set("Fur-lined Mantle : Effect" , function(card,e){
   let $card = board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]
   $card.currentHealth[4] += 8

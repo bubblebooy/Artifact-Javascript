@@ -653,6 +653,8 @@ effectMap.set("Gank", function(ev, lane, player, index) {
   doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
     battle( lane, player, index, board.lanes.indexOf($lane), $player, $targetCard , false)
     board.lanes[lane].collapse()
+    $lane.collapse()
+    game.infoDisplayUpdate();
   }, function($lane,$player,$targetCard){
     return (true)
   })
