@@ -93,7 +93,6 @@ const player = (turn, name, heros, deck, computer = false) => {
   return player
 }
 
-
 const game = (() => {
   const div = document.getElementById('game');
   // const bottomPassButton = document.getElementById("pass-btn-bottom");
