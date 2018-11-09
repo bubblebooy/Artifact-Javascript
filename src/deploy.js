@@ -90,7 +90,13 @@ function deployment(){
         board.lanes[rand].stages[sideIndex].appendChild(creep.div)
       }
       if (game.getRound() == 0){
-        let rand = shuffle([0,1,2])
+        let rand = Math.floor(Math.random() * 3)
+        if (side[rand].length >= 2) {rand = (rand + 1 + (Math.random() < 0.5)) % 3}
+        let creep = card(cardData.Cards.find( function(ev){  return ev.Name == "Melee Creep" }),game.players[sideIndex])
+        side[rand].push(creep);
+        board.lanes[rand].stages[sideIndex].appendChild(creep.div)
+
+        rand = shuffle([0,1,2])
         for (var i = 0; i < 3; i++) {
           let hero = game.players[sideIndex].getHeros()[i]
           board.lanes[rand[i]].stages[sideIndex].appendChild(hero.div)
