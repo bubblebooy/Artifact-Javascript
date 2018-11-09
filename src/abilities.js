@@ -352,6 +352,8 @@ abilityMap.set("Barroom Brawler" , function(card, e){
 });
 
 
+
+
 // game.condemn(l.cards[index][player],board.lanes[lane])
 // game.infoDisplayUpdate();
 // l.collapse()
@@ -775,6 +777,14 @@ abilityMap.set("Plague Ward : Effect" , function(card,e){
   }
 });
 
+triggerMap.set("Oglodi Catapult : Effect" , "beforeTheActionPhase")
+abilityMap.set("Oglodi Catapult : Effect" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  lane.towers[1-e.detail.player].currentHealth[0] -= 2
+  lane.towers[1-e.detail.player].updateDisplay()
+});
+
+
 triggerMap.set("Prowler Vanguard : Effect" , "continuousEffect")
 abilityMap.set("Prowler Vanguard : Effect" , function(card,e){
   for (var i = -1; i < 2; i+=2) {
@@ -825,6 +835,52 @@ abilityMap.set("Smeevil Armsmaster : Effect" , function playEffect(card, e,f){
   }
   card.div.removeEventListener("continuousEffect", f)
 });
+
+triggerMap.set("Smeevil Blacksmith : Effect" , "continuousEffect")
+abilityMap.set("Smeevil Blacksmith : Effect" , function playEffect(card, e,f){
+  let lane = board.lanes[e.detail.lane]
+  let $card = lane.cards.reduce(targetHerossAvail , [[],[]])[e.detail.player]
+  if ($card.length != 0){
+    $card = $card[Math.floor(Math.random()*$card.length)]
+    $card = lane.cards[$card]
+    if ($card[e.detail.player].Name != null) {
+      $card[e.detail.player].currentArmor[1] += 1
+      $card[e.detail.player].updateDisplay()
+    }
+  }
+  card.div.removeEventListener("continuousEffect", f)
+});
+
+triggerMap.set("Roseleaf Rejuvenator : Effect" , "continuousEffect")
+abilityMap.set("Roseleaf Rejuvenator : Effect" , function playEffect(card, e,f){
+  let player = e.detail.player
+  let lane = board.lanes[e.detail.lane]
+  lane.towers[e.detail.player].currentHealth[0] += 7
+  if (lane.towers[player].currentHealth[0] > 40 ) lane.towers[player].currentHealth[0] = 40
+  lane.towers[player].updateDisplay()
+  card.div.removeEventListener("continuousEffect", f)
+});
+
+triggerMap.set("Champion of the Ancient : Effect" , "continuousEffect")
+abilityMap.set("Champion of the Ancient : Effect" , function playEffect(card, e,f){
+  let lane = board.lanes[e.detail.lane]
+  let enemies = lane.cards.reduce(targetUnitsAvail , [[],[]])[e.detail.player].length
+  if (enemies != 0){
+    card.currentAttack[1] += enemies
+    card.currentHealth[1] += enemies
+    card.cleave[1] += enemies
+  }
+  card.div.removeEventListener("continuousEffect", f)
+});
+
+triggerMap.set("Oglodi Vandal : Effect" , "continuousEffect")
+abilityMap.set("Oglodi Vandal : Effect" , function playEffect(card, e,f){
+  let lane = board.lanes[e.detail.lane]
+  lane.towers[1-e.detail.player].currentHealth[0] -= 4
+  lane.towers[1-e.detail.player].updateDisplay()
+  card.div.removeEventListener("continuousEffect", f)
+});
+
 
 
 triggerMap.set("Stonehall Elite : Effect" , "afterUnitDies")

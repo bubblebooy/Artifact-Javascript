@@ -842,6 +842,275 @@ effectMap.set("Diabolic Revelation" , function(ev, lane){
   return true
 });
 
+targetMap.set("Ventriloquy" , "unit")
+effectMap.set("Ventriloquy" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  let card = l.cards[index][player]
+  for (var i = -1; i <= 1; i++) {
+    if (l.cards[index + i] != null && l.cards[index + i][1-player].Name != null){
+      l.cards[index+i][1-player].arrow = -1 * i
+      l.cards[index+i][1-player].updateDisplay()
+    }
+  }
+  card.updateDisplay()
+});
 
+
+targetMap.set("Cunning Plan" , "unit")
+effectMap.set("Cunning Plan" , function(ev, lane, player, index){
+  // let lane = board.lanes[game.getCurrentLane()]
+  let l = board.lanes[lane]
+  let card = l.cards[index][player]
+  doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
+    game.players[game.getTurn()].draw()
+    let nextSibling = index > $targetCard ? card.div.nextSibling : $lane.cards[$targetCard][$player].div.nextSibling
+    index > $targetCard ? $lane.cards[$targetCard][$player].div.parentNode.insertBefore(card.div,$lane.cards[$targetCard][$player].div) : card.div.parentNode.insertBefore($lane.cards[$targetCard][$player].div,card.div)
+    index > $targetCard ? card.div.parentNode.insertBefore($lane.cards[$targetCard][$player].div, nextSibling) : $lane.cards[$targetCard][$player].div.parentNode.insertBefore(card.div,nextSibling)
+    let temp = $lane.cards[$targetCard][$player]
+    $lane.cards[$targetCard][$player] = l.cards[index][player]
+    l.cards[index][player] = temp
+    if(l.cards[index][1 - player].Name != null){
+        l.cards[index][player].arrow = 0
+        l.cards[index][player].updateDisplay()
+    }
+    if($lane.cards[$targetCard][1 - $player].Name != null){
+        $lane.cards[$targetCard][$player].arrow = 0;
+        $lane.cards[$targetCard][$player].updateDisplay()
+    }
+  } , function($lane,$player,$targetCard){
+    return ( $lane == l && player == $player && (index == $targetCard - 1 || index == $targetCard + 1))
+  })
+  return false
+});
+
+targetMap.set("Juke" , "unit")
+effectMap.set("Juke" , function(ev, lane, player, index){
+  // let lane = board.lanes[game.getCurrentLane()]
+  if (player != game.getTurn()) return false
+  let l = board.lanes[lane]
+  let card = l.cards[index][player]
+  doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
+    let nextSibling = index > $targetCard ? card.div.nextSibling : $lane.cards[$targetCard][$player].div.nextSibling
+    index > $targetCard ? $lane.cards[$targetCard][$player].div.parentNode.insertBefore(card.div,$lane.cards[$targetCard][$player].div) : card.div.parentNode.insertBefore($lane.cards[$targetCard][$player].div,card.div)
+    index > $targetCard ? card.div.parentNode.insertBefore($lane.cards[$targetCard][$player].div, nextSibling) : $lane.cards[$targetCard][$player].div.parentNode.insertBefore(card.div,nextSibling)
+    let temp = $lane.cards[$targetCard][$player]
+    $lane.cards[$targetCard][$player] = l.cards[index][player]
+    l.cards[index][player] = temp
+    if(l.cards[index][1 - player].Name != null){
+        l.cards[index][player].arrow = 0
+        l.cards[index][player].updateDisplay()
+    }
+    if($lane.cards[$targetCard][1 - $player].Name != null){
+        $lane.cards[$targetCard][$player].arrow = 0;
+        $lane.cards[$targetCard][$player].updateDisplay()
+    }
+  } , function($lane,$player,$targetCard){
+    return ( $lane == l && player == $player && (index == $targetCard - 1 || index == $targetCard + 1))
+  })
+  return false
+});
+
+
+targetMap.set("Whispers of Madness" , "unit")
+effectMap.set("Whispers of Madness" , function(ev, lane, player, index){
+  if (player == game.getTurn()) return false
+  board.lanes[lane].cards[index][player].silenced = true
+  board.lanes[lane].cards[index][player].disarmed = true
+  board.lanes[lane].cards[index][player].updateDisplay()
+  board.lanes.forEach(function(l){
+    l.cards.forEach(function(card){
+      if (card[1-player].Name != null && card[1-player].CardType == "Hero") {
+        card[1-player].silenced = true
+        card[1-player].disarmed = true
+        card[1-player].updateDisplay()
+      }
+    })
+  })
+
+  return true
+});
+
+targetMap.set("At Any Cost" , "lane")
+effectMap.set("At Any Cost" , function(ev, lane){
+  let l = board.lanes[lane]
+  let player = game.getTurn()
+  l.cards.forEach(function(card){
+    if (card[1-player].Name != null) {
+      card[1-player].currentHealth[0] -= 6 - sum(card[1-player].currentArmor)
+    }
+    if (card[player].Name != null) {
+      card[player].currentHealth[0] -= 6 - sum(card[player].currentArmor)
+    }
+  })
+  l.collapse()
+  return true
+});
+
+targetMap.set("Annihilation" , "lane")
+effectMap.set("Annihilation" , function(ev, lane){
+  let l = board.lanes[lane]
+  let player = game.getTurn()
+  l.cards.forEach(function(card,index){
+    if (card[player].Name != null) {
+      game.condemn(l.cards[index][player],l)
+
+    }
+    if (card[1-player].Name != null) {
+      game.condemn(l.cards[index][1-player],l)
+    }
+  })
+  l.collapse()
+  return true
+});
+
+targetMap.set("Compel" , "unit")
+effectMap.set("Compel" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  let card = l.cards[index][player]
+  doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
+    card.arrow = $targetCard - index
+    card.updateDisplay()
+    game.players[game.getTurn()].draw()
+  }, function($lane,$player,$targetCard){
+    return ( $lane == l && game.players[player] != $player && Math.abs($targetCard - index) <= 1)
+  })
+  return false
+});
+
+targetMap.set("Arcane Assault" , "lane")
+effectMap.set("Arcane Assault" , function(ev, lane){
+  let l = board.lanes[lane]
+  let player = game.getTurn()
+  l.towers[1-player].currentHealth[0] -= 2 - sum(l.towers[1-player].currentArmor)
+  l.towers[1-player].updateDisplay()
+  game.players[player].draw()
+  game.gianInitiative()
+  return true
+});
+
+targetMap.set("Fog of War" , "lane")
+effectMap.set("Fog of War" , function(ev, lane){
+  let l = board.lanes[lane]
+  let player = game.getTurn()
+  l.cards.forEach(function(card){
+    if (card[1-player].Name != null) {
+      if (Math.random() < 0.5) card[1-player].disarmed = true
+    }
+  })
+  l.collapse()
+  return true
+});
+
+targetMap.set("Friendly Fire", "unit")
+effectMap.set("Friendly Fire", function(ev, lane, player, index) {
+  if (player == game.getTurn()) return false
+  // let l = board.lanes[lane]
+  // let card = l.cards[index][player]
+  doubleTarget(draggedCard, "card", function($lane,$player,$targetCard){
+    battle( lane, player, index, board.lanes.indexOf($lane), $player, $targetCard , false)
+    board.lanes[lane].collapse()
+  }, function($lane,$player,$targetCard){
+    return ( $lane == board.lanes[lane], $player == player )
+  })
+  return false
+
+});
+
+targetMap.set("Lodestone Demolition" , "lane")
+effectMap.set("Lodestone Demolition" , function(ev, lane){
+  let l = board.lanes[lane]
+  let x = 0;
+  let player = game.getTurn()
+  l.cards.forEach(function(card){
+    if (card[1-player].Name != null) {
+      x += sum(card[1-player].currentArmor)
+    }
+  })
+  l.towers[1-player].currentHealth[0] -= x - sum(l.towers[1-player].currentArmor)
+  l.towers[1-player].updateDisplay()
+  return true
+});
+
+targetMap.set("Hip Fire" , "unit")
+effectMap.set("Hip Fire" , function(ev, lane, player, index){
+  let l = board.lanes[lane]
+  l.cards[index][player].currentHealth[0] -= 4 - sum(l.cards[index][player].currentArmor)
+  l.collapse()
+  game.gianInitiative()
+  return true
+});
+
+targetMap.set("The Cover of Night" , "unit")
+effectMap.set("The Cover of Night" , function(ev, lane, player, index){
+  if (board.lanes[lane].cards[index][player].Color != "Black" || board.lanes[lane].cards[index][player].CardType != "Hero" || player != game.getTurn()) return false
+  let summons = [[],[]]
+  let hero = board.lanes[lane].cards[index][player]
+  let empty = blank(lane)//,board.lanes[lane].playAreas[player],index)
+
+  doubleTarget(draggedCard, "lane", function($lane){
+    board.lanes[lane].cards[index][player] = empty
+    hero.div.parentNode.replaceChild(empty.div , hero.div);
+    hero.currentAttack[5] += 4
+    hero.siege[5] += 7
+    summons[player].push(hero)
+    console.log($lane);
+    $lane.summon(summons)
+  } , function($lane){
+    return ( $lane != lane)
+  })
+  return false
+});
+
+targetMap.set("Arm the Rebellion" , "lane")  // not in database
+effectMap.set("Arm the Rebellion" , function(ev, lane){
+  let l = board.lanes[lane]
+  let player = game.getTurn()
+  l.cards.forEach(function(card){
+    if (card[player].Name != null && card[player].CardType == "Creep") {
+      card[player].currentAttack += 2
+      card[player].currentArmor += 1
+      card[player].updateDisplay()
+    }
+  })
+  return true
+});
+
+targetMap.set("Defend the Weak" , "unit")
+effectMap.set("Defend the Weak" , function(ev, lane, player, index){
+  let card = board.lanes[lane].cards[index][player]
+  card.div.addEventListener("continuousEffect", function(e){
+    for (var i = -1; i < 2; i+=2) {
+      let l = board.lanes[e.detail.lane]
+      index = e.detail.card
+      if(l.cards[index+i] != null && l.cards[index+i][e.detail.player].Name != null){
+        l.cards[index+i][e.detail.player].currentArmor[4] += 2;
+        l.cards[index+i][e.detail.player].updateDisplay()
+      }
+    }
+  })
+
+  return true
+});
+
+targetMap.set("Allseeing One's Favor" , "unit")
+effectMap.set("Allseeing One's Favor" , function(ev, lane, player, index){
+  if (board.lanes[lane].cards[index][player].Color != "Green" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
+  let card = board.lanes[lane].cards[index][player]
+  card.div.addEventListener("continuousEffect", function(e){
+    let l = board.lanes[e.detail.lane]
+
+    l.cards.forEach(function(card){
+      if (card[e.detail.player].Name != null && card[e.detail.player] != board.lanes[e.detail.lane].cards[e.detail.card][e.detail.player]) {
+        card[e.detail.player].regen[4] += 2;
+        card[e.detail.player].updateDisplay()
+      }
+    })
+  })
+
+  return true
+});
+
+
+//Defend the Weak,Allseeing One's Favor
 
 export {effectMap,targetMap};
