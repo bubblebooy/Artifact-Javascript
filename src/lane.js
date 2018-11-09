@@ -46,9 +46,9 @@ const lane = (lane) => {
           effectMap.get(draggedCard.Name)(ev , lane);
           draggedCard.div.parentNode.removeChild(draggedCard.div);
         }
-        board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost;
-        board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay();
-        game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1);
+        board.lanes[game.getCurrentLane()].towers[draggedCard.player.turn].mana[0] -= draggedCard.ManaCost;
+        board.lanes[game.getCurrentLane()].towers[draggedCard.player.turn].updateDisplay();
+        game.players[draggedCard.player.turn].hand.splice(game.players[draggedCard.player.turn].hand.indexOf(draggedCard),1);
         collapse();
         expand();
         game.dispatchEvent("continuousRefresh")

@@ -294,7 +294,7 @@ const card = (cardProto , player) => {
           }
         })
       }else{
-        div.addEventListener(triggerMap.get(ability.Name), function(e){abilityMap.get(ability.Name)(cardProto,e)})
+        div.addEventListener(triggerMap.get(ability.Name), function f(e){abilityMap.get(ability.Name)(cardProto,e,f)})
        }
        properties.Abilities.push(ability)
     })
@@ -316,10 +316,10 @@ const card = (cardProto , player) => {
 
           if (effectMap.get(draggedCard.Name)(ev, lane , player , index)){
             draggedCard.div.draggable = false;
-            board.lanes[game.getCurrentLane()].towers[game.getTurn()].mana[0] -= draggedCard.ManaCost
-            board.lanes[game.getCurrentLane()].towers[game.getTurn()].updateDisplay()
+            board.lanes[game.getCurrentLane()].towers[draggedCard.player.turn].mana[0] -= draggedCard.ManaCost
+            board.lanes[game.getCurrentLane()].towers[draggedCard.player.turn].updateDisplay()
             draggedCard.div.parentNode.removeChild(draggedCard.div)
-            game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
+            game.players[draggedCard.player.turn].hand.splice(game.players[draggedCard.player.turn].hand.indexOf(draggedCard),1)
             game.dispatchEvent("continuousRefresh")
             game.nextTurn()
           }
@@ -343,7 +343,7 @@ const card = (cardProto , player) => {
           cardProto.Weapon = draggedCard
           itemWeaponContainer.appendChild(draggedCard.div)
         }
-        game.players[game.getTurn()].hand.splice(game.players[game.getTurn()].hand.indexOf(draggedCard),1)
+        game.players[draggedCard.player.turn].hand.splice(game.players[draggedCard.player.turn].hand.indexOf(draggedCard),1)
         game.dispatchEvent("continuousRefresh")
         game.nextTurn()
       }

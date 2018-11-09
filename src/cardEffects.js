@@ -788,7 +788,60 @@ effectMap.set("Viscous Nasal Goo" , function(ev, lane, player, index){
   return true
 });
 
-//"Grazing Shot","No Accident","Slay","Pick Off","Assassinate"
+targetMap.set("Fight Through the Pain" , "unit")
+effectMap.set("Fight Through the Pain" , function(ev, lane, player, index){
+  if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
+  board.lanes[lane].cards[index][player].currentArmor[3] += 2;
+  game.gianInitiative()
+  board.lanes[lane].cards[index][player].updateDisplay()
+  return true
+});
+
+targetMap.set("Rend Armor" , "unit")
+effectMap.set("Rend Armor" , function(ev, lane, player, index){
+  board.lanes[lane].cards[index][player].currentArmor[1] -= sum(board.lanes[lane].cards[index][player].currentArmor);
+  board.lanes[lane].cards[index][player].updateDisplay()
+  return true
+});
+
+targetMap.set("Clear The Deck" , "lane")
+effectMap.set("Clear The Deck" , function(ev, lane){
+  let l = board.lanes[lane]
+  let player = game.getTurn()
+  l.cards.forEach(function(card){
+    if (card[player].Name != null && card[player].CardType == "Hero") {
+      card[player].cleave[3] += 4;
+      card[player].updateDisplay()
+    }
+  })
+  return true
+});
+
+targetMap.set("Crippling Blow" , "unit")
+effectMap.set("Crippling Blow" , function(ev, lane, player, index){
+  board.lanes[lane].cards[index][player].currentAttack[2] -= 2;
+  board.lanes[lane].cards[index][player].updateDisplay()
+  return true
+});
+
+targetMap.set("Diabolic Revelation" , "lane")
+effectMap.set("Diabolic Revelation" , function(ev, lane){
+  let player = game.players[game.getTurn()]
+  player.draw();player.draw()
+  //let l = board.lanes[lane]
+  player = game.getTurn()
+  board.lanes.forEach(function(l){
+    l.cards.forEach(function(card){
+      if (card[player].Name != null) {
+        card[player].currentHealth[0] -= 2 - sum(card[player].currentArmor)
+      }
+    })
+    l.collapse()
+  })
+
+  return true
+});
+
 
 
 export {effectMap,targetMap};
