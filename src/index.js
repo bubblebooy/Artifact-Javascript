@@ -535,7 +535,7 @@ importBtn.addEventListener("click", function(){
   if (deckCode) {
     deck3of.checked = false
     let importDeck = CArtifactDeckDecoder.ParseDeck(deckCode)
-    console.log(importDeck)
+    // console.log(importDeck)
     deckTextarea.value = importDeck.cards.map(function(card){
       let name = set00.card_set.card_list.find(function(c){return c.card_id == card.id})
       name = name || set01.card_set.card_list.find(function(c){return c.card_id == card.id})
@@ -560,7 +560,7 @@ importBtn.addEventListener("click", function(){
       hero = cardData.Cards.find( function(ev){  return ev.Name == hero })
       let card
       if (hero) card = cardData.Cards.find( function(ev){  return ev.Id == hero.SignatureCard })
-      console.log(card)
+      // console.log(card)
       deckTextarea.value += "," + card.Name + "," + card.Name + "," + card.Name
     })
     heroTextarea.value += "," + heroTextarea.value
