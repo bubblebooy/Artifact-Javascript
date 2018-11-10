@@ -9,6 +9,8 @@ import infoDisplay from './infoDisplay'
 import {sum, shuffle} from './arrayFunctions'
 import {board} from './board'
 import {AI} from './AI'
+import CArtifactDeckDecoder from './deck_decoder.js'
+import {set00,set01} from './artifactCardSets.js'
 
 let cardData = "not loaded yet";
 loadJSON(function(response){
@@ -418,6 +420,7 @@ const deckResetBtn = document.getElementById("deck-reset-btn")
 const deck3of = document.getElementById("deck-3of")
 const itemResetBtn = document.getElementById("item-reset-btn")
 const heroesResetBtn = document.getElementById("heroes-reset-btn")
+const importBtn = document.getElementById("import-game-btn")
 
 const refreshBtn = document.getElementById("refresh-btn")
 
@@ -428,10 +431,10 @@ deckTextarea.value = localStorage.getItem("deck")
 deckTextarea.value = deckTextarea.value || allcards;
 deckTextarea.placeholder = "  If empty all cards will be added to your deck."
 deck3of.checked = (localStorage.getItem("3of") == null ? true : localStorage.getItem("3of") == "true")
+deckTextarea.title = "adds 3 of each listed card"
 
 heroTextarea.value = localStorage.getItem("heroes")
 heroTextarea.value = heroTextarea.value || allheroes;
-deckTextarea.title = "adds 3 of each listed card"
 heroTextarea.placeholder = "  If empty your heroes will be Legion Commander, Lycan, Winter Wyvern, Skywrath Mage, Centaur Warrunner"
 
 itemTextarea.value = localStorage.getItem("item")
@@ -520,6 +523,50 @@ refreshBtn.addEventListener("click", function(){
   board.lanes[game.getCurrentLane()].expand()
   game.dispatchEvent("continuousRefresh")
 })
+
+// console.log(CArtifactDeckDecoder);
+// CArtifactDeckDecoder.DecodeDeckString("ADCJWkTZX05uwGDCRV4XQGy3QGLmqUBg4GQJgGLGgO7AaABR3JlZW4vQmxhY2sgRXhhbXBsZQ__")
+// CArtifactDeckDecoder.DecodeDeckString("ADCFXhlfTm7AYMJFQ__")
+// CArtifactDeckDecoder.DecodeDeckString("ADCEfg+uAI_")
+// CArtifactDeckDecoder.DecodeDeckString("ADCEeUquQI_")
+//console.log(CArtifactDeckDecoder.ParseDeck("ADCJWkTZX05uwGDCRV4XQGy3QGLmqUBg4GQJgGLGgO7AaABR3JlZW4vQmxhY2sgRXhhbXBsZQ__"))
+importBtn.addEventListener("click", function(){
+  let deckCode = prompt("Enter Deck Code \nNot all cards impelmented, cards not impelmented will be ignored")
+  if (deckCode) {
+    deck3of.checked = false
+    let importDeck = CArtifactDeckDecoder.ParseDeck(deckCode)
+    console.log(importDeck)
+    deckTextarea.value = importDeck.cards.map(function(card){
+      let name = set00.card_set.card_list.find(function(c){return c.card_id == card.id})
+      name = name || set01.card_set.card_list.find(function(c){return c.card_id == card.id})
+      if (name) { name = name.card_name.english }
+      name = [name]
+      for (var i = 1; i < card.count; i++) {
+        name.push(name[0])
+      }
+      return name
+    }).flat()
+
+    itemTextarea.value = deckTextarea.value
+
+    heroTextarea.value = importDeck.heroes.sort(function(a ,b){ return a.turn - b.turn}).map(function(card){
+      let name = set00.card_set.card_list.find(function(c){return c.card_id == card.id})
+      name = name || set01.card_set.card_list.find(function(c){return c.card_id == card.id})
+      if (name) { name = name.card_name.english }
+      return name
+    })
+
+    heroTextarea.value.split(",").forEach(function(hero){
+      hero = cardData.Cards.find( function(ev){  return ev.Name == hero })
+      let card
+      if (hero) card = cardData.Cards.find( function(ev){  return ev.Id == hero.SignatureCard })
+      console.log(card)
+      deckTextarea.value += "," + card.Name + "," + card.Name + "," + card.Name
+    })
+    heroTextarea.value += "," + heroTextarea.value
+  }
+})
+
 
 
 export {game, cardData, posAvail, battle, itemDeck, secretShopDeck};
