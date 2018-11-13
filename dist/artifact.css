@@ -755,7 +755,7 @@ body{
   transform: translate(-50%, -50%);
   box-shadow:  0px 0px 80px 0px #4d09d555;
 }
-#deck-game-btn , #heroes-game-btn,#item-game-btn,#deck-reset-btn,#item-reset-btn,#heroes-reset-btn,#import-game-btn{
+#deck-game-btn , #heroes-game-btn,#item-game-btn,#deck-reset-btn,#item-reset-btn,#heroes-reset-btn,#heroes-shuffle-btn,#import-game-btn{
     background-color: #233525;
     position: initial;
     display: inline-block;

@@ -420,6 +420,7 @@ const deckResetBtn = document.getElementById("deck-reset-btn")
 const deck3of = document.getElementById("deck-3of")
 const itemResetBtn = document.getElementById("item-reset-btn")
 const heroesResetBtn = document.getElementById("heroes-reset-btn")
+const heroesShuffleBtn = document.getElementById("heroes-shuffle-btn")
 const importBtn = document.getElementById("import-game-btn")
 
 const refreshBtn = document.getElementById("refresh-btn")
@@ -515,6 +516,9 @@ itemResetBtn.addEventListener("click", function(){
 })
 heroesResetBtn.addEventListener("click", function(){
   heroTextarea.value = allheroes;
+})
+heroesShuffleBtn.addEventListener("click", function(){
+  heroTextarea.value = shuffle(heroTextarea.value.split(","))
 })
 
 refreshBtn.title = "Makes sure everything is updated and you have at least one space to play a creep"
