@@ -325,6 +325,28 @@ abilityMap.set("Fissure" , function(card,e){
   return true
 });
 
+triggerMap.set("Ravage" , "click")
+abilityMap.set("Ravage" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = game.getTurn()
+  let index = lane.cards.findIndex(function(c){ return (c[player] == card) })
+  for (var i = -1; i < 2; i+=1) {
+    if(lane.cards[index+i] != null && lane.cards[index+i][1-player].Name != null){
+      lane.cards[index+i][1 - player].disarmed = true;
+      lane.cards[index+i][1 - player].silenced = true;
+      lane.cards[index+i][1 - player].updateDisplay()
+    }
+  }
+  lane.cards.forEach(function(card){
+    if (card[1-player].Name != null && Math.random() < .5) {
+      card[1-player].disarmed = true;
+      card[1-player].silenced = true;
+      card[1 - player].updateDisplay();
+    }
+  })
+  return true
+});
+
 triggerMap.set("Headshot" , "click")
 abilityMap.set("Headshot" , function(card,e){
   doubleTarget(card, e.currentTarget, "card", function(lane,player,targetCard){
@@ -351,6 +373,18 @@ abilityMap.set("Barroom Brawler" , function(card, e){
   return true
 });
 
+triggerMap.set("Sadist" , "afterUnitDies")
+abilityMap.set("Sadist" , function(card, e){
+  let l = board.lanes[game.getCurrentLane()]
+  let player = e.detail.player
+  let index = e.detail.card
+  if (e.detail.player == e.detail.triggerPlayer ||
+     sum(card.currentHealth) < 0 ||
+     !(e.detail.card - 1 == e.detail.triggerCard || e.detail.card == e.detail.triggerCard || e.detail.card + 1 == e.detail.triggerCard) ) return false
+  card.currentHealth[1] += 1;
+  card.updateDisplay()
+  return true
+});
 
 
 

@@ -251,6 +251,7 @@ const card = (cardProto , player) => {
   if (cardProto.Abilities != null){  //&& cardProto.CardType != "Improvement"
     properties.Abilities = []
     let abilitiesContainer = document.createElement('div');
+    cardProto.abilitiesContainer = abilitiesContainer
     abilitiesContainer.classList.add("abilities-container")
     cardProto.Abilities.forEach(function(ability,abilityIndex){
       ability = Object.assign({}, ability)

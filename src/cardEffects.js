@@ -797,6 +797,15 @@ effectMap.set("Fight Through the Pain" , function(ev, lane, player, index){
   return true
 });
 
+targetMap.set("Kraken Shell" , "unit")
+effectMap.set("Kraken Shell" , function(ev, lane, player, index){
+  if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
+  board.lanes[lane].cards[index][player].currentArmor[1] += 1;
+  game.gianInitiative()
+  board.lanes[lane].cards[index][player].updateDisplay()
+  return true
+});
+
 targetMap.set("Rend Armor" , "unit")
 effectMap.set("Rend Armor" , function(ev, lane, player, index){
   board.lanes[lane].cards[index][player].currentArmor[1] -= sum(board.lanes[lane].cards[index][player].currentArmor);
@@ -1105,6 +1114,34 @@ effectMap.set("Allseeing One's Favor" , function(ev, lane, player, index){
         card[e.detail.player].updateDisplay()
       }
     })
+  })
+
+  return true
+});
+
+targetMap.set("Heartstopper Aura" , "unit")
+effectMap.set("Heartstopper Aura" , function(ev, lane, player, index){
+  if (board.lanes[lane].cards[index][player].Color != "Black" || board.lanes[lane].cards[index][player].CardType != "Hero") return false
+  let card = board.lanes[lane].cards[index][player]
+  let abilitiesContainer = card.abilitiesContainer
+  let div = document.createElement('div')
+  div.classList.add("ability-container")
+  let abilityIcon = document.createElement('IMG'); abilityIcon.draggable = false;
+  abilityIcon.src = `../node_modules/artifactdb/assets/artwork/small/${card.FileName}.jpg`
+  abilityIcon.onerror = function () { abilityIcon.src = "../src/placeholder.png"}
+  abilityIcon.title = "Modify a black hero with \"Deal 2 piercing damage to this hero's enemy neighbors before the action phase.\""
+  div.appendChild(abilityIcon)
+  abilitiesContainer.appendChild(div)
+
+  card.div.addEventListener("beforeTheActionPhase", function(e){
+    let currentLane = board.lanes[e.detail.lane]
+    let index = e.detail.card
+    for (var i = -1; i <= 1; i++) {
+      if (currentLane.cards[index + i] && currentLane.cards[index + i][1-e.detail.player].Name != null){
+        currentLane.cards[index + i][1-e.detail.player].currentHealth[0] -= 2 - (sum(currentLane.cards[index + i][1-e.detail.player].currentArmor) < 0 ? sum(currentLane.cards[index + i][1-e.detail.player].currentArmor) : 0)
+      }
+      currentLane.collapse()
+    }
   })
 
   return true
