@@ -96,6 +96,7 @@ const card = (cardProto , player) => {
   if (cardProto.CardType == "Hero"){
     properties.respawn = 0;
     properties.Bounty = 5;
+    endOfRound = addToFunction(endOfRound , function(){if (cardProto.respawn >= 0) cardProto.Bounty = 5 })
   }
   if (cardProto.CardType == "Creep"){
     properties.Bounty = 1;

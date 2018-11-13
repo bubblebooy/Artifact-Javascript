@@ -1147,6 +1147,20 @@ effectMap.set("Heartstopper Aura" , function(ev, lane, player, index){
   return true
 });
 
+targetMap.set("Track" , "unit")
+effectMap.set("Track" , function(ev, lane, player, index){
+  if (board.lanes[lane].cards[index][player].CardType != "Hero") return false
+  board.lanes[lane].cards[index][player].Bounty += 10
+  return true
+});
+
+targetMap.set("Blood Rage" , "unit")
+effectMap.set("Blood Rage" , function(ev, lane, player, index){
+  board.lanes[lane].cards[index][player].silenced = true;
+  board.lanes[lane].cards[index][player].currentAttack[3] += 4;
+  board.lanes[lane].cards[index][player].updateDisplay()
+  return true
+});
 
 //Defend the Weak,Allseeing One's Favor
 
