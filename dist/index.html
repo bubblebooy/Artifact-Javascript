@@ -54,13 +54,24 @@
         <div id="item-options" class = 'display-none'>
           <button type="button" name="resetItemDeck" id='item-reset-btn' class="btn">Rest</button>
         </div>
+        <div id="other-options" class = 'display-none'>
+          <label title = "Adds to enemy tower if positive &#xA;Removes from your tower if negative"> Tower Handicap: </label>
+          <input type="number" min="-39" max = "1000" value="0" id="tower-handicap"> <br>
+          <label> AI Mana Bonus: </label>
+          <input type="number" min="0"  max = "1000" value="0" id="mana-handicap"> <br>
+          <label> AI Gold Bonus: </label>
+          <input type="number" min="0"  max = "1000" value="0" id="gold-handicap"> <br>
+        </div>
 
         <div class="game-options">
           <button type="button" name="editDeck" id='deck-game-btn' class="btn UI">Deck</button>
           <button type="button" name="editItemDeck" id='item-game-btn' class="btn UI">Items</button>
           <button type="button" name="editHeroes" id='heroes-game-btn' class="btn UI">Heroes</button>
           <button type="button" name="import" id='import-game-btn' class="btn UI">Import</button>
+          <button type="button" name="other" id='other-game-btn' class="btn UI">&#x2699;</button>
         </div>
+
+
 
         <div class="credit">
           <a>Bubblebooy</a> /

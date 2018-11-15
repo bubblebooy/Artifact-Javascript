@@ -755,7 +755,7 @@ body{
   transform: translate(-50%, -50%);
   box-shadow:  0px 0px 80px 0px #4d09d555;
 }
-#deck-game-btn , #heroes-game-btn,#item-game-btn,#deck-reset-btn,#item-reset-btn,#heroes-reset-btn,#heroes-shuffle-btn,#import-game-btn{
+#deck-game-btn , #heroes-game-btn,#item-game-btn,#deck-reset-btn,#item-reset-btn,#heroes-reset-btn,#heroes-shuffle-btn,#import-game-btn, #other-game-btn{
     background-color: #233525;
     position: initial;
     display: inline-block;
@@ -808,11 +808,27 @@ body{
   top: 79%;
   transform: translate(-50%, -50%);
 }
-#deck-options, #heroes-options,#item-options{
+#deck-options, #heroes-options,#item-options, #other-options{
   position: absolute;
   left: 50%;
   top: 90%;
   transform: translate(-50%, -50%);
+}
+#other-options{
+  top: 79%;
+}
+#other-options input{
+  background: none;
+  border: none;
+  color: inherit;
+}
+#other-options input:focus{
+  background: #0f002f;
+  border: solid;
+  border-width: 1px;
+  border-color: #96a2bd;
+  box-shadow: 0px 0px 200px 2px #4d09d5;
+  outline: none;
 }
 
 .refresh-btn{

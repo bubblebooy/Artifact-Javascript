@@ -422,6 +422,12 @@ const itemResetBtn = document.getElementById("item-reset-btn")
 const heroesResetBtn = document.getElementById("heroes-reset-btn")
 const heroesShuffleBtn = document.getElementById("heroes-shuffle-btn")
 const importBtn = document.getElementById("import-game-btn")
+const otherBtn = document.getElementById("other-game-btn")
+const otherOptions = document.getElementById("other-options")
+const towerHandicap = document.getElementById("tower-handicap")
+const manaHandicap = document.getElementById("mana-handicap")
+const goldHandicap = document.getElementById("gold-handicap")
+
 
 const refreshBtn = document.getElementById("refresh-btn")
 
@@ -441,6 +447,10 @@ heroTextarea.placeholder = "  If empty your heroes will be Legion Commander, Lyc
 itemTextarea.value = localStorage.getItem("item")
 itemTextarea.value = itemTextarea.value || secretShopDeck;
 itemTextarea.placeholder = "  If empty all items will be added to your item deck."
+
+goldHandicap.value = localStorage.getItem("goldHandicap") || 0
+manaHandicap.value = localStorage.getItem("manaHandicap") || 0
+towerHandicap.value = localStorage.getItem("towerHandicap") || 0
 
 startGamebtn.disabled = true;
 let loading = true
@@ -483,7 +493,21 @@ startGamebtn.addEventListener("click",function(){
   startScreen.parentNode.removeChild(startScreen)
   refreshBtn.disabled = false
   game.startGame()
+
+  game.players[1].gold += parseInt(goldHandicap.value);
+  localStorage.setItem("goldHandicap",goldHandicap.value)
+  game.infoDisplayUpdate();
+  if (manaHandicap.value != 0 || towerHandicap.value != 0) {
+    board.lanes.forEach(function(lane){
+      lane.towers[1].mana[0]+=parseInt(manaHandicap.value)
+      towerHandicap.value > 0 ? lane.towers[1].currentHealth[0]+=parseInt(towerHandicap.value) : lane.towers[0].currentHealth[0]+=parseInt(towerHandicap.value)
+      lane.towers[1].updateDisplay();lane.towers[0].updateDisplay()
+      localStorage.setItem("manaHandicap", manaHandicap.value)
+      localStorage.setItem("towerHandicap", towerHandicap.value)
+    })
+  }
 })
+
 deckBtn.addEventListener("click", function(){
   deckTextarea.classList.toggle('display-none')
   itemTextarea.classList.add('display-none')
@@ -491,6 +515,7 @@ deckBtn.addEventListener("click", function(){
   deckOptions.classList.toggle('display-none')
   itemOptions.classList.add('display-none')
   heroesOptions.classList.add('display-none')
+  otherOptions.classList.add('display-none')
 })
 itemBtn.addEventListener("click", function(){
   itemTextarea.classList.toggle('display-none')
@@ -499,6 +524,7 @@ itemBtn.addEventListener("click", function(){
   itemOptions.classList.toggle('display-none')
   heroesOptions.classList.add('display-none')
   deckOptions.classList.add('display-none')
+  otherOptions.classList.add('display-none')
 })
 heroBtn.addEventListener("click", function(){
   heroTextarea.classList.toggle('display-none')
@@ -507,7 +533,18 @@ heroBtn.addEventListener("click", function(){
   heroesOptions.classList.toggle('display-none')
   deckOptions.classList.add('display-none')
   itemOptions.classList.add('display-none')
+  otherOptions.classList.add('display-none')
 })
+otherBtn.addEventListener("click", function(){
+  heroTextarea.classList.add('display-none')
+  deckTextarea.classList.add('display-none')
+  itemTextarea.classList.add('display-none')
+  heroesOptions.classList.add('display-none')
+  deckOptions.classList.add('display-none')
+  itemOptions.classList.add('display-none')
+  otherOptions.classList.toggle('display-none')
+})
+
 deckResetBtn.addEventListener("click", function(){
   deckTextarea.value = allcards;
 })
