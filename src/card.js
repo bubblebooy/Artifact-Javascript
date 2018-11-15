@@ -212,7 +212,10 @@ const card = (cardProto , player) => {
     healthContainer.appendChild(healthIcon)
     healthContainer.appendChild(healthNumber)
     div.appendChild(healthContainer)
-    updateDisplay = addToFunction(updateDisplay , function(){healthNumber.textContent = sum(cardProto.currentHealth);})
+    updateDisplay = addToFunction(updateDisplay , function(){
+      healthNumber.textContent = sum(cardProto.currentHealth);
+      cardProto.currentHealth[0] < cardProto.Health ? healthNumber.classList.add("red-text") : healthNumber.classList.remove("red-text")
+    })
     endOfRound = addToFunction(endOfRound , function(){cardProto.currentHealth[3] = 0 })
     continuousRefresh = addToFunction(continuousRefresh , function(){cardProto.currentHealth[4] = 0 })
     afterCombat = addToFunction(afterCombat , function(){cardProto.currentHealth[5] = 0 })

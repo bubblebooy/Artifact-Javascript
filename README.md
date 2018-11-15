@@ -13,7 +13,7 @@ Blue: Friendly Fire,Fog of War,Arcane Assault,Compel,Annihilation,At Any Cost,Wh
 
 Green: Allseeing One's Favor,Defend the Weak,Juke,Roseleaf Rejuvenator,Champion of the Ancient,Smeevil Blacksmith,Homefield Advantage,Gust,Act of Defiance,Prowler Vanguard,Savage Wolf,Thunderhide Pack,Emissary of the Quorum,Ion Shell,Altar of the Mad Moon,Rebel Decoy,Selfish Cleric,Revtel Convoy,Rampaging Hellbear,Satyr Duelist,Savage Wolf,Verdant Refuge,Mist of Avernus,Stars Align,Bellow,Rumusque Blessing,Defensive Bloom,Restoration Effort,Intimidation,Curse of Atrophy,Iron Branch Protection,Avernus' Blessing,Thunderhide Alpha
 
-Black: Heartstopper Aura,The Cover of Night,Hip Fire,Lodestone Demolition,Oglodi Vandal,Oglodi Catapult,Assassin's Shadow,Pit Fighter of Quoidge,Murder Plot,Collateral Damage,Trebuchets,Unsupervised Artillery,Iron Fog Goldmine,Assured Destruction,Escape Route,Assassinate,Winter's Curse,Gank,Coup de Grace,Forward Charge,Sister of the Veil,Steam Cannon,Keenfolk Turret,Assassin's Apprentice,Grazing Shot,No Accident,Slay,Pick Off,Ravenous Mass,Disciple of Nevermore,Assault Ladders,Mana Drain,Payday,Arcane Censure,Untested Grunt
+Black: Blood Rage,Track,Heartstopper Aura,The Cover of Night,Hip Fire,Lodestone Demolition,Oglodi Vandal,Oglodi Catapult,Assassin's Shadow,Pit Fighter of Quoidge,Murder Plot,Collateral Damage,Trebuchets,Unsupervised Artillery,Iron Fog Goldmine,Assured Destruction,Escape Route,Assassinate,Winter's Curse,Gank,Coup de Grace,Forward Charge,Sister of the Veil,Steam Cannon,Keenfolk Turret,Assassin's Apprentice,Grazing Shot,No Accident,Slay,Pick Off,Ravenous Mass,Disciple of Nevermore,Assault Ladders,Mana Drain,Payday,Arcane Censure,Untested Grunt
 
 Items: Rumusque Vestments,Wingfall Hammer,Blink Dagger,Broadsword,Claymore,Chainmail,Fur-lined Mantle,Hero's Cape,Platemail,Barbed Mail,Demagicking Maul,Stonehall Plate,Stonehall Cloak,Leather Armor,Short Sword,Traveler's Cloak,Blade of the Vigil,Keenfolk Musket,Red Mist Maul,Shield of Basilius,Horn of the Alpha,Phase Boots,Ring of Tarrasque
 
@@ -22,4 +22,4 @@ Current Heros:
 Red: Tidehunter,Legion Commander,Axe,Centaur Warrunner,Bristleback,Sven,Pugna,Keefe the Bold
 Blue: Skywrath Mage,Earthshaker,Venomancer,Prellex,Luna,J'Muy the Wise
 Green: Lycan,Omniknight,Drow Ranger,Treant Protector,Enchantress,Fahrvhan the Dreamer
-Black: Necrophos,Winter Wyvern,Sorla Khan,Phantom Assassin,Lion,Lich,Bounty Hunter,Debbi the Cunning,Keefe the Bold
+Black: Bloodseeker,Necrophos,Winter Wyvern,Sorla Khan,Phantom Assassin,Lion,Lich,Bounty Hunter,Debbi the Cunning

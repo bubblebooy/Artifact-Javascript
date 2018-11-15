@@ -913,3 +913,8 @@ input:checked + .slider:before {
   background-color: #b6bbd4;
   transform: translateX(47px);
 }
+
+.red-text{
+  color:red;
+  text-shadow: 1px 1px 1px black;
+}
