@@ -5,6 +5,8 @@ Cards Not implemented are ignored
 
 Reset You Deck/Item/Heros to check for new cards since last time played
 
+Deck codes start with ADC
+
 Current Cards:
 
 Red: Kraken Shell,The Omexe Arena,Crippling Blow,Clear The Deck,Rend Armor,Fight Through the Pain,Cursed Satyr,Stonehall Elite,Smeevil Armsmaster,Viscous Nasal Goo,Ogre Corpse Tosser,Combat Training,Pick a Fight,Grand Melee,Duel,Berserker's Call,Fighting Instinct,New Orders,Time of Triumph,New Orders,Legion Standard Bearer,Mercenary Exiles,Poised to Strike,Defensive Stance,Enrage,God's Strength,Spring the Trap,Double Edge,Bronze Legionnaire,Marrowfell Brawler,Ogre Conscript
