@@ -51,11 +51,16 @@ const tower = (currentHealth, player) => {
     tower.manaDiv.textContent = `${tower.mana[0]} : ${tower.mana[1]}`
   };
 
-  setTimeout(function(){ board.lanes[player].div.addEventListener("endOfRound", function(){
-    tower.mana[1]+=1
-    tower.manaDiv.textContent = `${tower.mana[0]} : ${tower.mana[1]}`
-    restoreMana()
-  })},10)
+  setTimeout(function(){ 
+    board.lanes[player].div.addEventListener("endOfRound", function(){
+      tower.mana[1]+=1
+      tower.manaDiv.textContent = `${tower.mana[0]} : ${tower.mana[1]}`
+      restoreMana()
+    })
+    board.lanes[player].div.addEventListener("continuousRefresh", function(){
+      tower.currentArmor = [0];
+    })
+  },10)
 
   let tower = {currentHealth , div, Name, currentArmor, mana, manaDiv, updateDisplay}  // why did I do it this way?
 
@@ -157,6 +162,7 @@ const game = (() => {
   let continuousRefreshEvent = new CustomEvent('continuousRefresh', { detail: {lane: undefined, card: undefined, player: undefined} })
   let continuousEffectEvent = new CustomEvent('continuousEffect', { detail: {lane: undefined, card: undefined, player: undefined} })
   let whenAttackingEvent = new CustomEvent('whenAttacking', { detail: {lane: undefined, card: undefined, player: undefined} })
+  let afterAttackingEvent = new CustomEvent('afterAttacking', { detail: {lane: undefined, card: undefined, player: undefined} })
   let beforeTheActionPhaseEvent = new CustomEvent('beforeTheActionPhase', { detail: {lane: undefined, card: undefined, player: undefined} })
   let afterUnitDiesEvent = new CustomEvent('afterUnitDies', { detail: {lane: undefined, card: undefined, player: undefined, triggerLane: undefined, triggerCard: undefined, triggerPlayer: undefined} })
 
@@ -170,6 +176,7 @@ const game = (() => {
       "continuousRefresh": (lane ) => {return continuousRefreshEvent},
       "_continuousEffect": (lane) => {return continuousEffectEvent},
       "whenAttacking": (lane) => {if (lane == currentLane) return whenAttackingEvent},
+      "afterAttacking": (lane) => {if (lane == currentLane) return afterAttackingEvent},
       "afterUnitDies": (lane) => {if (lane == currentLane) return afterUnitDiesEvent}
     };
     board.lanes.forEach(function(lane, laneIndex){
@@ -316,13 +323,14 @@ function battle( attackerLane, attackerPlayer, attackerIndex, targetLane, target
     if(sum(target.retaliate)>0){attacker.currentHealth[0] -= sum(target.retaliate) - sum(attacker.currentArmor)}
     target.currentHealth[0] -= sum(attacker.currentAttack) - sum(target.currentArmor)
   }
+  let evnt = new CustomEvent('afterAttacking', { detail: {lane: targetLane, card: targetIndex, player: attackerPlayer} })
+  attacker.div.dispatchEvent(evnt);
   game.infoDisplayUpdate();
 
   if (bidirectional) battle(targetLane, targetPlayer, targetIndex, attackerLane, attackerPlayer, attackerIndex, false, false)
 }
 
 function combat(){
-
   let currentLane = board.lanes[game.getCurrentLane()]
   game.dispatchEvent("whenAttacking")
   currentLane.cards.forEach(function(row, rowIndex){
@@ -356,7 +364,7 @@ function combat(){
       if(attacker.currentHealth[0] > attacker.Health) {attacker.currentHealth[0] = attacker.Health}
     })
   });
-
+  game.dispatchEvent("afterAttacking") 
   board.collapse(); //should this be currentLane.collapse?
   currentLane.towers[1].updateDisplay();
   currentLane.towers[0].updateDisplay();
@@ -393,13 +401,12 @@ function buildLanes(){
   })
 }
 
-const allcards = ["Blood Rage","Track","Heartstopper Aura","Kraken Shell","Allseeing One's Favor","Defend the Weak","Juke","Roseleaf Rejuvenator","Champion of the Ancient","Smeevil Blacksmith","The Cover of Night","Hip Fire","Lodestone Demolition","Oglodi Vandal","Oglodi Catapult","Friendly Fire","Fog of War","Arcane Assault","Compel","Annihilation","At Any Cost","Whispers of Madness","Cunning Plan","Ventriloquy","Diabolic Revelation","The Omexe Arena","Crippling Blow","Clear The Deck","Rend Armor","Fight Through the Pain","Cursed Satyr","Stonehall Elite","Smeevil Armsmaster","Assassin's Shadow","Pit Fighter of Quoidge","Viscous Nasal Goo","Ogre Corpse Tosser","Murder Plot","Collateral Damage","Combat Training","Pick a Fight","Trebuchets","Unsupervised Artillery","Homefield Advantage","Iron Fog Goldmine","Assured Destruction","Escape Route","Howling Mind","Grand Melee","Assassinate","Echo Slam","Winter's Curse","Battlefield Control","Gust","Act of Defiance","Frostbite","Gank","Duel","Berserker's Call","Prowler Vanguard","Coup de Grace","Mystic Flare","Sow Venom","Barracks","Eclipse","Savage Wolf","Fighting Instinct","Thunderhide Pack","Emissary of the Quorum","New Orders","Ion Shell","Time of Triumph","Forward Charge","Altar of the Mad Moon","New Orders","Sister of the Veil","Rebel Decoy","Steam Cannon","Keenfolk Turret","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
+const allcards = ["Whirling Death", "Steel Reinforcement", "Blood Rage","Track","Heartstopper Aura","Kraken Shell","Allseeing One's Favor","Defend the Weak","Juke","Roseleaf Rejuvenator","Champion of the Ancient","Smeevil Blacksmith","The Cover of Night","Hip Fire","Lodestone Demolition","Oglodi Vandal","Oglodi Catapult","Friendly Fire","Fog of War","Arcane Assault","Compel","Annihilation","At Any Cost","Whispers of Madness","Cunning Plan","Ventriloquy","Diabolic Revelation","The Omexe Arena","Crippling Blow","Clear The Deck","Rend Armor","Fight Through the Pain","Cursed Satyr","Stonehall Elite","Smeevil Armsmaster","Assassin's Shadow","Pit Fighter of Quoidge","Viscous Nasal Goo","Ogre Corpse Tosser","Murder Plot","Collateral Damage","Combat Training","Pick a Fight","Trebuchets","Unsupervised Artillery","Homefield Advantage","Iron Fog Goldmine","Assured Destruction","Escape Route","Howling Mind","Grand Melee","Assassinate","Echo Slam","Winter's Curse","Battlefield Control","Gust","Act of Defiance","Frostbite","Gank","Duel","Berserker's Call","Prowler Vanguard","Coup de Grace","Mystic Flare","Sow Venom","Barracks","Eclipse","Savage Wolf","Fighting Instinct","Thunderhide Pack","Emissary of the Quorum","New Orders","Ion Shell","Time of Triumph","Forward Charge","Altar of the Mad Moon","New Orders","Sister of the Veil","Rebel Decoy","Steam Cannon","Keenfolk Turret","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Payday","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
 let deck
 let AIdeck = ["Blood Rage","Track","Heartstopper Aura","Kraken Shell","Allseeing One's Favor","Defend the Weak","Roseleaf Rejuvenator","Champion of the Ancient","Smeevil Blacksmith","Hip Fire","Oglodi Vandal","Oglodi Catapult","Fog of War","Arcane Assault","The Omexe Arena","Crippling Blow","Clear The Deck","Fight Through the Pain","Cursed Satyr","Stonehall Elite","Smeevil Armsmaster","Assassin's Shadow","Pit Fighter of Quoidge","Viscous Nasal Goo","Ogre Corpse Tosser","Collateral Damage","Combat Training","Trebuchets","Homefield Advantage","Iron Fog Goldmine","Payday","Assured Destruction","Howling Mind","Assassinate","Echo Slam","Winter's Curse","Gust","Act of Defiance","Frostbite","Berserker's Call","Prowler Vanguard","Coup de Grace","Mystic Flare","Sow Venom","Barracks","Thunderhide Pack","Altar of the Mad Moon","Time of Triumph","Forward Charge","Ion Shell","Sister of the Veil","Rebel Decoy","Assassin's Apprentice","Grazing Shot","No Accident","Slay","Pick Off","Selfish Cleric","Revtel Convoy","Ravenous Mass","Rampaging Hellbear","Satyr Duelist","Savage Wolf","Satyr Magician","Disciple of Nevermore","Legion Standard Bearer","Mercenary Exiles","Verdant Refuge","Mist of Avernus","Ignite","Assault Ladders","Mana Drain","Arcane Censure","Stars Align","Bellow","Rumusque Blessing","Defensive Bloom","Restoration Effort","Intimidation","Curse of Atrophy","Strafing Run","Lightning Strike","Rolling Storm","Tower Barrage","Foresight","Prey on the Weak","Remote Detonation","Thunderstorm","Bolt of Damocles","Poised to Strike","Defensive Stance","Enrage","God's Strength","Spring the Trap","Double Edge","Conflagration","Call the Reserves", "Better Late Than Never","Iron Branch Protection","Avernus' Blessing","Dimensional Portal","Bronze Legionnaire","Marrowfell Brawler","Ogre Conscript","Troll Soothsayer","Untested Grunt","Thunderhide Alpha"]
 let AIheros = ["Bloodseeker","Necrophos","Bristleback","J\'Muy the Wise","Legion Commander","Lycan","Centaur Warrunner","Drow Ranger","Sorla Khan","Phantom Assassin","Bounty Hunter","Venomancer","Prellex","Sven","Luna","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Fahrvhan the Dreamer","Axe"] // "Beastmaster"
 AIheros = shuffle(AIheros).slice(0,5)
-
-let allheroes = ["Legion Commander","Lycan","Winter Wyvern","Skywrath Mage","Centaur Warrunner","Bloodseeker","Necrophos","Tidehunter","Bristleback","Earthshaker","Omniknight","Drow Ranger","Sorla Khan","Phantom Assassin","Lion","Lich","Bounty Hunter","Venomancer","Prellex","Pugna","Sven","Luna","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Sniper","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"] // "Beastmaster"
+let allheroes = ["Beastmaster", "Timbersaw","Ursa", "Mazzie", "Legion Commander","Lycan","Winter Wyvern","Skywrath Mage","Centaur Warrunner","Bloodseeker","Necrophos","Tidehunter","Bristleback","Earthshaker","Omniknight","Drow Ranger","Sorla Khan","Phantom Assassin","Lion","Lich","Bounty Hunter","Venomancer","Prellex","Pugna","Sven","Luna","Treant Protector","Enchantress","Debbi the Cunning","Keefe the Bold","Sniper","Fahrvhan the Dreamer","J\'Muy the Wise","Axe"] 
 let heroes
 
 let secretShopDeck = ["Rumusque Vestments","Wingfall Hammer","Blink Dagger","Broadsword","Claymore","Chainmail","Fur-lined Mantle","Hero's Cape","Platemail","Barbed Mail","Demagicking Maul","Stonehall Plate","Stonehall Cloak","Leather Armor","Short Sword","Traveler's Cloak","Blade of the Vigil","Keenfolk Musket","Red Mist Maul","Shield of Basilius","Horn of the Alpha","Phase Boots","Ring of Tarrasque"]

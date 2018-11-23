@@ -669,10 +669,15 @@ abilityMap.set("Troll Soothsayer : Effect" , function(card,e){
   card.player.draw()
 });
 
-// triggerMap.set("Loyal Beast : Effect" , "endOfRound")
-// abilityMap.set("Loyal Beast : Effect" , function(card,e){
-//   let lane = board.lanes[e.detail.lane]
-// });
+triggerMap.set("Loyal Beast : Effect" , "afterAttacking")
+abilityMap.set("Loyal Beast : Effect" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  let player = e.detail.player
+  let index = e.detail.card
+  if(lane.cards[index] != null && lane.cards[index][1-player].Name != null){
+    lane.cards[index][1-player].currentAttack[1]-=1
+  }
+});
 
 triggerMap.set("Legion Standard Bearer : Effect" , "continuousEffect")
 abilityMap.set("Legion Standard Bearer : Effect" , function(card,e){
@@ -1275,6 +1280,35 @@ abilityMap.set("Shield of Aquila : Effect" , function(card,e){
     if(lane.cards[index+i] != null && lane.cards[index+i][e.detail.player].Name != null){
       lane.cards[index+i][e.detail.player].currentArmor[4] += 3;
       lane.cards[index+i][e.detail.player].updateDisplay()
+    }
+  }
+});
+
+triggerMap.set("Steel Reinforcement : Effect" , "continuousEffect")
+abilityMap.set("Steel Reinforcement : Effect" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player=e.detail.player
+  lane.towers[player].currentArmor[0]+=1
+});
+
+triggerMap.set("Fury Swipes" , "afterAttacking")
+abilityMap.set("Fury Swipes" , function(card,e){
+  let lane = board.lanes[game.getCurrentLane()]
+  let player = e.detail.player
+  let index = e.detail.card
+  if(lane.cards[index] != null && lane.cards[index][1-player].Name != null){
+    lane.cards[index][1-player].currentArmor[1]-=1
+  }
+});
+
+triggerMap.set("Reactive Armor" , "continuousEffect")
+abilityMap.set("Reactive Armor" , function(card,e){
+  let lane = board.lanes[e.detail.lane]
+  let player = e.detail.player
+  let index = e.detail.card
+  for (var i = -1; i <= 1; i++) {
+    if (lane.cards[index + i] != null && lane.cards[index + i][1-player].Name != null && lane.cards[index + i][1-player].arrow + i == 0){
+      card.currentArmor[4] += 1;
     }
   }
 });

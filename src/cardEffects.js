@@ -1162,6 +1162,21 @@ effectMap.set("Blood Rage" , function(ev, lane, player, index){
   return true
 });
 
+targetMap.set("Whirling Death", "unit")
+effectMap.set("Whirling Death", function(ev, lane, player, index) {
+  if (board.lanes[lane].cards[index][player].Color != "Red" || board.lanes[lane].cards[index][player].CardType != "Hero" || player !== game.getTurn()) return false
+  const currentLane = board.lanes[lane]
+  for (var i = -1; i <= 1; i++) {
+    if (currentLane.cards[index + i] != null && currentLane.cards[index + i][1-player].Name != null){
+      currentLane.cards[index + i][1 - player].currentHealth[0] -= 2 - sum(currentLane.cards[index + i][1 - player].currentArmor)
+      currentLane.cards[index + i][1 - player].currentAttack[3] -= 2;
+    }
+  }
+  currentLane.collapse()
+  return true
+
+});
+
 //Defend the Weak,Allseeing One's Favor
 
 export {effectMap,targetMap};
